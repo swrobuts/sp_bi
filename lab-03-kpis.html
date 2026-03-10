@@ -3,621 +3,567 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lab 03 – KPIs mit DAX & Python · THWS BI Lab</title>
+  <title>Lab 03 &#8211; KPIs mit DAX &amp; Python &middot; THWS BI Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
-    :root { --primary: #1E3A8A; --accent: #2563EB; --dark: #1A1A1A; --light-bg: #FAFAFA; }
+    :root {
+      --primary: #1E3A8A;
+      --accent: #2563EB;
+      --dark: #1A1A1A;
+      --light-bg: #FAFAFA;
+      --primary-light: rgba(30,58,138,0.08);
+    }
     *, *::before, *::after { box-sizing: border-box; }
-    body { background: #FAFAFA; font-family: 'Space Grotesk', -apple-system, sans-serif; margin: 0; color: #1A1A1A; }
+    body { background: #FAFAFA; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; color: #1A1A1A; }
     h2 { color: #1E3A8A; font-weight: 800; font-family: 'Space Grotesk', sans-serif; margin-top: 0; }
     h3 { color: #1E3A8A; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
     h4 { font-family: 'Space Grotesk', sans-serif; font-weight: 600; margin: 0.5rem 0; }
     p { line-height: 1.7; }
+
+    /* Bauhaus */
+    .bauhaus-card { border: 1px solid #E5E7EB; border-radius: 10px; padding: 1.5rem; background: white; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
     .bauhaus-accent-line { width: 48px; height: 4px; background: #2563EB; margin: 0.5rem 0 1rem 0; }
-    .bauhaus-badge { background: #2563EB; color: white; padding: 0.2rem 0.7rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; display: inline-block; }
-    .code-block { background: #F3F4F6; color: #1A1A1A; border-left: 4px solid #D1D5DB; font-family: 'Courier New', monospace; font-size: 0.82rem; padding: 1rem 1.25rem; border-radius: 0 8px 8px 0; white-space: pre; overflow-x: auto; position: relative; margin: 1rem 0; }
+    .bauhaus-badge { background: #2563EB; color: white; padding: 0.2rem 0.7rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border-radius: 0; display: inline-block; }
+
+    /* Code */
+    .code-block { background: #F3F4F6; color: #1A1A1A; padding: 1.25rem; border-left: 4px solid #D1D5DB; font-family: 'Fira Code', 'Courier New', monospace; font-size: 0.85rem; overflow-x: auto; position: relative; border-radius: 0 8px 8px 0; white-space: pre; margin: 1rem 0; }
+
+    /* Info boxes */
     .tip-box { border-left: 4px solid #2563EB; background: #EFF6FF; padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
     .info-box { border-left: 4px solid #3b82f6; background: #eff6ff; padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
-    .concept-box { border-left: 4px solid #1E3A8A; background: rgba(30,58,138,0.06); padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
-    .header { position: fixed; top: 0; left: 0; right: 0; height: 56px; z-index: 100; background: white; border-bottom: 1px solid #E5E7EB; box-shadow: 0 1px 8px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; }
+    .concept-box { border-left: 4px solid #1E3A8A; background: rgba(30,58,138,0.08); padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+
+    /* Layout */
+    .header {
+      position: fixed; top: 0; left: 0; right: 0; height: 56px; z-index: 100;
+      background: white; border-bottom: 1px solid #E5E7EB; box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 1.5rem;
+    }
     .header-left { display: flex; align-items: center; gap: 1.5rem; }
     .header-logo { font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1.1rem; color: #1E3A8A; text-decoration: none; }
     .header-back { font-size: 0.85rem; color: #555; text-decoration: none; font-weight: 500; }
     .header-back:hover { color: #1E3A8A; }
-    .lang-btn { border: 2px solid #1A1A1A; background: white; padding: 0.2rem 0.6rem; font-size: 0.78rem; font-weight: 700; cursor: pointer; letter-spacing: 0.05em; font-family: 'Space Grotesk', sans-serif; }
-    .lang-btn.active { background: #2563EB; color: white; border-color: #2563EB; }
+    .lang-btn { border: 2px solid #1A1A1A; background: white; padding: 0.2rem 0.6rem; font-size: 0.78rem; font-weight: 700; cursor: pointer; border-radius: 4px; letter-spacing: 0.05em; }
+    .lang-btn.active { background: #1E3A8A; color: white; border-color: #1E3A8A; }
     .lang-btn:hover:not(.active) { background: #f5f5f5; }
-    .sidebar { position: fixed; top: 56px; left: 0; width: 260px; height: calc(100vh - 56px); overflow-y: auto; border-right: 1px solid #E5E7EB; background: white; padding: 1.5rem 0; }
+
+    .sidebar {
+      position: fixed; top: 56px; left: 0; width: 260px;
+      height: calc(100vh - 56px); overflow-y: auto;
+      border-right: 1px solid #E5E7EB; background: white;
+      padding: 1.5rem 0;
+    }
     .sidebar-title { font-family: 'Space Grotesk', sans-serif; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #888; padding: 0 1.25rem; margin-bottom: 0.75rem; }
-    .sidebar-link { display: block; padding: 0.55rem 1.25rem; font-size: 0.88rem; color: #444; text-decoration: none; border-left: 3px solid transparent; transition: background 0.12s, color 0.12s, border-color 0.12s; font-weight: 500; }
+    .sidebar-link {
+      display: block; padding: 0.55rem 1.25rem; font-size: 0.88rem; color: #444;
+      text-decoration: none; border-left: 3px solid transparent;
+      transition: background 0.12s, color 0.12s, border-color 0.12s;
+      font-weight: 500;
+    }
     .sidebar-link:hover { color: #1E3A8A; background: rgba(30,58,138,0.04); }
-    .sidebar-link.active { color: #1E3A8A; border-left-color: #2563EB; background: rgba(30,58,138,0.06); font-weight: 700; }
-    .main-content { margin-left: 260px; padding-top: 72px; padding-bottom: 4rem; padding-left: 3rem; padding-right: 3rem; max-width: 960px; }
+    .sidebar-link.active { color: #1E3A8A; border-left-color: #1E3A8A; background: rgba(30,58,138,0.06); font-weight: 700; }
+
+    .main-content {
+      margin-left: 260px; padding-top: 72px; padding-bottom: 4rem;
+      padding-left: 3rem; padding-right: 3rem; max-width: 960px;
+    }
     .section-block { margin-bottom: 4rem; }
+
+    /* Tables */
     table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
     th { background: #1E3A8A; color: white; padding: 0.65rem 1rem; text-align: left; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.82rem; letter-spacing: 0.05em; }
     td { padding: 0.6rem 1rem; border-bottom: 1px solid #e5e7eb; }
     tr:nth-child(even) td { background: #f9fafb; }
-    .nav-bottom { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; margin-top: 2rem; border-top: 1px solid #e5e7eb; }
-    .nav-btn { border: 2px solid #1A1A1A; background: white; padding: 0.65rem 1.25rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; text-decoration: none; color: #1A1A1A; font-family: 'Space Grotesk', sans-serif; display: inline-block; }
-    .nav-btn:hover { background: #2563EB; color: white; border-color: #2563EB; }
+    tr:hover td { background: rgba(30,58,138,0.03); }
+    td code { font-family: 'Fira Code', 'Courier New', monospace; font-size: 0.82rem; background: #F3F4F6; padding: 0.1rem 0.35rem; border-radius: 3px; }
+
+    /* Nav bottom */
+    .nav-bottom { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 2rem; padding: 1.5rem 0; border-top: 1px solid #E5E7EB; }
+    .nav-btn { border: 2px solid #1A1A1A; background: white; padding: 0.65rem 1.25rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; text-decoration: none; color: #1A1A1A; font-family: 'Space Grotesk', sans-serif; display: inline-block; border-radius: 4px; }
+    .nav-btn:hover { background: #1E3A8A; color: white; border-color: #1E3A8A; }
     .nav-btn.primary { background: #1E3A8A; border-color: #1E3A8A; color: white; }
     .nav-btn.primary:hover { background: #1e40af; border-color: #1e40af; }
-    .lernziele-box { background: #EFF6FF; border-left: 4px solid #2563EB; padding: 1.25rem 1.5rem; margin-top: 1.5rem; }
-    .lernziele-heading { color: #1E3A8A; margin: 0 0 0.75rem; font-family: 'Space Grotesk', sans-serif; font-weight: 700; }
-    .dax-vs-python { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
-    @media (max-width: 600px) { .dax-vs-python { grid-template-columns: 1fr; } }
-    .code-label { font-family: 'Space Grotesk', sans-serif; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #6B7280; margin-bottom: 0.4rem; }
-    .footer { background: #1A1A1A; padding: 2rem 3rem 2rem calc(260px + 3rem); }
-    .footer-text { color: #6B7280; font-size: 0.875rem; }
-    @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding-left: 1.25rem; padding-right: 1.25rem; } .footer { padding: 2rem 1.25rem; } }
-    [data-lang="en"] h2, [data-lang="en"] h3 { color: #0D9488; }
-    [data-lang="en"] .bauhaus-accent-line { background: #14B8A6; }
-    [data-lang="en"] .bauhaus-badge { background: #0D9488; }
-    [data-lang="en"] .header-logo { color: #0D9488; }
-    [data-lang="en"] .lang-btn.active { background: #0D9488; border-color: #0D9488; color: white; }
-    [data-lang="en"] .sidebar-link.active { color: #0D9488; border-left-color: #14B8A6; background: rgba(13,148,136,0.06); }
-    [data-lang="en"] .sidebar-link:hover { color: #0D9488; }
-    [data-lang="en"] .header-back:hover { color: #0D9488; }
-    [data-lang="en"] th { background: #0D9488; }
-    [data-lang="en"] .tip-box { border-left-color: #14B8A6; background: #F0FDFA; }
-    [data-lang="en"] .concept-box { border-left-color: #0D9488; background: rgba(13,148,136,0.06); }
-    [data-lang="en"] .lernziele-box { border-left-color: #14B8A6; background: #F0FDFA; }
-    [data-lang="en"] .lernziele-heading { color: #0D9488; }
-    [data-lang="en"] .nav-btn:hover { background: #0D9488; border-color: #0D9488; color: white; }
-    [data-lang="en"] .nav-btn.primary { background: #0D9488; border-color: #0D9488; }
+
+    /* Lab header */
+    .lab-header { padding: 3rem 3rem 2rem; margin-left: 260px; padding-top: 88px; }
+    .lab-num { font-family: 'Space Grotesk', sans-serif; font-size: 4rem; font-weight: 900; color: #2563EB; line-height: 1; margin-bottom: 0.5rem; }
+    .lab-title-h1 { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 800; color: #1A1A1A; margin-bottom: 0.75rem; }
+    .lab-desc-intro { font-size: 1.1rem; color: #4B5563; line-height: 1.6; max-width: 680px; margin-bottom: 1.5rem; }
+    .lernziele-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+    .lernziel-chip { background: rgba(30,58,138,0.08); color: #1E3A8A; border: 1px solid rgba(30,58,138,0.2); padding: 0.3rem 0.75rem; font-size: 0.8rem; font-weight: 600; border-radius: 20px; font-family: 'Space Grotesk', sans-serif; }
+
+    /* YouTube box */
+    .youtube-box { background: #FFF7ED; border: 1px solid #FED7AA; border-radius: 10px; padding: 1.5rem; margin: 2rem 0; }
+    .youtube-box h3 { color: #EA580C; margin-top: 0; }
+    .youtube-link { color: #EA580C; text-decoration: none; font-weight: 600; }
+    .youtube-link:hover { text-decoration: underline; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-content { margin-left: 0; padding-left: 1.25rem; padding-right: 1.25rem; }
+      .lab-header { margin-left: 0; padding-left: 1.25rem; padding-right: 1.25rem; }
+    }
+
+    /* Footer */
+    .footer { background: #1A1A1A; color: rgba(255,255,255,0.6); text-align: center; padding: 1.5rem; margin-left: 260px; font-size: 0.85rem; }
+    @media (max-width: 768px) { .footer { margin-left: 0; } }
   </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel">
-  function CodeBlock({ code }) {
-    const [copied, setCopied] = React.useState(false);
-    const copy = () => {
-      navigator.clipboard.writeText(code).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500); }).catch(() => { const el = document.createElement('textarea'); el.value = code; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); setCopied(true); setTimeout(() => setCopied(false), 1500); });
-    };
-    return (
-      <div style={{ position: 'relative', marginBottom: '1rem' }}>
-        <pre className="code-block">{code}</pre>
-        <button onClick={copy} style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', background: copied ? '#059669' : '#E5E7EB', color: copied ? 'white' : '#374151', border: 'none', padding: '0.2rem 0.5rem', fontSize: '0.75rem', cursor: 'pointer', fontFamily: 'Space Grotesk, sans-serif' }}>{copied ? '✓ Kopiert' : 'Kopieren'}</button>
-      </div>
-    );
-  }
+  <div id="root"></div>
 
-  function App() {
-    const urlLang = new URLSearchParams(window.location.search).get('lang');
-    const [lang, setLang] = React.useState(() => localStorage.getItem('bi-lang') || urlLang || 'de');
-    const toggleLang = (l) => { setLang(l); localStorage.setItem('bi-lang', l); };
+  <script type="text/babel">
+    const { useState, useEffect } = React;
 
-    const [activeSection, setActiveSection] = React.useState('ueberblick');
-
-    React.useEffect(() => {
-      document.documentElement.setAttribute('data-lang', lang);
-    }, [lang]);
-
-    React.useEffect(() => {
-      const sections = ['ueberblick', 'dax-grundlagen', 'filter-kontext', 'kpi-tabelle', 'uebung', 'ressourcen'];
-      const handleScroll = () => {
-        let current = 'ueberblick';
-        for (const id of sections) {
-          const el = document.getElementById(id);
-          if (el) {
-            const rect = el.getBoundingClientRect();
-            if (rect.top <= 100) current = id;
-          }
-        }
-        setActiveSection(current);
+    // ─── CodeBlock Component ──────────────────────────────────────────────────
+    function CodeBlock({ code }) {
+      const [copied, setCopied] = React.useState(false);
+      const copy = () => {
+        navigator.clipboard.writeText(code).then(() => {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1500);
+        }).catch(() => {
+          const el = document.createElement('textarea');
+          el.value = code;
+          document.body.appendChild(el);
+          el.select();
+          document.execCommand('copy');
+          document.body.removeChild(el);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1500);
+        });
       };
-      window.addEventListener('scroll', handleScroll, { passive: true });
-      return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+      return (
+        <div style={{ position: 'relative', marginBottom: '1rem' }}>
+          <pre className="code-block">{code}</pre>
+          <button onClick={copy} style={{
+            position: 'absolute', top: '0.5rem', right: '0.5rem',
+            background: copied ? '#059669' : '#E5E7EB',
+            color: copied ? 'white' : '#374151',
+            border: 'none', borderRadius: '4px',
+            padding: '0.2rem 0.5rem', fontSize: '0.75rem',
+            cursor: 'pointer', fontFamily: 'Space Grotesk, sans-serif'
+          }}>
+            {copied ? '\u2713 Kopiert' : 'Kopieren'}
+          </button>
+        </div>
+      );
+    }
 
-    const t = {
+    // ─── Translations ─────────────────────────────────────────────────────────
+    const translations = {
       de: {
-        logo: 'THWS BI Lab',
-        back: '← Zur Kursübersicht',
-        backHref: 'index.html',
-        badge: 'Lab 03',
-        pageTitle: 'KPIs mit DAX & Python',
-        pageSubtitle: 'Kennzahlen berechnen, Filter-Kontext verstehen und Business-Metriken mit DAX und Python umsetzen.',
-        nav: [
-          { id: 'ueberblick', label: 'Überblick' },
-          { id: 'dax-grundlagen', label: 'DAX Grundlagen' },
-          { id: 'filter-kontext', label: 'Filter-Kontext' },
-          { id: 'kpi-tabelle', label: 'Business-KPIs' },
-          { id: 'uebung', label: 'Übungsaufgabe' },
-          { id: 'ressourcen', label: 'Ressourcen' },
-        ],
-        s1Title: 'Überblick',
-        s1Lernziele: 'Lernziele',
-        s1Goals: [
+        title: 'KPIs mit DAX \u0026 Python',
+        desc: 'DAX (Data Analysis Expressions) ist die Formelsprache von Power BI. In diesem Lab lernen Sie, wie Sie wichtige Business-KPIs sowohl in DAX als auch in Python berechnen, den Filter-Kontext verstehen und Measures korrekt einsetzen.',
+        lernziele: [
           'DAX-Grundlagen in Power BI anwenden',
-          'Measures vs. Calculated Columns unterscheiden',
-          'Wichtige Business-KPIs in DAX und Python berechnen',
+          'Measures vs. Calculated Columns verstehen',
+          'Wichtige Business-KPIs berechnen',
           'Filter-Kontext in DAX verstehen',
         ],
-        s2Title: 'DAX – Data Analysis Expressions',
-        s2What: 'Was ist DAX?',
-        s2WhatText: 'DAX (Data Analysis Expressions) ist eine Excel-ähnliche Formelsprache, die in Power BI, SQL Server Analysis Services und Power Pivot verwendet wird. Sie ermöglicht die Definition von Berechnungen und KPIs direkt im Datenmodell.',
-        s2MeasuresTitle: 'Measures vs. Calculated Columns',
-        s2MeasuresText: 'Der wichtigste Unterschied in DAX:',
-        s2MeasuresDef: [
-          { term: 'Measures', desc: 'Dynamisch – wird im aktuellen Filter-Kontext berechnet. Ideal für Aggregationen und KPIs.' },
-          { term: 'Calculated Columns', desc: 'Statisch – wird Zeile für Zeile beim Laden berechnet und im Modell gespeichert. Mehr Speicherverbrauch.' },
-        ],
-        s2GoldRule: 'Fast immer Measures verwenden! Calculated Columns verbrauchen mehr Speicher und sind weniger flexibel.',
-        s2Examples: 'Code-Beispiele: DAX vs. Python',
-        s2Pair1: 'Einfache Aggregation',
-        s2Pair2: 'Bedingte Aggregation mit CALCULATE',
-        s2Pair3: 'Division mit Null-Absicherung',
-        s2Pair4: 'Zeitintelligenz',
-        s2Pair5: 'Ranking',
-        s3Title: 'Filter-Kontext',
-        s3RowTitle: 'Row Context vs. Filter Context',
-        s3RowText: 'DAX kennt zwei Arten von Kontext, die das Ergebnis einer Berechnung bestimmen:',
-        s3Contexts: [
-          { term: 'Row Context', desc: 'Entsteht in Calculated Columns und EARLIER()-Funktionen. Bezeichnet die aktuelle Zeile.' },
-          { term: 'Filter Context', desc: 'Entsteht durch Slicers, Visualisierungen und CALCULATE(). Bestimmt, welche Zeilen ausgewertet werden.' },
-        ],
-        s3CalcTitle: 'CALCULATE() – Der Filter-Modifier',
-        s3CalcInfo: 'CALCULATE() ist die mächtigste DAX-Funktion. Sie ändert den Filter-Kontext für die enthaltene Berechnung.',
-        s3CalcText: 'Mit CALCULATE() kann der aktuelle Filter-Kontext erweitert, eingeschränkt oder ersetzt werden. Das ist die Grundlage für nahezu alle fortgeschrittenen DAX-Berechnungen.',
-        s3ExampleLabel: 'Beispiel: CALCULATE() im Einsatz',
-        s4Title: 'Wichtige Business-KPIs',
-        s4Intro: 'Die folgende Tabelle zeigt die wichtigsten KPIs im Business Intelligence-Kontext mit ihrer DAX- und Python-Entsprechung:',
-        s4ThKPI: 'KPI',
-        s4ThFormel: 'Formel',
-        s4ThDAX: 'DAX-Funktion',
-        s4ThPython: 'Python',
-        s4Rows: [
-          { kpi: 'Umsatz', formel: 'Summe aller Beträge', dax: 'SUM()', python: '.sum()' },
-          { kpi: 'Bruttogewinn', formel: 'Umsatz - Kosten', dax: 'CALCULATE()', python: 'Subtraktion' },
-          { kpi: 'Marge %', formel: 'GP / Umsatz × 100', dax: 'DIVIDE()', python: '/ * 100' },
-          { kpi: 'YoY-Wachstum', formel: '(Jetzt - VJ) / VJ', dax: 'SAMEPERIODLASTYEAR()', python: 'pct_change()' },
-          { kpi: 'Conversion Rate', formel: 'Käufe / Besuche', dax: 'DIVIDE()', python: '/' },
-          { kpi: 'Customer LTV', formel: 'Ø Bestellwert × Frequenz', dax: 'Measures kombinieren', python: 'groupby' },
-          { kpi: 'Churn Rate', formel: 'Abgänge / Gesamt', dax: 'CALCULATE() + DIVIDE()', python: 'groupby + /' },
-        ],
-        s5Title: 'Übungsaufgabe',
-        s5BoxTitle: 'Aufgabe: Superstore Measures erstellen',
-        s5BoxText: 'Erstelle die folgenden 3 DAX-Measures (und 2 Bonus-Measures) für die Superstore-Daten in Power BI:',
-        s5Steps: [
-          { code: 'Umsatz = SUM(Orders[Sales])', desc: 'Gesamtumsatz als Summe der Verkäufe' },
-          { code: 'Gewinn = SUM(Orders[Profit])', desc: 'Gesamtgewinn als Summe der Profite' },
-          { code: 'Marge_Pct = DIVIDE([Gewinn], [Umsatz], 0) * 100', desc: 'Marge in Prozent mit Null-Absicherung' },
-        ],
-        s5CodeLabel: 'Power BI – DAX Measures (Superstore)',
-        s6Title: 'YouTube-Ressourcen',
-        s6Intro: 'Empfohlene Video-Ressourcen für DAX:',
-        s6Resources: [
-          { title: 'SQLBI – DAX Introduction', desc: 'Umfangreiche DAX-Tutorials vom führenden Analysis Services Experten-Team.', url: 'https://www.youtube.com/@SQLBI', label: 'SQLBI auf YouTube' },
-          { title: 'DAX Fridays – Curbal', desc: 'Wöchentliche DAX-Lektionen mit praktischen Beispielen von Ruth Pozuelo Martinez.', url: 'https://www.youtube.com/@Curbal', label: 'Curbal auf YouTube' },
-        ],
-        navBack: '← Lab 02: Daten',
-        navBackHref: 'lab-02-daten.html',
-        navNext: 'Weiter: Lab 04 – Dashboards →',
-        navNextHref: 'lab-04-dashboards.html',
-        footer: '© 2025 THWS Business School · BI Lab · Alle Rechte vorbehalten',
-      },
-      en: {
-        logo: 'THWS BI Lab',
-        back: '← Back to Course Overview',
-        backHref: 'index.html',
-        badge: 'Lab 03',
-        pageTitle: 'KPIs with DAX & Python',
-        pageSubtitle: 'Calculate key metrics, understand filter context, and implement business KPIs with DAX and Python.',
+        navContents: 'Inhalt',
         nav: [
-          { id: 'ueberblick', label: 'Overview' },
-          { id: 'dax-grundlagen', label: 'DAX Basics' },
-          { id: 'filter-kontext', label: 'Filter Context' },
-          { id: 'kpi-tabelle', label: 'Business KPIs' },
-          { id: 'uebung', label: 'Exercise' },
-          { id: 'ressourcen', label: 'Resources' },
+          { href: '#dax-grundlagen',   label: 'DAX Grundlagen' },
+          { href: '#python',           label: 'Python \u00C4quivalente' },
+          { href: '#kpi-tabelle',      label: 'KPI-Tabelle' },
+          { href: '#filter-kontext',   label: 'Filter-Kontext' },
+          { href: '#youtube',          label: 'Ressourcen' },
         ],
-        s1Title: 'Overview',
-        s1Lernziele: 'Learning Objectives',
-        s1Goals: [
+        backLabel: '\u2190 \u00DCbersicht',
+
+        s1Title: 'DAX Grundlagen',
+        s1Desc: 'DAX (Data Analysis Expressions) ist eine Excel-\u00E4hnliche Formelsprache, die speziell f\u00FCr Power BI, Analysis Services und Power Pivot entwickelt wurde. Mit DAX k\u00F6nnen Sie leistungsstarke Berechnungen und Analysen direkt im Datenmodell definieren.',
+        s1WhatTitle: 'Was ist DAX?',
+        s1WhatText: 'DAX ist eine Sammlung von Funktionen, Operatoren und Konstanten, die in Formeln (Expressions) verwendet werden k\u00F6nnen, um einen oder mehrere Werte zu berechnen. DAX wurde f\u00FCr die Arbeit mit Tabellen und Beziehungen optimiert und kennt zwei wichtige Konzepte: Measures und Calculated Columns.',
+        s1MeasuresTitle: 'Measures vs. Calculated Columns',
+        s1MeasuresDe: [
+          {
+            name: 'Measures (Kennzahlen)',
+            color: '#1E3A8A',
+            points: [
+              'Dynamisch \u2013 werden zur Laufzeit berechnet',
+              'Abh\u00E4ngig vom aktuellen Filter-Kontext',
+              'Werden NICHT in der Tabelle gespeichert',
+              'Beispiele: Gesamtumsatz, Marge %, YoY-Wachstum',
+            ],
+          },
+          {
+            name: 'Calculated Columns',
+            color: '#2563EB',
+            points: [
+              'Statisch \u2013 einmal berechnet und gespeichert',
+              'Zeile f\u00FCr Zeile (Row Context)',
+              'Ergebnis wird in der Tabelle gespeichert',
+              'Beispiele: Vollst\u00E4ndiger Name, Kategorie-Gruppe',
+            ],
+          },
+        ],
+        s1GoldenRule: 'Goldene Regel',
+        s1GoldenRuleText: 'Fast immer Measures verwenden! Measures sind flexibler, verbrauchen weniger Speicher und reagieren korrekt auf Filter. Calculated Columns nur verwenden, wenn Sie den Wert in Slicern oder als Filterbedingung ben\u00F6tigen.',
+        s1CodeDax: '-- Einfache Aggregation\nGesamtumsatz = SUM(Umsatz[Betrag])\n\n-- Mit Bedingung (CALCULATE)\nUmsatz_DE = CALCULATE(SUM(Umsatz[Betrag]), Umsatz[Land] = "Deutschland")\n\n-- Division mit Null-Absicherung\nMarge_% = DIVIDE([Bruttogewinn], [Umsatz], 0)\n\n-- Zeitintelligenz\nUmsatz_VJ = CALCULATE([Gesamtumsatz], SAMEPERIODLASTYEAR(Datum[Datum]))\nWachstum_% = DIVIDE([Gesamtumsatz] - [Umsatz_VJ], [Umsatz_VJ], 0)\n\n-- Ranking\nTop_Produkte = RANKX(ALL(Produkt[Name]), [Gesamtumsatz])',
+
+        s2Title: 'Python \u00C4quivalente',
+        s2Desc: 'Die gleichen KPIs, die Sie in DAX berechnen, k\u00F6nnen in Python mit der pandas-Bibliothek umgesetzt werden. Hier sehen Sie die direkten \u00C4quivalente:',
+        s2CodePython: '# Gesamtumsatz\numsatz_gesamt = df[\'Betrag\'].sum()\n\n# Umsatz DE\numsatz_de = df[df[\'Land\'] == \'Deutschland\'][\'Betrag\'].sum()\n\n# Marge\nmarge_pct = df[\'Bruttogewinn\'].sum() / df[\'Betrag\'].sum() * 100\n\n# Jahresvergleich\ndf[\'Jahr\'] = pd.to_datetime(df[\'Datum\']).dt.year\nyearly = df.groupby(\'Jahr\')[\'Betrag\'].sum()\nwachstum = yearly.pct_change() * 100\nprint(wachstum)\n\n# Ranking\ntop_produkte = (df.groupby(\'Produkt\')[\'Betrag\'].sum()\n                  .sort_values(ascending=False)\n                  .reset_index())\nprint(top_produkte.head(10))',
+
+        s3Title: 'KPI-Tabelle',
+        s3Desc: 'Die wichtigsten Business-KPIs auf einen Blick \u2013 mit Formel, DAX-Funktion und Python-\u00C4quivalent.',
+        s3Headers: ['KPI', 'Formel', 'DAX-Funktion', 'Python (Pandas)'],
+        s3Rows: [
+          ['Gesamtumsatz', '\u03A3 Betrag', 'SUM()', '.sum()'],
+          ['Bruttogewinn', 'Umsatz \u2212 COGS', 'CALCULATE()', 'Subtraktion'],
+          ['Marge %', 'Gewinn / Umsatz \u00D7 100', 'DIVIDE()', '/ * 100'],
+          ['YoY-Wachstum', '(Jetzt \u2212 VJ) / VJ', 'SAMEPERIODLASTYEAR', 'pct_change()'],
+          ['Conversion Rate', 'K\u00E4ufe / Besuche', 'DIVIDE()', '/'],
+          ['Customer LTV', '\u00D8 Bestellwert \u00D7 Frequenz', 'Measures', 'groupby'],
+          ['Churn Rate', 'Abgewanderte / Gesamt', 'COUNTROWS + DIVIDE', 'count + /'],
+        ],
+
+        s4Title: 'Filter-Kontext',
+        s4Desc: 'Das Verst\u00E4ndnis des Filter-Kontexts ist der Schl\u00FCssel zu machtvollem DAX. Es gibt zwei grundlegende Kontexte in DAX:',
+        s4RowTitle: 'Row Context (Zeilen-Kontext)',
+        s4RowText: 'Beim Row Context iteriert DAX Zeile f\u00FCr Zeile \u00FCber eine Tabelle. Dieser Kontext entsteht automatisch bei Calculated Columns und bei Iterator-Funktionen wie SUMX, AVERAGEX, MAXX. In jedem Durchlauf ist die aktuelle Zeile bekannt.',
+        s4FilterTitle: 'Filter Context (Filter-Kontext)',
+        s4FilterText: 'Der Filter Context ist die Menge aller aktiven Filter, wenn ein Measure ausgewertet wird. Diese Filter entstehen durch Slicers, Report-Filter, Zeilen/Spalten in einer Matrix oder durch CALCULATE()-Aufrufe im DAX-Code selbst.',
+        s4WhyCalcTitle: 'Warum CALCULATE() so m\u00E4chtig ist',
+        s4WhyCalcText: 'CALCULATE() ist die einzige Funktion in DAX, die den Filter Context ver\u00E4ndern kann. Damit k\u00F6nnen Sie Filter hinzuf\u00FCgen, entfernen oder \u00FCberschreiben \u2013 direkt in einer Formel. Ohne CALCULATE k\u00F6nnen Sie nicht filtern innerhalb eines Measures.',
+        s4CodeCalc: '-- Ohne CALCULATE: kein Filtern m\u00F6glich\nUmsatz_falsch = SUM(Umsatz[Betrag])  -- ignoriert kein Land-Filter\n\n-- Mit CALCULATE: Filter-Kontext \u00E4ndern\nUmsatz_DE = CALCULATE(\n    SUM(Umsatz[Betrag]),\n    Umsatz[Land] = "Deutschland"\n)\n\n-- Filter entfernen mit ALL()\nUmsatz_Gesamt_Immer = CALCULATE(\n    SUM(Umsatz[Betrag]),\n    ALL(Umsatz)\n)\n\n-- Anteil am Gesamtumsatz\nAnteil_% = DIVIDE(\n    [Gesamtumsatz],\n    CALCULATE([Gesamtumsatz], ALL(Umsatz[Land])),\n    0\n)',
+
+        s5Title: 'Lernressourcen',
+        s5Desc: 'Erg\u00E4nzende YouTube-Kanalempfehlungen f\u00FCr DAX und Python-Analysen:',
+        s5Resources: [
+          {
+            title: 'SQLBI \u2013 DAX Introduction',
+            url: 'https://www.youtube.com/@SQLBI',
+            desc: 'SQLBI (Marco Russo & Alberto Ferrari) sind die weltweit f\u00FChrenden DAX-Experten. Tiefe Einblicke in DAX, Power BI und das Tabular-Modell.',
+          },
+          {
+            title: '"DAX Fridays" \u2013 Curbal',
+            url: 'https://www.youtube.com/@Curbal',
+            desc: 'W\u00F6chentliche DAX-Tipps und Tutorials. Sehr praxisnah, gut f\u00FCr Einsteiger und Fortgeschrittene.',
+          },
+        ],
+
+        navPrev: '\u2190 Lab 02: Daten',
+        navNext: 'Lab 04: Dashboards \u2192',
+      },
+
+      en: {
+        title: 'KPIs with DAX \u0026 Python',
+        desc: 'DAX (Data Analysis Expressions) is the formula language of Power BI. In this lab you will learn how to calculate important business KPIs in both DAX and Python, understand the filter context, and use measures correctly.',
+        lernziele: [
           'Apply DAX fundamentals in Power BI',
-          'Distinguish between Measures and Calculated Columns',
-          'Calculate important business KPIs in DAX and Python',
-          'Understand filter context in DAX',
+          'Understand Measures vs. Calculated Columns',
+          'Calculate important business KPIs',
+          'Understand Filter Context in DAX',
         ],
-        s2Title: 'DAX – Data Analysis Expressions',
-        s2What: 'What is DAX?',
-        s2WhatText: 'DAX (Data Analysis Expressions) is an Excel-like formula language used in Power BI, SQL Server Analysis Services, and Power Pivot. It enables defining calculations and KPIs directly within the data model.',
-        s2MeasuresTitle: 'Measures vs. Calculated Columns',
-        s2MeasuresText: 'The most important distinction in DAX:',
-        s2MeasuresDef: [
-          { term: 'Measures', desc: 'Dynamic – evaluated in the current filter context. Ideal for aggregations and KPIs.' },
-          { term: 'Calculated Columns', desc: 'Static – computed row by row at load time and stored in the model. Higher memory consumption.' },
+        navContents: 'Contents',
+        nav: [
+          { href: '#dax-grundlagen',   label: 'DAX Fundamentals' },
+          { href: '#python',           label: 'Python Equivalents' },
+          { href: '#kpi-tabelle',      label: 'KPI Table' },
+          { href: '#filter-kontext',   label: 'Filter Context' },
+          { href: '#youtube',          label: 'Resources' },
         ],
-        s2GoldRule: 'Almost always use Measures! Calculated Columns consume more memory and are less flexible.',
-        s2Examples: 'Code Examples: DAX vs. Python',
-        s2Pair1: 'Simple Aggregation',
-        s2Pair2: 'Conditional Aggregation with CALCULATE',
-        s2Pair3: 'Division with Zero Guard',
-        s2Pair4: 'Time Intelligence',
-        s2Pair5: 'Ranking',
-        s3Title: 'Filter Context',
-        s3RowTitle: 'Row Context vs. Filter Context',
-        s3RowText: 'DAX has two types of context that determine the result of a calculation:',
-        s3Contexts: [
-          { term: 'Row Context', desc: 'Created in Calculated Columns and EARLIER() functions. Refers to the current row.' },
-          { term: 'Filter Context', desc: 'Created by slicers, visuals, and CALCULATE(). Determines which rows are evaluated.' },
+        backLabel: '\u2190 Overview',
+
+        s1Title: 'DAX Fundamentals',
+        s1Desc: 'DAX (Data Analysis Expressions) is an Excel-like formula language developed specifically for Power BI, Analysis Services and Power Pivot. With DAX you can define powerful calculations and analyses directly in the data model.',
+        s1WhatTitle: 'What is DAX?',
+        s1WhatText: 'DAX is a collection of functions, operators and constants that can be used in formulas (expressions) to calculate one or more values. DAX is optimised for working with tables and relationships and has two important concepts: Measures and Calculated Columns.',
+        s1MeasuresTitle: 'Measures vs. Calculated Columns',
+        s1MeasuresDe: [
+          {
+            name: 'Measures (Metrics)',
+            color: '#1E3A8A',
+            points: [
+              'Dynamic \u2013 calculated at runtime',
+              'Dependent on the current filter context',
+              'NOT stored in the table',
+              'Examples: Total Revenue, Margin %, YoY Growth',
+            ],
+          },
+          {
+            name: 'Calculated Columns',
+            color: '#2563EB',
+            points: [
+              'Static \u2013 calculated once and stored',
+              'Row by row (Row Context)',
+              'Result is stored in the table',
+              'Examples: Full Name, Category Group',
+            ],
+          },
         ],
-        s3CalcTitle: 'CALCULATE() – The Filter Modifier',
-        s3CalcInfo: 'CALCULATE() is the most powerful DAX function. It modifies the filter context for the enclosed calculation.',
-        s3CalcText: 'With CALCULATE(), the current filter context can be extended, restricted, or replaced. This is the foundation for almost all advanced DAX calculations.',
-        s3ExampleLabel: 'Example: CALCULATE() in Action',
-        s4Title: 'Important Business KPIs',
-        s4Intro: 'The following table shows the most important KPIs in a Business Intelligence context with their DAX and Python equivalents:',
-        s4ThKPI: 'KPI',
-        s4ThFormel: 'Formula',
-        s4ThDAX: 'DAX Function',
-        s4ThPython: 'Python',
-        s4Rows: [
-          { kpi: 'Revenue', formel: 'Sum of all amounts', dax: 'SUM()', python: '.sum()' },
-          { kpi: 'Gross Profit', formel: 'Revenue - Costs', dax: 'CALCULATE()', python: 'subtraction' },
-          { kpi: 'Margin %', formel: 'GP / Revenue × 100', dax: 'DIVIDE()', python: '/ * 100' },
-          { kpi: 'YoY Growth', formel: '(Now - PY) / PY', dax: 'SAMEPERIODLASTYEAR()', python: 'pct_change()' },
-          { kpi: 'Conversion Rate', formel: 'Purchases / Visits', dax: 'DIVIDE()', python: '/' },
-          { kpi: 'Customer LTV', formel: 'Avg Order Value × Frequency', dax: 'Combine Measures', python: 'groupby' },
-          { kpi: 'Churn Rate', formel: 'Churned / Total', dax: 'CALCULATE() + DIVIDE()', python: 'groupby + /' },
+        s1GoldenRule: 'Golden Rule',
+        s1GoldenRuleText: 'Almost always use Measures! Measures are more flexible, consume less memory and respond correctly to filters. Use Calculated Columns only when you need the value in slicers or as a filter condition.',
+        s1CodeDax: '-- Simple aggregation\nTotalRevenue = SUM(Sales[Amount])\n\n-- With condition (CALCULATE)\nRevenue_DE = CALCULATE(SUM(Sales[Amount]), Sales[Country] = "Germany")\n\n-- Division with zero protection\nMargin_% = DIVIDE([GrossProfit], [Revenue], 0)\n\n-- Time intelligence\nRevenue_PY = CALCULATE([TotalRevenue], SAMEPERIODLASTYEAR(Date[Date]))\nGrowth_% = DIVIDE([TotalRevenue] - [Revenue_PY], [Revenue_PY], 0)\n\n-- Ranking\nTop_Products = RANKX(ALL(Product[Name]), [TotalRevenue])',
+
+        s2Title: 'Python Equivalents',
+        s2Desc: 'The same KPIs you calculate in DAX can be implemented in Python using the pandas library. Here are the direct equivalents:',
+        s2CodePython: '# Total revenue\ntotal_revenue = df[\'Amount\'].sum()\n\n# Revenue Germany\nrevenue_de = df[df[\'Country\'] == \'Germany\'][\'Amount\'].sum()\n\n# Margin\nmargin_pct = df[\'GrossProfit\'].sum() / df[\'Amount\'].sum() * 100\n\n# Year-over-year comparison\ndf[\'Year\'] = pd.to_datetime(df[\'Date\']).dt.year\nyearly = df.groupby(\'Year\')[\'Amount\'].sum()\ngrowth = yearly.pct_change() * 100\nprint(growth)\n\n# Ranking\ntop_products = (df.groupby(\'Product\')[\'Amount\'].sum()\n                  .sort_values(ascending=False)\n                  .reset_index())\nprint(top_products.head(10))',
+
+        s3Title: 'KPI Table',
+        s3Desc: 'The most important business KPIs at a glance \u2013 with formula, DAX function and Python equivalent.',
+        s3Headers: ['KPI', 'Formula', 'DAX Function', 'Python (Pandas)'],
+        s3Rows: [
+          ['Total Revenue', '\u03A3 Amount', 'SUM()', '.sum()'],
+          ['Gross Profit', 'Revenue \u2212 COGS', 'CALCULATE()', 'Subtraction'],
+          ['Margin %', 'Profit / Revenue \u00D7 100', 'DIVIDE()', '/ * 100'],
+          ['YoY Growth', '(Now \u2212 PY) / PY', 'SAMEPERIODLASTYEAR', 'pct_change()'],
+          ['Conversion Rate', 'Purchases / Visits', 'DIVIDE()', '/'],
+          ['Customer LTV', 'Avg Order Value \u00D7 Frequency', 'Measures', 'groupby'],
+          ['Churn Rate', 'Churned / Total', 'COUNTROWS + DIVIDE', 'count + /'],
         ],
-        s5Title: 'Exercise',
-        s5BoxTitle: 'Task: Create Superstore Measures',
-        s5BoxText: 'Create the following 3 DAX measures (and 2 bonus measures) for the Superstore data in Power BI:',
-        s5Steps: [
-          { code: 'Umsatz = SUM(Orders[Sales])', desc: 'Total revenue as sum of sales' },
-          { code: 'Gewinn = SUM(Orders[Profit])', desc: 'Total profit as sum of profits' },
-          { code: 'Marge_Pct = DIVIDE([Gewinn], [Umsatz], 0) * 100', desc: 'Margin percentage with zero guard' },
+
+        s4Title: 'Filter Context',
+        s4Desc: 'Understanding the filter context is the key to powerful DAX. There are two fundamental contexts in DAX:',
+        s4RowTitle: 'Row Context',
+        s4RowText: 'In Row Context, DAX iterates row by row over a table. This context is automatically created for Calculated Columns and for iterator functions like SUMX, AVERAGEX, MAXX. In each iteration the current row is known.',
+        s4FilterTitle: 'Filter Context',
+        s4FilterText: 'The Filter Context is the set of all active filters when a Measure is evaluated. These filters are created by slicers, report filters, rows/columns in a matrix or by CALCULATE() calls in the DAX code itself.',
+        s4WhyCalcTitle: 'Why CALCULATE() is so powerful',
+        s4WhyCalcText: 'CALCULATE() is the only function in DAX that can modify the Filter Context. This allows you to add, remove or override filters \u2013 directly in a formula. Without CALCULATE you cannot filter inside a measure.',
+        s4CodeCalc: '-- Without CALCULATE: no filtering possible\nRevenue_wrong = SUM(Sales[Amount])  -- ignores no Country filter\n\n-- With CALCULATE: modify filter context\nRevenue_DE = CALCULATE(\n    SUM(Sales[Amount]),\n    Sales[Country] = "Germany"\n)\n\n-- Remove filter with ALL()\nRevenue_Always_Total = CALCULATE(\n    SUM(Sales[Amount]),\n    ALL(Sales)\n)\n\n-- Share of total revenue\nShare_% = DIVIDE(\n    [TotalRevenue],\n    CALCULATE([TotalRevenue], ALL(Sales[Country])),\n    0\n)',
+
+        s5Title: 'Learning Resources',
+        s5Desc: 'Recommended YouTube channels for DAX and Python analytics:',
+        s5Resources: [
+          {
+            title: 'SQLBI \u2013 DAX Introduction',
+            url: 'https://www.youtube.com/@SQLBI',
+            desc: 'SQLBI (Marco Russo & Alberto Ferrari) are the world\'s leading DAX experts. Deep insights into DAX, Power BI and the Tabular model.',
+          },
+          {
+            title: '"DAX Fridays" \u2013 Curbal',
+            url: 'https://www.youtube.com/@Curbal',
+            desc: 'Weekly DAX tips and tutorials. Very practical, suitable for beginners and advanced users alike.',
+          },
         ],
-        s5CodeLabel: 'Power BI – DAX Measures (Superstore)',
-        s6Title: 'YouTube Resources',
-        s6Intro: 'Recommended video resources for DAX:',
-        s6Resources: [
-          { title: 'SQLBI – DAX Introduction', desc: 'Comprehensive DAX tutorials from the leading Analysis Services expert team.', url: 'https://www.youtube.com/@SQLBI', label: 'SQLBI on YouTube' },
-          { title: 'DAX Fridays – Curbal', desc: 'Weekly DAX lessons with practical examples by Ruth Pozuelo Martinez.', url: 'https://www.youtube.com/@Curbal', label: 'Curbal on YouTube' },
-        ],
-        navBack: '← Lab 02: Data',
-        navBackHref: 'lab-02-daten.html',
-        navNext: 'Next: Lab 04 – Dashboards →',
-        navNextHref: 'lab-04-dashboards.html',
-        footer: '© 2025 THWS Business School · BI Lab · All rights reserved',
+
+        navPrev: '\u2190 Lab 02: Data',
+        navNext: 'Lab 04: Dashboards \u2192',
       },
     };
 
-    const c = t[lang];
+    // ─── App Component ────────────────────────────────────────────────────────
+    function App() {
+      const urlLang = new URLSearchParams(window.location.search).get('lang');
+      const [lang, setLang] = useState(() => localStorage.getItem('bi-lang') || urlLang || 'de');
+      const [activeSection, setActiveSection] = useState('dax-grundlagen');
 
-    const daxPair1DAX = `-- Gesamtumsatz
-Gesamtumsatz = SUM(Umsatz[Betrag])
+      const setLangAndStore = (l) => {
+        setLang(l);
+        localStorage.setItem('bi-lang', l);
+      };
 
--- Anzahl Bestellungen
-Bestellungen = COUNTROWS(Umsatz)`;
+      useEffect(() => {
+        const sections = ['dax-grundlagen', 'python', 'kpi-tabelle', 'filter-kontext', 'youtube'];
+        const handler = () => {
+          for (let i = sections.length - 1; i >= 0; i--) {
+            const el = document.getElementById(sections[i]);
+            if (el && el.getBoundingClientRect().top <= 100) {
+              setActiveSection(sections[i]);
+              return;
+            }
+          }
+          setActiveSection('dax-grundlagen');
+        };
+        window.addEventListener('scroll', handler, { passive: true });
+        return () => window.removeEventListener('scroll', handler);
+      }, []);
 
-    const daxPair1Py = `# Gesamtumsatz
-umsatz_gesamt = df['Betrag'].sum()
+      const tx = translations[lang];
 
-# Anzahl Bestellungen
-bestellungen = len(df)`;
+      return (
+        <div data-lang={lang}>
 
-    const daxPair2DAX = `-- Umsatz Deutschland
-Umsatz_DE = CALCULATE(
-    SUM(Umsatz[Betrag]),
-    Umsatz[Land] = "Deutschland"
-)`;
-
-    const daxPair2Py = `# Umsatz Deutschland
-umsatz_de = df[
-    df['Land'] == 'Deutschland'
-]['Betrag'].sum()`;
-
-    const daxPair3DAX = `-- Marge in Prozent
-Marge_Pct = DIVIDE(
-    [Bruttogewinn],
-    [Gesamtumsatz],
-    0
-)`;
-
-    const daxPair3Py = `# Marge in Prozent
-gesamt = df['Betrag'].sum()
-gewinn = df['Gewinn'].sum()
-marge = (gewinn / gesamt * 100
-         if gesamt != 0 else 0)`;
-
-    const daxPair4DAX = `-- Umsatz Vorjahr
-Umsatz_VJ = CALCULATE(
-    [Gesamtumsatz],
-    SAMEPERIODLASTYEAR(Datum[Datum])
-)
-
--- YoY Wachstum
-Wachstum_Pct = DIVIDE(
-    [Gesamtumsatz] - [Umsatz_VJ],
-    [Umsatz_VJ],
-    0
-)`;
-
-    const daxPair4Py = `# Jahresvergleich
-yearly = df.groupby(
-    df['Datum'].dt.year
-)['Betrag'].sum()
-
-wachstum = yearly.pct_change() * 100`;
-
-    const daxPair5DAX = `-- Top Produkte
-Top_Produkte = RANKX(
-    ALL(Produkt[Name]),
-    [Gesamtumsatz],
-    ,
-    DESC,
-    DENSE
-)`;
-
-    const daxPair5Py = `# Ranking
-top_produkte = (
-    df.groupby('Produkt')['Betrag']
-    .sum()
-    .rank(ascending=False, method='dense')
-)`;
-
-    const calcExampleDAX = `-- Umsatz nur für Kategorie "Technik"
-Umsatz_Technik = CALCULATE(
-    [Gesamtumsatz],
-    Produkt[Kategorie] = "Technik"
-)
-
--- Umsatz alle Filter entfernen
-Umsatz_Total = CALCULATE(
-    [Gesamtumsatz],
-    ALL(Umsatz)
-)`;
-
-    const superstoreCode = `-- Superstore Measures in Power BI
-
-Umsatz =
-SUM(Orders[Sales])
-
-Gewinn =
-SUM(Orders[Profit])
-
-Marge_Pct =
-DIVIDE([Gewinn], [Umsatz], 0) * 100
-
-Bestellungen =
-COUNTROWS(Orders)
-
-Avg_Bestellwert =
-DIVIDE([Umsatz], [Bestellungen], 0)`;
-
-    return (
-      <div data-lang={lang}>
-        <header className="header">
-          <div className="header-left">
-            <a href="index.html" className="header-logo">{c.logo}</a>
-            <a href={c.backHref} className="header-back">{c.back}</a>
-          </div>
-          <div style={{ display: 'flex', gap: '0.35rem' }}>
-            <button className={'lang-btn' + (lang === 'de' ? ' active' : '')} onClick={() => toggleLang('de')}>DE</button>
-            <button className={'lang-btn' + (lang === 'en' ? ' active' : '')} onClick={() => toggleLang('en')}>EN</button>
-          </div>
-        </header>
-
-        <nav className="sidebar">
-          <div className="sidebar-title">Lab 03</div>
-          {c.nav.map(item => (
-            <a
-              key={item.id}
-              href={'#' + item.id}
-              className={'sidebar-link' + (activeSection === item.id ? ' active' : '')}
-            >{item.label}</a>
-          ))}
-        </nav>
-
-        <main className="main-content">
-          <div style={{ marginBottom: '2.5rem' }}>
-            <span className="bauhaus-badge">{c.badge}</span>
-            <h2 style={{ fontSize: '2rem', marginTop: '0.75rem', marginBottom: '0.25rem' }}>{c.pageTitle}</h2>
-            <div className="bauhaus-accent-line"></div>
-            <p style={{ color: '#555', fontSize: '1.05rem', maxWidth: '640px' }}>{c.pageSubtitle}</p>
-          </div>
-
-          <div id="ueberblick" className="section-block">
-            <h2>{c.s1Title}</h2>
-            <div className="bauhaus-accent-line"></div>
-            <div className="lernziele-box">
-              <h4 className="lernziele-heading">{c.s1Lernziele}</h4>
-              <ul style={{ margin: 0, paddingLeft: '1.25rem', lineHeight: '2' }}>
-                {c.s1Goals.map((g, i) => (
-                  <li key={i}>{g}</li>
-                ))}
-              </ul>
+          {/* Fixed Header */}
+          <header className="header">
+            <div className="header-left">
+              <a href="index.html" className="header-logo">{'BI Lab'}</a>
+              <a href={'index.html' + (lang === 'en' ? '?lang=en' : '')} className="header-back">{tx.backLabel}</a>
             </div>
-          </div>
-
-          <div id="dax-grundlagen" className="section-block">
-            <h2>{c.s2Title}</h2>
-            <div className="bauhaus-accent-line"></div>
-
-            <h3>{c.s2What}</h3>
-            <p>{c.s2WhatText}</p>
-
-            <h3>{c.s2MeasuresTitle}</h3>
-            <p>{c.s2MeasuresText}</p>
-            <ul style={{ lineHeight: '2' }}>
-              {c.s2MeasuresDef.map((m, i) => (
-                <li key={i}><strong>{m.term}:</strong> {m.desc}</li>
-              ))}
-            </ul>
-
-            <div className="concept-box">
-              <strong>{lang === 'de' ? 'Goldene Regel:' : 'Golden Rule:'}</strong> {c.s2GoldRule}
+            <div style={{ display: 'flex', gap: '0.35rem' }}>
+              <button className={'lang-btn' + (lang === 'de' ? ' active' : '')} onClick={() => setLangAndStore('de')}>{'DE'}</button>
+              <button className={'lang-btn' + (lang === 'en' ? ' active' : '')} onClick={() => setLangAndStore('en')}>{'EN'}</button>
             </div>
+          </header>
 
-            <h3 style={{ marginTop: '2rem' }}>{c.s2Examples}</h3>
-
-            <h4 style={{ marginTop: '1.5rem' }}>{c.s2Pair1}</h4>
-            <div className="dax-vs-python">
-              <div>
-                <div className="code-label">DAX</div>
-                <CodeBlock code={daxPair1DAX} />
-              </div>
-              <div>
-                <div className="code-label">Python</div>
-                <CodeBlock code={daxPair1Py} />
-              </div>
-            </div>
-
-            <h4 style={{ marginTop: '1.5rem' }}>{c.s2Pair2}</h4>
-            <div className="dax-vs-python">
-              <div>
-                <div className="code-label">DAX</div>
-                <CodeBlock code={daxPair2DAX} />
-              </div>
-              <div>
-                <div className="code-label">Python</div>
-                <CodeBlock code={daxPair2Py} />
-              </div>
-            </div>
-
-            <h4 style={{ marginTop: '1.5rem' }}>{c.s2Pair3}</h4>
-            <div className="dax-vs-python">
-              <div>
-                <div className="code-label">DAX</div>
-                <CodeBlock code={daxPair3DAX} />
-              </div>
-              <div>
-                <div className="code-label">Python</div>
-                <CodeBlock code={daxPair3Py} />
-              </div>
-            </div>
-
-            <h4 style={{ marginTop: '1.5rem' }}>{c.s2Pair4}</h4>
-            <div className="dax-vs-python">
-              <div>
-                <div className="code-label">DAX</div>
-                <CodeBlock code={daxPair4DAX} />
-              </div>
-              <div>
-                <div className="code-label">Python</div>
-                <CodeBlock code={daxPair4Py} />
-              </div>
-            </div>
-
-            <h4 style={{ marginTop: '1.5rem' }}>{c.s2Pair5}</h4>
-            <div className="dax-vs-python">
-              <div>
-                <div className="code-label">DAX</div>
-                <CodeBlock code={daxPair5DAX} />
-              </div>
-              <div>
-                <div className="code-label">Python</div>
-                <CodeBlock code={daxPair5Py} />
-              </div>
-            </div>
-          </div>
-
-          <div id="filter-kontext" className="section-block">
-            <h2>{c.s3Title}</h2>
-            <div className="bauhaus-accent-line"></div>
-
-            <h3>{c.s3RowTitle}</h3>
-            <p>{c.s3RowText}</p>
-            <ul style={{ lineHeight: '2' }}>
-              {c.s3Contexts.map((ctx, i) => (
-                <li key={i}><strong>{ctx.term}:</strong> {ctx.desc}</li>
-              ))}
-            </ul>
-
-            <h3 style={{ marginTop: '2rem' }}>{c.s3CalcTitle}</h3>
-            <div className="info-box">
-              {c.s3CalcInfo}
-            </div>
-            <p>{c.s3CalcText}</p>
-
-            <div className="code-label" style={{ marginTop: '1rem' }}>{c.s3ExampleLabel}</div>
-            <CodeBlock code={calcExampleDAX} />
-          </div>
-
-          <div id="kpi-tabelle" className="section-block">
-            <h2>{c.s4Title}</h2>
-            <div className="bauhaus-accent-line"></div>
-            <p>{c.s4Intro}</p>
-            <table>
-              <thead>
-                <tr>
-                  <th>{c.s4ThKPI}</th>
-                  <th>{c.s4ThFormel}</th>
-                  <th>{c.s4ThDAX}</th>
-                  <th>{c.s4ThPython}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {c.s4Rows.map((row, i) => (
-                  <tr key={i}>
-                    <td><strong>{row.kpi}</strong></td>
-                    <td>{row.formel}</td>
-                    <td><code style={{ fontFamily: 'Courier New, monospace', fontSize: '0.85rem' }}>{row.dax}</code></td>
-                    <td><code style={{ fontFamily: 'Courier New, monospace', fontSize: '0.85rem' }}>{row.python}</code></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div id="uebung" className="section-block">
-            <h2>{c.s5Title}</h2>
-            <div className="bauhaus-accent-line"></div>
-
-            <div className="concept-box">
-              <h4 style={{ marginTop: 0 }}>{c.s5BoxTitle}</h4>
-              <p style={{ marginBottom: '0.75rem' }}>{c.s5BoxText}</p>
-              <ol style={{ paddingLeft: '1.25rem', lineHeight: '2', margin: 0 }}>
-                {c.s5Steps.map((step, i) => (
-                  <li key={i}>
-                    <code style={{ fontFamily: 'Courier New, monospace', fontSize: '0.85rem', background: '#F3F4F6', padding: '0.1rem 0.3rem' }}>{step.code}</code>
-                    {' '}{lang === 'de' ? '–' : '–'} {step.desc}
-                  </li>
-                ))}
-              </ol>
-            </div>
-
-            <div className="code-label" style={{ marginTop: '1.5rem' }}>{c.s5CodeLabel}</div>
-            <CodeBlock code={superstoreCode} />
-          </div>
-
-          <div id="ressourcen" className="section-block">
-            <h2>{c.s6Title}</h2>
-            <div className="bauhaus-accent-line"></div>
-            <p>{c.s6Intro}</p>
-            {c.s6Resources.map((res, i) => (
-              <div key={i} className="tip-box" style={{ marginBottom: '1rem' }}>
-                <h4 style={{ marginTop: 0 }}>{res.title}</h4>
-                <p style={{ margin: '0.25rem 0 0.75rem' }}>{res.desc}</p>
-                <a href={res.url} target="_blank" rel="noopener noreferrer" style={{ color: '#2563EB', fontWeight: 600, fontSize: '0.9rem', textDecoration: 'none' }}>{res.label} ↗</a>
-              </div>
+          {/* Sidebar */}
+          <nav className="sidebar">
+            <div className="sidebar-title">{tx.navContents}</div>
+            {tx.nav.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className={'sidebar-link' + (activeSection === item.href.slice(1) ? ' active' : '')}
+              >
+                {item.label}
+              </a>
             ))}
+          </nav>
+
+          {/* Lab Header */}
+          <div className="lab-header">
+            <div className="lab-num">{'03'}</div>
+            <h1 className="lab-title-h1">{tx.title}</h1>
+            <p className="lab-desc-intro">{tx.desc}</p>
+            <div className="lernziele-chips">
+              {tx.lernziele.map((lz, i) => (
+                <span key={i} className="lernziel-chip">{lz}</span>
+              ))}
+            </div>
           </div>
 
-          <div className="nav-bottom">
-            <a href={c.navBackHref} className="nav-btn">{c.navBack}</a>
-            <a href={c.navNextHref} className="nav-btn primary">{c.navNext}</a>
-          </div>
-        </main>
+          {/* Main Content */}
+          <main className="main-content">
 
-        <footer className="footer">
-          <p className="footer-text">{c.footer}</p>
-        </footer>
-      </div>
-    );
-  }
+            {/* ── Section 1: DAX Grundlagen ── */}
+            <section id="dax-grundlagen" className="section-block">
+              <h2>{tx.s1Title}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <p>{tx.s1Desc}</p>
 
-  var root = ReactDOM.createRoot(document.getElementById('root'));
-  root.render(React.createElement(App));
-</script>
+              <h3 style={{ marginTop: '1.5rem' }}>{tx.s1WhatTitle}</h3>
+              <div className="info-box">
+                <p style={{ margin: 0 }}>{tx.s1WhatText}</p>
+              </div>
+
+              <h3 style={{ marginTop: '2rem' }}>{tx.s1MeasuresTitle}</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1rem', margin: '1rem 0' }}>
+                {tx.s1MeasuresDe.map((item, i) => (
+                  <div key={i} className="bauhaus-card">
+                    <div style={{
+                      display: 'inline-block', background: item.color, color: 'white',
+                      fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700,
+                      fontSize: '0.72rem', letterSpacing: '0.1em', textTransform: 'uppercase',
+                      padding: '0.2rem 0.6rem', borderRadius: '3px', marginBottom: '0.85rem'
+                    }}>
+                      {item.name}
+                    </div>
+                    <ul style={{ margin: 0, paddingLeft: '1.1rem' }}>
+                      {item.points.map((pt, j) => (
+                        <li key={j} style={{ fontSize: '0.875rem', color: '#374151', lineHeight: 1.7 }}>{pt}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+
+              <div className="concept-box" style={{ marginTop: '1.5rem' }}>
+                <h4 style={{ marginTop: 0, color: '#1E3A8A' }}>{tx.s1GoldenRule}</h4>
+                <p style={{ margin: 0 }}>{tx.s1GoldenRuleText}</p>
+              </div>
+
+              <h3 style={{ marginTop: '2rem' }}>{'DAX Code'}</h3>
+              <CodeBlock code={tx.s1CodeDax} />
+            </section>
+
+            {/* ── Section 2: Python Aquivalente ── */}
+            <section id="python" className="section-block">
+              <h2>{tx.s2Title}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <p>{tx.s2Desc}</p>
+              <CodeBlock code={tx.s2CodePython} />
+            </section>
+
+            {/* ── Section 3: KPI-Tabelle ── */}
+            <section id="kpi-tabelle" className="section-block">
+              <h2>{tx.s3Title}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <p>{tx.s3Desc}</p>
+              <table>
+                <thead>
+                  <tr>{tx.s3Headers.map((h, i) => <th key={i}>{h}</th>)}</tr>
+                </thead>
+                <tbody>
+                  {tx.s3Rows.map((row, i) => (
+                    <tr key={i}>
+                      <td style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, color: '#1E3A8A' }}>{row[0]}</td>
+                      <td>{row[1]}</td>
+                      <td><code>{row[2]}</code></td>
+                      <td><code>{row[3]}</code></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </section>
+
+            {/* ── Section 4: Filter-Kontext ── */}
+            <section id="filter-kontext" className="section-block">
+              <h2>{tx.s4Title}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <p>{tx.s4Desc}</p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1rem', margin: '1rem 0 1.5rem' }}>
+                <div className="concept-box" style={{ margin: 0 }}>
+                  <h4 style={{ marginTop: 0, color: '#1E3A8A' }}>{tx.s4RowTitle}</h4>
+                  <p style={{ margin: 0, fontSize: '0.875rem', color: '#374151', lineHeight: 1.6 }}>{tx.s4RowText}</p>
+                </div>
+                <div className="tip-box" style={{ margin: 0 }}>
+                  <h4 style={{ marginTop: 0, color: '#1E3A8A' }}>{tx.s4FilterTitle}</h4>
+                  <p style={{ margin: 0, fontSize: '0.875rem', color: '#374151', lineHeight: 1.6 }}>{tx.s4FilterText}</p>
+                </div>
+              </div>
+
+              <h3 style={{ marginTop: '2rem' }}>{tx.s4WhyCalcTitle}</h3>
+              <div className="info-box">
+                <p style={{ margin: 0 }}>{tx.s4WhyCalcText}</p>
+              </div>
+
+              <CodeBlock code={tx.s4CodeCalc} />
+            </section>
+
+            {/* ── Section 5: YouTube-Ressourcen ── */}
+            <section id="youtube" className="section-block">
+              <h2>{tx.s5Title}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <p>{tx.s5Desc}</p>
+
+              <div className="youtube-box">
+                <h3>{'YouTube'}</h3>
+                {tx.s5Resources.map((res, i) => (
+                  <div key={i} style={{
+                    marginBottom: i < tx.s5Resources.length - 1 ? '1.25rem' : 0,
+                    paddingBottom: i < tx.s5Resources.length - 1 ? '1.25rem' : 0,
+                    borderBottom: i < tx.s5Resources.length - 1 ? '1px solid #FED7AA' : 'none'
+                  }}>
+                    <a href={res.url} target="_blank" rel="noopener noreferrer" className="youtube-link">{res.title}</a>
+                    <p style={{ margin: '0.25rem 0 0', fontSize: '0.875rem', color: '#78350F' }}>{res.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* ── Nav Bottom ── */}
+            <div className="nav-bottom">
+              <a href={'lab-02-daten.html' + (lang === 'en' ? '?lang=en' : '')} className="nav-btn">
+                {tx.navPrev}
+              </a>
+              <a href={'lab-04-dashboards.html' + (lang === 'en' ? '?lang=en' : '')} className="nav-btn primary">
+                {tx.navNext}
+              </a>
+            </div>
+
+          </main>
+
+          {/* Footer */}
+          <footer className="footer">
+            {'THWS Business School \u00B7 BI Lab \u00B7 Prof. Dr. Robert Butscher \u00B7 2026'}
+          </footer>
+
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
 </body>
 </html>
