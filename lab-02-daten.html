@@ -1,638 +1,620 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lab 02 – Daten: Quellen, Modelle, Qualität · THWS BI Lab</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab 02 &#8211; Daten: Quellen, Modelle, Qualit&auml;t &middot; THWS BI Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
-    :root { --primary: #1E3A8A; --accent: #2563EB; --dark: #1A1A1A; --light-bg: #FAFAFA; }
+    :root {
+      --primary: #1E3A8A;
+      --accent: #2563EB;
+      --dark: #1A1A1A;
+      --light-bg: #FAFAFA;
+      --primary-light: rgba(30,58,138,0.08);
+    }
     *, *::before, *::after { box-sizing: border-box; }
-    body { background: #FAFAFA; font-family: 'Space Grotesk', -apple-system, sans-serif; margin: 0; color: #1A1A1A; }
+    body { background: #FAFAFA; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; color: #1A1A1A; }
     h2 { color: #1E3A8A; font-weight: 800; font-family: 'Space Grotesk', sans-serif; margin-top: 0; }
     h3 { color: #1E3A8A; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
     h4 { font-family: 'Space Grotesk', sans-serif; font-weight: 600; margin: 0.5rem 0; }
     p { line-height: 1.7; }
+
+    /* Bauhaus */
+    .bauhaus-card { border: 1px solid #E5E7EB; border-radius: 10px; padding: 1.5rem; background: white; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
     .bauhaus-accent-line { width: 48px; height: 4px; background: #2563EB; margin: 0.5rem 0 1rem 0; }
-    .bauhaus-badge { background: #2563EB; color: white; padding: 0.2rem 0.7rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; display: inline-block; }
-    .code-block { background: #F3F4F6; color: #1A1A1A; border-left: 4px solid #D1D5DB; font-family: 'Courier New', monospace; font-size: 0.82rem; padding: 1rem 1.25rem; border-radius: 0 8px 8px 0; white-space: pre; overflow-x: auto; position: relative; margin: 1rem 0; }
+    .bauhaus-badge { background: #2563EB; color: white; padding: 0.2rem 0.7rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border-radius: 0; display: inline-block; }
+
+    /* Code */
+    .code-block { background: #F3F4F6; color: #1A1A1A; padding: 1.25rem; border-left: 4px solid #D1D5DB; font-family: 'Fira Code', 'Courier New', monospace; font-size: 0.85rem; overflow-x: auto; position: relative; border-radius: 0 8px 8px 0; white-space: pre; margin: 1rem 0; }
+
+    /* Info boxes */
     .tip-box { border-left: 4px solid #2563EB; background: #EFF6FF; padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
     .info-box { border-left: 4px solid #3b82f6; background: #eff6ff; padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
-    .concept-box { border-left: 4px solid #1E3A8A; background: rgba(30,58,138,0.06); padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
-    .header { position: fixed; top: 0; left: 0; right: 0; height: 56px; z-index: 100; background: white; border-bottom: 1px solid #E5E7EB; box-shadow: 0 1px 8px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; }
+    .concept-box { border-left: 4px solid #1E3A8A; background: rgba(30,58,138,0.08); padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+
+    /* Layout */
+    .header {
+      position: fixed; top: 0; left: 0; right: 0; height: 56px; z-index: 100;
+      background: white; border-bottom: 1px solid #E5E7EB; box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 1.5rem;
+    }
     .header-left { display: flex; align-items: center; gap: 1.5rem; }
     .header-logo { font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1.1rem; color: #1E3A8A; text-decoration: none; }
     .header-back { font-size: 0.85rem; color: #555; text-decoration: none; font-weight: 500; }
     .header-back:hover { color: #1E3A8A; }
-    .lang-btn { border: 2px solid #1A1A1A; background: white; padding: 0.2rem 0.6rem; font-size: 0.78rem; font-weight: 700; cursor: pointer; letter-spacing: 0.05em; font-family: 'Space Grotesk', sans-serif; }
-    .lang-btn.active { background: #2563EB; color: white; border-color: #2563EB; }
+    .lang-btn { border: 2px solid #1A1A1A; background: white; padding: 0.2rem 0.6rem; font-size: 0.78rem; font-weight: 700; cursor: pointer; border-radius: 4px; letter-spacing: 0.05em; }
+    .lang-btn.active { background: #1E3A8A; color: white; border-color: #1E3A8A; }
     .lang-btn:hover:not(.active) { background: #f5f5f5; }
-    .sidebar { position: fixed; top: 56px; left: 0; width: 260px; height: calc(100vh - 56px); overflow-y: auto; border-right: 1px solid #E5E7EB; background: white; padding: 1.5rem 0; }
+
+    .sidebar {
+      position: fixed; top: 56px; left: 0; width: 260px;
+      height: calc(100vh - 56px); overflow-y: auto;
+      border-right: 1px solid #E5E7EB; background: white;
+      padding: 1.5rem 0;
+    }
     .sidebar-title { font-family: 'Space Grotesk', sans-serif; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #888; padding: 0 1.25rem; margin-bottom: 0.75rem; }
-    .sidebar-link { display: block; padding: 0.55rem 1.25rem; font-size: 0.88rem; color: #444; text-decoration: none; border-left: 3px solid transparent; transition: background 0.12s, color 0.12s, border-color 0.12s; font-weight: 500; }
+    .sidebar-link {
+      display: block; padding: 0.55rem 1.25rem; font-size: 0.88rem; color: #444;
+      text-decoration: none; border-left: 3px solid transparent;
+      transition: background 0.12s, color 0.12s, border-color 0.12s;
+      font-weight: 500;
+    }
     .sidebar-link:hover { color: #1E3A8A; background: rgba(30,58,138,0.04); }
-    .sidebar-link.active { color: #1E3A8A; border-left-color: #2563EB; background: rgba(30,58,138,0.06); font-weight: 700; }
-    .main-content { margin-left: 260px; padding-top: 72px; padding-bottom: 4rem; padding-left: 3rem; padding-right: 3rem; max-width: 960px; }
+    .sidebar-link.active { color: #1E3A8A; border-left-color: #1E3A8A; background: rgba(30,58,138,0.06); font-weight: 700; }
+
+    .main-content {
+      margin-left: 260px; padding-top: 72px; padding-bottom: 4rem;
+      padding-left: 3rem; padding-right: 3rem; max-width: 960px;
+    }
     .section-block { margin-bottom: 4rem; }
+
+    /* Tables */
     table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
     th { background: #1E3A8A; color: white; padding: 0.65rem 1rem; text-align: left; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.82rem; letter-spacing: 0.05em; }
     td { padding: 0.6rem 1rem; border-bottom: 1px solid #e5e7eb; }
     tr:nth-child(even) td { background: #f9fafb; }
-    .nav-bottom { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; margin-top: 2rem; border-top: 1px solid #e5e7eb; }
-    .nav-btn { border: 2px solid #1A1A1A; background: white; padding: 0.65rem 1.25rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; text-decoration: none; color: #1A1A1A; font-family: 'Space Grotesk', sans-serif; display: inline-block; }
-    .nav-btn:hover { background: #2563EB; color: white; border-color: #2563EB; }
+    tr:hover td { background: rgba(30,58,138,0.03); }
+
+    /* Nav bottom */
+    .nav-bottom { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 2rem; padding: 1.5rem 0; border-top: 1px solid #E5E7EB; }
+    .nav-btn { border: 2px solid #1A1A1A; background: white; padding: 0.65rem 1.25rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; text-decoration: none; color: #1A1A1A; font-family: 'Space Grotesk', sans-serif; display: inline-block; border-radius: 4px; }
+    .nav-btn:hover { background: #1E3A8A; color: white; border-color: #1E3A8A; }
     .nav-btn.primary { background: #1E3A8A; border-color: #1E3A8A; color: white; }
     .nav-btn.primary:hover { background: #1e40af; border-color: #1e40af; }
-    .lernziele-box { background: #EFF6FF; border-left: 4px solid #2563EB; padding: 1.25rem 1.5rem; margin-top: 1.5rem; }
-    .lernziele-heading { color: #1E3A8A; margin: 0 0 0.75rem; font-family: 'Space Grotesk', sans-serif; font-weight: 700; }
-    .footer { background: #1A1A1A; padding: 2rem 3rem 2rem calc(260px + 3rem); }
-    .footer-text { color: #6B7280; font-size: 0.875rem; }
-    @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding-left: 1.25rem; padding-right: 1.25rem; } .footer { padding: 2rem 1.25rem; } }
-    [data-lang="en"] h2, [data-lang="en"] h3 { color: #0D9488; }
-    [data-lang="en"] .bauhaus-accent-line { background: #14B8A6; }
-    [data-lang="en"] .bauhaus-badge { background: #0D9488; }
-    [data-lang="en"] .header-logo { color: #0D9488; }
-    [data-lang="en"] .lang-btn.active { background: #0D9488; border-color: #0D9488; color: white; }
-    [data-lang="en"] .sidebar-link.active { color: #0D9488; border-left-color: #14B8A6; background: rgba(13,148,136,0.06); }
-    [data-lang="en"] .sidebar-link:hover { color: #0D9488; }
-    [data-lang="en"] .header-back:hover { color: #0D9488; }
-    [data-lang="en"] th { background: #0D9488; }
-    [data-lang="en"] .tip-box { border-left-color: #14B8A6; background: #F0FDFA; }
-    [data-lang="en"] .concept-box { border-left-color: #0D9488; background: rgba(13,148,136,0.06); }
-    [data-lang="en"] .lernziele-box { border-left-color: #14B8A6; background: #F0FDFA; }
-    [data-lang="en"] .lernziele-heading { color: #0D9488; }
-    [data-lang="en"] .nav-btn:hover { background: #0D9488; border-color: #0D9488; color: white; }
-    [data-lang="en"] .nav-btn.primary { background: #0D9488; border-color: #0D9488; }
+
+    /* Lab header */
+    .lab-header { padding: 3rem 3rem 2rem; margin-left: 260px; padding-top: 88px; }
+    .lab-num { font-family: 'Space Grotesk', sans-serif; font-size: 4rem; font-weight: 900; color: #2563EB; line-height: 1; margin-bottom: 0.5rem; }
+    .lab-title-h1 { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 800; color: #1A1A1A; margin-bottom: 0.75rem; }
+    .lab-desc-intro { font-size: 1.1rem; color: #4B5563; line-height: 1.6; max-width: 680px; margin-bottom: 1.5rem; }
+    .lernziele-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+    .lernziel-chip { background: rgba(30,58,138,0.08); color: #1E3A8A; border: 1px solid rgba(30,58,138,0.2); padding: 0.3rem 0.75rem; font-size: 0.8rem; font-weight: 600; border-radius: 20px; font-family: 'Space Grotesk', sans-serif; }
+
+    /* YouTube box */
+    .youtube-box { background: #FFF7ED; border: 1px solid #FED7AA; border-radius: 10px; padding: 1.5rem; margin: 2rem 0; }
+    .youtube-box h3 { color: #EA580C; margin-top: 0; }
+    .youtube-link { color: #EA580C; text-decoration: none; font-weight: 600; }
+    .youtube-link:hover { text-decoration: underline; }
+
+    /* Source category tags */
+    .source-tag { display: inline-block; background: rgba(30,58,138,0.1); color: #1E3A8A; border: 1px solid rgba(30,58,138,0.25); border-radius: 4px; padding: 0.15rem 0.5rem; font-size: 0.75rem; font-weight: 600; font-family: 'Space Grotesk', sans-serif; margin: 0.15rem; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-content { margin-left: 0; padding-left: 1.25rem; padding-right: 1.25rem; }
+      .lab-header { margin-left: 0; padding-left: 1.25rem; padding-right: 1.25rem; }
+    }
+
+    /* Footer */
+    .footer { background: #1A1A1A; color: rgba(255,255,255,0.6); text-align: center; padding: 1.5rem; margin-left: 260px; font-size: 0.85rem; }
+    @media (max-width: 768px) { .footer { margin-left: 0; } }
   </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel">
+  <div id="root"></div>
 
-function CodeBlock({ code }) {
-  var [copied, setCopied] = React.useState(false);
-  var copy = function() {
-    navigator.clipboard.writeText(code).then(function() {
-      setCopied(true);
-      setTimeout(function() { setCopied(false); }, 1500);
-    }).catch(function() {
-      var el = document.createElement('textarea');
-      el.value = code;
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand('copy');
-      document.body.removeChild(el);
-      setCopied(true);
-      setTimeout(function() { setCopied(false); }, 1500);
-    });
-  };
-  return (
-    <div style={{ position: 'relative', marginBottom: '1rem' }}>
-      <pre className="code-block">{code}</pre>
-      <button onClick={copy} style={{
-        position: 'absolute', top: '0.5rem', right: '0.5rem',
-        background: copied ? '#059669' : '#E5E7EB',
-        color: copied ? 'white' : '#374151',
-        border: 'none', padding: '0.2rem 0.5rem', fontSize: '0.75rem',
-        cursor: 'pointer', fontFamily: 'Space Grotesk, sans-serif'
-      }}>{copied ? '✓ Kopiert' : 'Kopieren'}</button>
-    </div>
-  );
-}
+  <script type="text/babel">
+    const { useState, useEffect } = React;
 
-var codePython = `import pandas as pd
-import requests
-
-# CSV laden
-df = pd.read_csv('data.csv', encoding='utf-8')
-
-# Excel laden
-df = pd.read_excel('report.xlsx', sheet_name='Sheet1')
-
-# SQL (mit SQLAlchemy)
-from sqlalchemy import create_engine
-engine = create_engine('postgresql://user:pass@host:5432/db')
-df = pd.read_sql('SELECT * FROM orders', engine)
-
-# REST-API
-response = requests.get('https://api.example.com/sales')
-df = pd.json_normalize(response.json())`;
-
-var codeStarSchema = `              Dim_Zeit
-                 |
-Dim_Produkt — Fakt_Umsatz — Dim_Kunde
-                 |
-             Dim_Region`;
-
-var codeDataQuality = `import pandas as pd
-
-df = pd.read_csv('data.csv')
-
-# Nullwerte prüfen
-print(df.isnull().sum())
-
-# Nullwerte auffüllen
-df['Umsatz'].fillna(0, inplace=True)
-df['Land'].fillna('Unbekannt', inplace=True)
-
-# Duplikate entfernen
-df = df.drop_duplicates()
-
-# Datentypen konvertieren
-df['Datum'] = pd.to_datetime(df['Datum'])
-df['Preis'] = pd.to_numeric(df['Preis'], errors='coerce')
-
-# String-Bereinigung
-df['Land'] = df['Land'].str.strip().str.upper()
-
-# Inkonsistenzen beheben
-df['Land'] = df['Land'].replace({
-    'GERMANY': 'Deutschland',
-    'DE': 'Deutschland',
-    'GER': 'Deutschland'
-})`;
-
-var codeExercise = `import pandas as pd
-
-df = pd.read_csv('sales.csv')
-
-# 1. Nullwerte in Preis durch Mittelwert ersetzen
-df['Preis'] = df['Preis'].fillna(df['Preis'].mean())
-
-# 2. Duplikate anhand Order_ID entfernen
-df = df.drop_duplicates(subset=['Order_ID'])
-
-# 3. Datum konvertieren
-df['Datum'] = pd.to_datetime(df['Datum'])
-
-# 4. Spalte umbenennen
-df = df.rename(columns={'Sales': 'Umsatz'})
-
-print(f"Datensätze nach Bereinigung: {len(df)}")
-print(df.dtypes)`;
-
-function App() {
-  var urlLang = new URLSearchParams(window.location.search).get('lang');
-  var [lang, setLang] = React.useState(function() { return localStorage.getItem('bi-lang') || urlLang || 'de'; });
-  var [activeSection, setActiveSection] = React.useState('ueberblick');
-
-  var toggleLang = function(l) { setLang(l); localStorage.setItem('bi-lang', l); };
-
-  React.useEffect(function() {
-    document.documentElement.setAttribute('data-lang', lang);
-  }, [lang]);
-
-  React.useEffect(function() {
-    var sections = ['ueberblick', 'datenquellen', 'datenmodellierung', 'datenqualitaet', 'uebung', 'ressourcen'];
-    var observer = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id);
-        }
-      });
-    }, { rootMargin: '-30% 0px -60% 0px' });
-    sections.forEach(function(id) {
-      var el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-    return function() { observer.disconnect(); };
-  }, []);
-
-  var de = {
-    sidebarTitle: 'Lab 02',
-    nav: [
-      { id: 'ueberblick', label: '1. Überblick' },
-      { id: 'datenquellen', label: '2. Datenquellen' },
-      { id: 'datenmodellierung', label: '3. Datenmodellierung' },
-      { id: 'datenqualitaet', label: '4. Datenqualität' },
-      { id: 'uebung', label: '5. Übungsaufgabe' },
-      { id: 'ressourcen', label: '6. Ressourcen' },
-    ],
-    back: '← Zurück zur Übersicht',
-    badge: 'Lab 02',
-    pageTitle: 'Daten: Quellen, Modelle, Qualität',
-    s1: {
-      heading: 'Überblick',
-      lernzieleHeading: 'Lernziele',
-      goals: [
-        'Verschiedene Datenquellen anbinden',
-        'Star Schema und Snowflake Schema verstehen und entwerfen',
-        'Datenqualitätsprobleme erkennen und beheben',
-        'Power Query (Power BI) und Pandas (Python) für Datentransformation nutzen',
-      ],
-    },
-    s2: {
-      heading: 'Datenquellen',
-      intro: 'Daten kommen aus vielfältigen Quellen. Je nach Struktur und Herkunft unterscheiden wir folgende Kategorien:',
-      strukturiertLabel: 'Strukturiert',
-      strukturiertDesc: 'CSV, Excel, SQL-Datenbanken (MySQL, PostgreSQL)',
-      semiLabel: 'Semi-strukturiert',
-      semiDesc: 'JSON, XML, REST-APIs',
-      cloudLabel: 'Cloud-Quellen',
-      cloudDesc: 'Google Sheets, Azure, SharePoint',
-      powerBILabel: 'Power BI',
-      powerBIDesc: 'Im Power BI Desktop können Datenquellen über den Dialog "Daten abrufen" eingebunden werden (Home ' + String.fromCharCode(8594) + ' Get Data). Es stehen über 100 Konnektoren zur Verfügung.',
-      pythonHeading: 'Datenquellen in Python laden',
-    },
-    s3: {
-      heading: 'Datenmodellierung',
-      starHeading: 'Star Schema',
-      starDesc: 'Das Star Schema ist das Standard-Modell für analytische Datenbanken. Eine zentrale Faktentabelle ist von mehreren Dimensionstabellen umgeben.',
-      faktLabel: 'Faktentabelle',
-      faktDesc: 'Enthält Messgrößen: Umsatz, Menge, Preis',
-      dimLabel: 'Dimensionstabellen',
-      dimDesc: 'Liefern Kontext: Zeit, Produkt, Kunde, Region',
-      vorteileLabel: 'Vorteile',
-      vorteile: [
-        'Einfache Abfragen',
-        'Gute Performance',
-        'Leicht verständlich',
-      ],
-      snowflakeHeading: 'Snowflake Schema',
-      snowflakeDesc: 'Beim Snowflake Schema werden Dimensionstabellen weiter normalisiert, d.h. Hierarchien werden in separate Tabellen aufgebrochen.',
-      snowflakeExample: 'Beispiel: Dim_Produkt ' + String.fromCharCode(8594) + ' Dim_Kategorie ' + String.fromCharCode(8594) + ' Dim_Hauptkategorie',
-      tableHeading: 'Vergleich: Star Schema vs. Snowflake Schema',
-      tableRows: [
-        ['Normalisierung', 'Denormalisiert', 'Normalisiert'],
-        ['Abfragekomplexit\u00e4t', 'Einfach', 'Komplex (mehr JOINs)'],
-        ['Performance', 'Sehr gut', 'Gut'],
-        ['Speicher', 'Mehr', 'Weniger'],
-        ['Empfehlung', 'Standard f\u00fcr BI', 'Bei sehr gro\u00dfen Datenmengen'],
-      ],
-      colAspect: 'Aspekt',
-      colStar: 'Star Schema',
-      colSnowflake: 'Snowflake Schema',
-    },
-    s4: {
-      heading: 'Datenqualität',
-      intro: 'Fehlerhafte Daten führen zu falschen Analysen. Typische Probleme umfassen:',
-      problems: [
-        'Nullwerte (fehlende Einträge)',
-        'Duplikate (doppelte Datensätze)',
-        'Falsche Datentypen (Datum als Text gespeichert)',
-        'Inkonsistenzen ("DE" vs. "Germany" vs. "Deutschland")',
-      ],
-      pandasHeading: 'Datenbereinigung mit Pandas',
-      powerQueryHeading: 'Datenbereinigung mit Power Query (Power BI)',
-      powerQuerySteps: [
-        'Home ' + String.fromCharCode(8594) + ' Transform Data ' + String.fromCharCode(8594) + ' Power Query Editor öffnen',
-        'Spalten filtern: Dropdown auf Spaltenheader klicken',
-        'Datentypen setzen: Spalte auswählen ' + String.fromCharCode(8594) + ' Data Type',
-        'Werte ersetzen: Transform ' + String.fromCharCode(8594) + ' Replace Values',
-      ],
-    },
-    s5: {
-      heading: 'Übungsaufgabe',
-      taskHeading: 'Praktische Aufgabe',
-      taskDesc: 'Gegeben ist ein CSV mit Verkaufsdaten. Ihre Aufgabe:',
-      tasks: [
-        'Nullwerte in der Spalte "Preis" identifizieren und durch den Mittelwert ersetzen.',
-        'Duplikate anhand der Spalte "Order_ID" entfernen.',
-        'Das Datum in den Typ datetime konvertieren.',
-        'Den Spaltennamen "Sales" in "Umsatz" umbenennen.',
-      ],
-      solutionHeading: 'Musterlösung',
-    },
-    s6: {
-      heading: 'YouTube-Ressourcen',
-      intro: 'Empfohlene Videos zur Vertiefung:',
-      resources: [
-        { title: 'Power Query Tutorial', channel: 'Curbal Channel', url: 'https://www.youtube.com/@Curbal' },
-        { title: 'Pandas Data Cleaning', channel: 'Keith Galli', url: 'https://www.youtube.com/@KeithGalli' },
-      ],
-    },
-    navBack: '← Lab 01: Grundlagen',
-    navNext: 'Weiter: Lab 03 \u2013 KPIs \u2192',
-  };
-
-  var en = {
-    sidebarTitle: 'Lab 02',
-    nav: [
-      { id: 'ueberblick', label: '1. Overview' },
-      { id: 'datenquellen', label: '2. Data Sources' },
-      { id: 'datenmodellierung', label: '3. Data Modeling' },
-      { id: 'datenqualitaet', label: '4. Data Quality' },
-      { id: 'uebung', label: '5. Exercise' },
-      { id: 'ressourcen', label: '6. Resources' },
-    ],
-    back: '← Back to Overview',
-    badge: 'Lab 02',
-    pageTitle: 'Data: Sources, Models, Quality',
-    s1: {
-      heading: 'Overview',
-      lernzieleHeading: 'Learning Objectives',
-      goals: [
-        'Connect different data sources',
-        'Understand and design Star Schema and Snowflake Schema',
-        'Identify and fix data quality problems',
-        'Use Power Query (Power BI) and Pandas (Python) for data transformation',
-      ],
-    },
-    s2: {
-      heading: 'Data Sources',
-      intro: 'Data comes from a wide variety of sources. Depending on structure and origin, we distinguish the following categories:',
-      strukturiertLabel: 'Structured',
-      strukturiertDesc: 'CSV, Excel, SQL databases (MySQL, PostgreSQL)',
-      semiLabel: 'Semi-structured',
-      semiDesc: 'JSON, XML, REST APIs',
-      cloudLabel: 'Cloud Sources',
-      cloudDesc: 'Google Sheets, Azure, SharePoint',
-      powerBILabel: 'Power BI',
-      powerBIDesc: 'In Power BI Desktop, data sources can be connected via the "Get Data" dialog (Home ' + String.fromCharCode(8594) + ' Get Data). Over 100 connectors are available.',
-      pythonHeading: 'Loading Data Sources in Python',
-    },
-    s3: {
-      heading: 'Data Modeling',
-      starHeading: 'Star Schema',
-      starDesc: 'The Star Schema is the standard model for analytical databases. A central fact table is surrounded by multiple dimension tables.',
-      faktLabel: 'Fact Table',
-      faktDesc: 'Contains measures: Revenue, Quantity, Price',
-      dimLabel: 'Dimension Tables',
-      dimDesc: 'Provide context: Time, Product, Customer, Region',
-      vorteileLabel: 'Advantages',
-      vorteile: [
-        'Simple queries',
-        'Good performance',
-        'Easy to understand',
-      ],
-      snowflakeHeading: 'Snowflake Schema',
-      snowflakeDesc: 'In the Snowflake Schema, dimension tables are further normalized, meaning hierarchies are broken out into separate tables.',
-      snowflakeExample: 'Example: Dim_Product ' + String.fromCharCode(8594) + ' Dim_Category ' + String.fromCharCode(8594) + ' Dim_MainCategory',
-      tableHeading: 'Comparison: Star Schema vs. Snowflake Schema',
-      tableRows: [
-        ['Normalization', 'Denormalized', 'Normalized'],
-        ['Query Complexity', 'Simple', 'Complex (more JOINs)'],
-        ['Performance', 'Very good', 'Good'],
-        ['Storage', 'More', 'Less'],
-        ['Recommendation', 'Standard for BI', 'For very large datasets'],
-      ],
-      colAspect: 'Aspect',
-      colStar: 'Star Schema',
-      colSnowflake: 'Snowflake Schema',
-    },
-    s4: {
-      heading: 'Data Quality',
-      intro: 'Faulty data leads to incorrect analyses. Typical problems include:',
-      problems: [
-        'Null values (missing entries)',
-        'Duplicates (repeated records)',
-        'Wrong data types (date stored as text)',
-        'Inconsistencies ("DE" vs. "Germany" vs. "Deutschland")',
-      ],
-      pandasHeading: 'Data Cleaning with Pandas',
-      powerQueryHeading: 'Data Cleaning with Power Query (Power BI)',
-      powerQuerySteps: [
-        'Home ' + String.fromCharCode(8594) + ' Transform Data ' + String.fromCharCode(8594) + ' Open Power Query Editor',
-        'Filter columns: Click dropdown on column header',
-        'Set data types: Select column ' + String.fromCharCode(8594) + ' Data Type',
-        'Replace values: Transform ' + String.fromCharCode(8594) + ' Replace Values',
-      ],
-    },
-    s5: {
-      heading: 'Exercise',
-      taskHeading: 'Practical Task',
-      taskDesc: 'Given is a CSV file with sales data. Your task:',
-      tasks: [
-        'Identify null values in the "Preis" column and replace them with the mean.',
-        'Remove duplicates based on the "Order_ID" column.',
-        'Convert the date column to datetime type.',
-        'Rename the column "Sales" to "Umsatz".',
-      ],
-      solutionHeading: 'Sample Solution',
-    },
-    s6: {
-      heading: 'YouTube Resources',
-      intro: 'Recommended videos for further study:',
-      resources: [
-        { title: 'Power Query Tutorial', channel: 'Curbal Channel', url: 'https://www.youtube.com/@Curbal' },
-        { title: 'Pandas Data Cleaning', channel: 'Keith Galli', url: 'https://www.youtube.com/@KeithGalli' },
-      ],
-    },
-    navBack: '← Lab 01: Foundations',
-    navNext: 'Next: Lab 03 \u2013 KPIs \u2192',
-  };
-
-  var t = lang === 'en' ? en : de;
-
-  var scrollTo = function(id) {
-    var el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+    // ─── CodeBlock Component ──────────────────────────────────────────────────
+    function CodeBlock({ code }) {
+      const [copied, setCopied] = React.useState(false);
+      const copy = () => {
+        navigator.clipboard.writeText(code).then(() => {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1500);
+        }).catch(() => {
+          const el = document.createElement('textarea');
+          el.value = code;
+          document.body.appendChild(el);
+          el.select();
+          document.execCommand('copy');
+          document.body.removeChild(el);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1500);
+        });
+      };
+      return (
+        <div style={{ position: 'relative', marginBottom: '1rem' }}>
+          <pre className="code-block">{code}</pre>
+          <button onClick={copy} style={{
+            position: 'absolute', top: '0.5rem', right: '0.5rem',
+            background: copied ? '#059669' : '#E5E7EB',
+            color: copied ? 'white' : '#374151',
+            border: 'none', borderRadius: '4px',
+            padding: '0.2rem 0.5rem', fontSize: '0.75rem',
+            cursor: 'pointer', fontFamily: 'Space Grotesk, sans-serif'
+          }}>
+            {copied ? '\u2713 Kopiert' : 'Kopieren'}
+          </button>
+        </div>
+      );
     }
-  };
 
-  return (
-    <div data-lang={lang}>
-      {/* Header */}
-      <header className="header">
-        <div className="header-left">
-          <a href="index.html" className="header-logo">THWS BI Lab</a>
-          <a href="index.html" className="header-back">{t.back}</a>
-        </div>
-        <div style={{ display: 'flex', gap: '0.35rem' }}>
-          <button className={'lang-btn' + (lang === 'de' ? ' active' : '')} onClick={function() { toggleLang('de'); }}>DE</button>
-          <button className={'lang-btn' + (lang === 'en' ? ' active' : '')} onClick={function() { toggleLang('en'); }}>EN</button>
-        </div>
-      </header>
+    // ─── Translations ─────────────────────────────────────────────────────────
+    const translations = {
+      de: {
+        title: 'Daten: Quellen, Modelle, Qualit\u00E4t',
+        desc: 'Daten sind das Fundament jeder BI-L\u00F6sung. In diesem Lab lernen Sie, wie verschiedene Datenquellen angebunden werden, wie Star- und Snowflake-Schemata funktionieren und wie Datenqualit\u00E4tsprobleme erkannt und behoben werden.',
+        lernziele: [
+          'Verschiedene Datenquellen anbinden',
+          'Star Schema & Snowflake Schema verstehen',
+          'Datenqualit\u00E4tsprobleme erkennen & beheben',
+          'Power Query & Pandas nutzen',
+        ],
+        navContents: 'Inhalt',
+        nav: [
+          { href: '#datenquellen',  label: 'Datenquellen' },
+          { href: '#modellierung',  label: 'Datenmodellierung' },
+          { href: '#qualitaet',     label: 'Datenqualit\u00E4t' },
+          { href: '#youtube',       label: 'Ressourcen' },
+        ],
+        backLabel: '\u2190 \u00DCbersicht',
 
-      {/* Sidebar */}
-      <nav className="sidebar">
-        <div className="sidebar-title">{t.sidebarTitle}</div>
-        {t.nav.map(function(item) {
-          return (
-            <a
-              key={item.id}
-              href={'#' + item.id}
-              className={'sidebar-link' + (activeSection === item.id ? ' active' : '')}
-              onClick={function(e) { e.preventDefault(); scrollTo(item.id); }}
-            >{item.label}</a>
-          );
-        })}
-      </nav>
+        s1Title: 'Datenquellen',
+        s1Desc: 'BI-Systeme integrieren Daten aus vielen verschiedenen Quellen. Je nach Struktur der Daten unterscheidet man drei Hauptkategorien.',
+        s1CategoriesTitle: 'Kategorien von Datenquellen',
+        s1Categories: [
+          {
+            label: 'Strukturiert',
+            color: '#1E3A8A',
+            examples: ['CSV', 'Excel', 'SQL (MySQL, PostgreSQL)', 'SAP-Exporte'],
+            desc: 'Klar definiertes Schema, Zeilen und Spalten. Einfach zu verarbeiten.',
+          },
+          {
+            label: 'Semi-strukturiert',
+            color: '#2563EB',
+            examples: ['JSON', 'XML', 'REST-APIs', 'GraphQL'],
+            desc: 'Flexibles Schema, hierarchische oder verschachtelte Strukturen.',
+          },
+          {
+            label: 'Cloud-Quellen',
+            color: '#3B82F6',
+            examples: ['Google Sheets', 'Azure Blob Storage', 'SharePoint', 'Snowflake'],
+            desc: 'Online-Dienste mit API-Zugriff oder nativer Konnektorunterst\u00FCtzung.',
+          },
+        ],
+        s1PowerBITitle: 'Daten laden in Power BI',
+        s1PowerBIText: 'In Power BI \u00F6ffnet der Dialog \u201EDaten abrufen\u201C (Home \u2192 Daten abrufen) eine Quellen-Auswahl mit \u00FCber 100 Konnektoren. Nach der Verbindung \u00F6ffnet sich der Power Query Editor zur Vorschau und Transformation.',
+        s1PythonTitle: 'Daten laden in Python',
+        s1PythonDesc: 'Mit pandas und der requests-Bibliothek k\u00F6nnen alle g\u00E4ngigen Datenquellen eingelesen werden:',
+        s1CodePython: '# Python: Daten laden\nimport pandas as pd\nimport requests\n\n# CSV laden\ndf = pd.read_csv(\'daten.csv\')\n\n# Excel laden\ndf_excel = pd.read_excel(\'bericht.xlsx\', sheet_name=\'Umsatz\')\n\n# REST API laden\nresponse = requests.get(\'https://api.example.com/sales\')\ndf_api = pd.json_normalize(response.json()[\'data\'])\n\nprint(df.head())\nprint(df.shape)   # (Zeilen, Spalten)',
 
-      {/* Main Content */}
-      <main className="main-content">
+        s2Title: 'Datenmodellierung',
+        s2Desc: 'Ein gutes Datenmodell ist entscheidend f\u00FCr die Performance und Verst\u00E4ndlichkeit eines BI-Systems. Das Star Schema ist das verbreitetste Modell im Data Warehousing.',
+        s2StarTitle: 'Star Schema',
+        s2StarDesc: 'Im Star Schema liegt eine zentrale Faktentabelle im Mittelpunkt, die von mehreren Dimensionstabellen umgeben wird \u2013 wie ein Stern.',
+        s2DiagramCode: '              Dim_Zeit\n                 |\nDim_Produkt \u2014 Fakt_Umsatz \u2014 Dim_Kunde\n                 |\n             Dim_Region',
+        s2FactTitle: 'Faktentabelle',
+        s2FactText: 'Enth\u00E4lt die Messgr\u00F6\u00DFen (Kennzahlen) des Gesch\u00E4ftsprozesses: Umsatz, Menge, Preis, Rabatt. Jede Zeile repr\u00E4sentiert einen Gesch\u00E4ftsvorfall (z.\u202FB. eine Bestellung). Die Faktentabelle hat in der Regel viele Millionen Zeilen.',
+        s2DimTitle: 'Dimensionstabellen',
+        s2DimText: 'Beschreiben den Kontext der Fakten: Zeit (Jahr, Quartal, Monat), Produkt (Kategorie, Marke), Kunde (Region, Segment), Region (Land, Stadt). Dimensionstabellen sind kleiner und enthalten beschreibende Attribute.',
+        s2CompareTitle: 'Star Schema vs. Snowflake Schema',
+        s2CompareHeaders: ['Merkmal', 'Star Schema', 'Snowflake Schema'],
+        s2CompareRows: [
+          ['Dimensionen', 'Flach (denormalisiert)', 'Normalisiert (mehrere Tabellen)'],
+          ['Performance', 'Schnellere Abfragen', 'Etwas langsamer durch JOINs'],
+          ['Speicher', 'H\u00F6herer Bedarf', 'Geringerer Bedarf'],
+          ['Komplexit\u00E4t', 'Einfach zu verstehen', 'Komplexere Struktur'],
+          ['Einsatz', 'Power BI, Tableau', 'Snowflake DW, BigQuery'],
+        ],
+        s2TipTitle: 'Empfehlung',
+        s2TipText: 'F\u00FCr die meisten BI-Projekte ist das Star Schema die bessere Wahl: es ist einfacher zu verstehen, leichter zu pflegen und liefert in den meisten BI-Tools schnellere Abfragezeiten.',
 
-        {/* Section 1: Überblick */}
-        <section id="ueberblick" className="section-block">
-          <span className="bauhaus-badge">{t.badge}</span>
-          <h2 style={{ marginTop: '0.75rem', fontSize: '2rem' }}>{t.pageTitle}</h2>
-          <div className="bauhaus-accent-line"></div>
-          <div className="lernziele-box">
-            <h3 className="lernziele-heading">{t.s1.lernzieleHeading}</h3>
-            <ol style={{ margin: 0, paddingLeft: '1.25rem' }}>
-              {t.s1.goals.map(function(g, i) {
-                return <li key={i} style={{ marginBottom: '0.4rem', lineHeight: '1.6' }}>{g}</li>;
-              })}
-            </ol>
-          </div>
-        </section>
+        s3Title: 'Datenqualit\u00E4t',
+        s3Desc: 'Schlechte Datenqualit\u00E4t ist die h\u00E4ufigste Ursache f\u00FCr falsche BI-Ergebnisse. Das Erkennen und Beheben von Qualit\u00E4tsproblemen ist ein zentraler Teil jedes ETL-Prozesses.',
+        s3ProblemsTitle: 'H\u00E4ufige Datenqualit\u00E4tsprobleme',
+        s3Problems: [
+          { name: 'Nullwerte', desc: 'Fehlende Werte in Pflichtfeldern (z.\u202FB. kein Umsatz eingetragen)', fix: 'Zeilen entfernen oder mit Standardwert f\u00FCllen' },
+          { name: 'Duplikate', desc: 'Gleiche Datens\u00E4tze mehrfach vorhanden (z.\u202FB. doppelte Bestellungen)', fix: 'Mit drop_duplicates() oder Power Query entfernen' },
+          { name: 'Falsche Datentypen', desc: 'Datum als Text gespeichert, Zahlen als String', fix: 'pd.to_datetime(), astype(), Power Query: Typ \u00E4ndern' },
+          { name: 'Inkonsistenzen', desc: 'Schreibweisen variieren: \u201EDE\u201C, \u201Ede\u201C, \u201E Deutschland \u201C', fix: 'str.strip(), str.upper(), Ersetzungstabellen' },
+        ],
+        s3PandasTitle: 'Datenqualit\u00E4t pr\u00FCfen & bereinigen mit Pandas',
+        s3CodePandas: '# Datenqualit\u00E4t pr\u00FCfen\ndf.isnull().sum()          # Nullwerte pr\u00FCfen\ndf.duplicated().sum()      # Duplikate z\u00E4hlen\nprint(df.dtypes)           # Datentypen anzeigen\n\n# Bereinigen\ndf_clean = df.drop_duplicates()\ndf_clean = df_clean.dropna(subset=[\'Umsatz\'])\ndf_clean[\'Datum\'] = pd.to_datetime(df_clean[\'Datum\'])\ndf_clean[\'Land\'] = df_clean[\'Land\'].str.strip().str.upper()\n\n# Zusammenfassung\nprint(f"Zeilen original: {len(df)}")\nprint(f"Zeilen bereinigt: {len(df_clean)}")\nprint(f"Entfernt: {len(df) - len(df_clean)}")',
+        s3PowerBITitle: 'Datenqualit\u00E4t in Power BI',
+        s3PowerBIText: 'Im Power Query Editor (Home \u2192 Daten transformieren) stehen folgende Werkzeuge zur Verf\u00FCgung:',
+        s3PowerBISteps: [
+          'Spalte markieren \u2192 Transformieren \u2192 Datentyp \u00E4ndern',
+          'Start \u2192 Zeilen entfernen \u2192 Leere Zeilen entfernen',
+          'Rechtsklick auf Spalte \u2192 Werte ersetzen',
+          'Start \u2192 Zeilen entfernen \u2192 Duplikate entfernen',
+        ],
 
-        {/* Section 2: Datenquellen */}
-        <section id="datenquellen" className="section-block">
-          <h2>{t.s2.heading}</h2>
-          <div className="bauhaus-accent-line"></div>
-          <p>{t.s2.intro}</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', margin: '1.25rem 0' }}>
-            <div className="tip-box">
-              <h4>{t.s2.strukturiertLabel}</h4>
-              <p style={{ margin: 0, fontSize: '0.9rem' }}>{t.s2.strukturiertDesc}</p>
+        s4Title: 'Lernressourcen',
+        s4Desc: 'Erg\u00E4nzende YouTube-Kanalempfehlungen f\u00FCr Datentransformation und Datenqualit\u00E4t:',
+        s4Resources: [
+          {
+            title: 'Power Query Tutorial \u2013 Curbal',
+            url: 'https://www.youtube.com/@Curbal',
+            desc: 'Umfangreiche Tutorial-Serie zu Power Query, M-Sprache und Datentransformation in Power BI.',
+          },
+          {
+            title: 'Pandas Data Cleaning \u2013 Keith Galli',
+            url: 'https://www.youtube.com/@KeithGalli',
+            desc: 'Praxisnahe Python-Tutorials zu Pandas, Datenbereinigung und explorativer Datenanalyse.',
+          },
+        ],
+
+        navPrev: '\u2190 Lab 01: Grundlagen',
+        navNext: 'Lab 03: KPIs \u2192',
+      },
+
+      en: {
+        title: 'Data: Sources, Models, Quality',
+        desc: 'Data is the foundation of every BI solution. In this lab you will learn how to connect different data sources, how star and snowflake schemas work, and how to identify and fix data quality issues.',
+        lernziele: [
+          'Connect various data sources',
+          'Understand Star & Snowflake Schema',
+          'Identify & fix data quality issues',
+          'Use Power Query & Pandas',
+        ],
+        navContents: 'Contents',
+        nav: [
+          { href: '#datenquellen',  label: 'Data Sources' },
+          { href: '#modellierung',  label: 'Data Modelling' },
+          { href: '#qualitaet',     label: 'Data Quality' },
+          { href: '#youtube',       label: 'Resources' },
+        ],
+        backLabel: '\u2190 Overview',
+
+        s1Title: 'Data Sources',
+        s1Desc: 'BI systems integrate data from many different sources. Depending on the structure of the data, three main categories are distinguished.',
+        s1CategoriesTitle: 'Categories of Data Sources',
+        s1Categories: [
+          {
+            label: 'Structured',
+            color: '#1E3A8A',
+            examples: ['CSV', 'Excel', 'SQL (MySQL, PostgreSQL)', 'SAP exports'],
+            desc: 'Clearly defined schema, rows and columns. Easy to process.',
+          },
+          {
+            label: 'Semi-structured',
+            color: '#2563EB',
+            examples: ['JSON', 'XML', 'REST APIs', 'GraphQL'],
+            desc: 'Flexible schema, hierarchical or nested structures.',
+          },
+          {
+            label: 'Cloud Sources',
+            color: '#3B82F6',
+            examples: ['Google Sheets', 'Azure Blob Storage', 'SharePoint', 'Snowflake'],
+            desc: 'Online services with API access or native connector support.',
+          },
+        ],
+        s1PowerBITitle: 'Loading Data in Power BI',
+        s1PowerBIText: 'In Power BI, the "Get Data" dialog (Home \u2192 Get Data) opens a source selection with over 100 connectors. After connecting, the Power Query Editor opens for preview and transformation.',
+        s1PythonTitle: 'Loading Data in Python',
+        s1PythonDesc: 'With pandas and the requests library, all common data sources can be read:',
+        s1CodePython: '# Python: Load data\nimport pandas as pd\nimport requests\n\n# Load CSV\ndf = pd.read_csv(\'data.csv\')\n\n# Load Excel\ndf_excel = pd.read_excel(\'report.xlsx\', sheet_name=\'Revenue\')\n\n# Load REST API\nresponse = requests.get(\'https://api.example.com/sales\')\ndf_api = pd.json_normalize(response.json()[\'data\'])\n\nprint(df.head())\nprint(df.shape)   # (rows, columns)',
+
+        s2Title: 'Data Modelling',
+        s2Desc: 'A good data model is crucial for the performance and comprehensibility of a BI system. The star schema is the most common model in data warehousing.',
+        s2StarTitle: 'Star Schema',
+        s2StarDesc: 'In the star schema, a central fact table is at the centre, surrounded by several dimension tables \u2013 like a star.',
+        s2DiagramCode: '              Dim_Time\n                 |\nDim_Product \u2014 Fact_Sales \u2014 Dim_Customer\n                 |\n             Dim_Region',
+        s2FactTitle: 'Fact Table',
+        s2FactText: 'Contains the measures (metrics) of the business process: revenue, quantity, price, discount. Each row represents a business transaction (e.g. an order). The fact table typically has many millions of rows.',
+        s2DimTitle: 'Dimension Tables',
+        s2DimText: 'Describe the context of the facts: Time (year, quarter, month), Product (category, brand), Customer (region, segment), Region (country, city). Dimension tables are smaller and contain descriptive attributes.',
+        s2CompareTitle: 'Star Schema vs. Snowflake Schema',
+        s2CompareHeaders: ['Feature', 'Star Schema', 'Snowflake Schema'],
+        s2CompareRows: [
+          ['Dimensions', 'Flat (denormalised)', 'Normalised (multiple tables)'],
+          ['Performance', 'Faster queries', 'Slightly slower due to JOINs'],
+          ['Storage', 'Higher requirement', 'Lower requirement'],
+          ['Complexity', 'Easy to understand', 'More complex structure'],
+          ['Usage', 'Power BI, Tableau', 'Snowflake DW, BigQuery'],
+        ],
+        s2TipTitle: 'Recommendation',
+        s2TipText: 'For most BI projects, the star schema is the better choice: it is easier to understand, easier to maintain, and delivers faster query times in most BI tools.',
+
+        s3Title: 'Data Quality',
+        s3Desc: 'Poor data quality is the most common cause of incorrect BI results. Identifying and fixing quality issues is a central part of every ETL process.',
+        s3ProblemsTitle: 'Common Data Quality Issues',
+        s3Problems: [
+          { name: 'Null values', desc: 'Missing values in required fields (e.g. no revenue entered)', fix: 'Remove rows or fill with default value' },
+          { name: 'Duplicates', desc: 'Same records present multiple times (e.g. duplicate orders)', fix: 'Remove with drop_duplicates() or Power Query' },
+          { name: 'Wrong data types', desc: 'Date stored as text, numbers as string', fix: 'pd.to_datetime(), astype(), Power Query: change type' },
+          { name: 'Inconsistencies', desc: 'Spellings vary: "DE", "de", " Germany "', fix: 'str.strip(), str.upper(), replacement tables' },
+        ],
+        s3PandasTitle: 'Check & Clean Data Quality with Pandas',
+        s3CodePandas: '# Check data quality\ndf.isnull().sum()          # Check null values\ndf.duplicated().sum()      # Count duplicates\nprint(df.dtypes)           # Show data types\n\n# Clean\ndf_clean = df.drop_duplicates()\ndf_clean = df_clean.dropna(subset=[\'Revenue\'])\ndf_clean[\'Date\'] = pd.to_datetime(df_clean[\'Date\'])\ndf_clean[\'Country\'] = df_clean[\'Country\'].str.strip().str.upper()\n\n# Summary\nprint(f"Rows original: {len(df)}")\nprint(f"Rows cleaned: {len(df_clean)}")\nprint(f"Removed: {len(df) - len(df_clean)}")',
+        s3PowerBITitle: 'Data Quality in Power BI',
+        s3PowerBIText: 'In the Power Query Editor (Home \u2192 Transform Data) the following tools are available:',
+        s3PowerBISteps: [
+          'Select column \u2192 Transform \u2192 Change Data Type',
+          'Home \u2192 Remove Rows \u2192 Remove Blank Rows',
+          'Right-click column \u2192 Replace Values',
+          'Home \u2192 Remove Rows \u2192 Remove Duplicates',
+        ],
+
+        s4Title: 'Learning Resources',
+        s4Desc: 'Recommended YouTube channels for data transformation and data quality:',
+        s4Resources: [
+          {
+            title: 'Power Query Tutorial \u2013 Curbal',
+            url: 'https://www.youtube.com/@Curbal',
+            desc: 'Comprehensive tutorial series on Power Query, M language and data transformation in Power BI.',
+          },
+          {
+            title: 'Pandas Data Cleaning \u2013 Keith Galli',
+            url: 'https://www.youtube.com/@KeithGalli',
+            desc: 'Practical Python tutorials on pandas, data cleaning and exploratory data analysis.',
+          },
+        ],
+
+        navPrev: '\u2190 Lab 01: Foundations',
+        navNext: 'Lab 03: KPIs \u2192',
+      },
+    };
+
+    // ─── App Component ────────────────────────────────────────────────────────
+    function App() {
+      const urlLang = new URLSearchParams(window.location.search).get('lang');
+      const [lang, setLang] = useState(() => localStorage.getItem('bi-lang') || urlLang || 'de');
+      const [activeSection, setActiveSection] = useState('datenquellen');
+
+      const setLangAndStore = (l) => {
+        setLang(l);
+        localStorage.setItem('bi-lang', l);
+      };
+
+      useEffect(() => {
+        const sections = ['datenquellen', 'modellierung', 'qualitaet', 'youtube'];
+        const handler = () => {
+          for (let i = sections.length - 1; i >= 0; i--) {
+            const el = document.getElementById(sections[i]);
+            if (el && el.getBoundingClientRect().top <= 100) {
+              setActiveSection(sections[i]);
+              return;
+            }
+          }
+          setActiveSection('datenquellen');
+        };
+        window.addEventListener('scroll', handler, { passive: true });
+        return () => window.removeEventListener('scroll', handler);
+      }, []);
+
+      const tx = translations[lang];
+
+      return (
+        <div data-lang={lang}>
+
+          {/* Fixed Header */}
+          <header className="header">
+            <div className="header-left">
+              <a href="index.html" className="header-logo">{'BI Lab'}</a>
+              <a href={'index.html' + (lang === 'en' ? '?lang=en' : '')} className="header-back">{tx.backLabel}</a>
             </div>
-            <div className="tip-box">
-              <h4>{t.s2.semiLabel}</h4>
-              <p style={{ margin: 0, fontSize: '0.9rem' }}>{t.s2.semiDesc}</p>
+            <div style={{ display: 'flex', gap: '0.35rem' }}>
+              <button className={'lang-btn' + (lang === 'de' ? ' active' : '')} onClick={() => setLangAndStore('de')}>{'DE'}</button>
+              <button className={'lang-btn' + (lang === 'en' ? ' active' : '')} onClick={() => setLangAndStore('en')}>{'EN'}</button>
             </div>
-            <div className="tip-box">
-              <h4>{t.s2.cloudLabel}</h4>
-              <p style={{ margin: 0, fontSize: '0.9rem' }}>{t.s2.cloudDesc}</p>
-            </div>
-          </div>
-          <div className="info-box">
-            <h4 style={{ margin: '0 0 0.4rem' }}>{t.s2.powerBILabel}</h4>
-            <p style={{ margin: 0, fontSize: '0.9rem' }}>{t.s2.powerBIDesc}</p>
-          </div>
-          <h3>{t.s2.pythonHeading}</h3>
-          <CodeBlock code={codePython} />
-        </section>
+          </header>
 
-        {/* Section 3: Datenmodellierung */}
-        <section id="datenmodellierung" className="section-block">
-          <h2>{t.s3.heading}</h2>
-          <div className="bauhaus-accent-line"></div>
+          {/* Sidebar */}
+          <nav className="sidebar">
+            <div className="sidebar-title">{tx.navContents}</div>
+            {tx.nav.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className={'sidebar-link' + (activeSection === item.href.slice(1) ? ' active' : '')}
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
 
-          <h3>{t.s3.starHeading}</h3>
-          <p>{t.s3.starDesc}</p>
-          <CodeBlock code={codeStarSchema} />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', margin: '1rem 0' }}>
-            <div className="concept-box">
-              <h4>{t.s3.faktLabel}</h4>
-              <p style={{ margin: 0, fontSize: '0.9rem' }}>{t.s3.faktDesc}</p>
-            </div>
-            <div className="concept-box">
-              <h4>{t.s3.dimLabel}</h4>
-              <p style={{ margin: 0, fontSize: '0.9rem' }}>{t.s3.dimDesc}</p>
+          {/* Lab Header */}
+          <div className="lab-header">
+            <div className="lab-num">{'02'}</div>
+            <h1 className="lab-title-h1">{tx.title}</h1>
+            <p className="lab-desc-intro">{tx.desc}</p>
+            <div className="lernziele-chips">
+              {tx.lernziele.map((lz, i) => (
+                <span key={i} className="lernziel-chip">{lz}</span>
+              ))}
             </div>
           </div>
-          <div className="tip-box">
-            <strong>{t.s3.vorteileLabel}:</strong>
-            <ul style={{ margin: '0.5rem 0 0', paddingLeft: '1.25rem' }}>
-              {t.s3.vorteile.map(function(v, i) {
-                return <li key={i} style={{ fontSize: '0.9rem', marginBottom: '0.2rem' }}>{v}</li>;
-              })}
-            </ul>
-          </div>
 
-          <h3 style={{ marginTop: '2rem' }}>{t.s3.snowflakeHeading}</h3>
-          <p>{t.s3.snowflakeDesc}</p>
-          <p style={{ fontSize: '0.9rem', fontStyle: 'italic' }}>{t.s3.snowflakeExample}</p>
+          {/* Main Content */}
+          <main className="main-content">
 
-          <h4 style={{ marginTop: '1.5rem' }}>{t.s3.tableHeading}</h4>
-          <table>
-            <thead>
-              <tr>
-                <th>{t.s3.colAspect}</th>
-                <th>{t.s3.colStar}</th>
-                <th>{t.s3.colSnowflake}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {t.s3.tableRows.map(function(row, i) {
-                return (
-                  <tr key={i}>
-                    <td><strong>{row[0]}</strong></td>
-                    <td>{row[1]}</td>
-                    <td>{row[2]}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </section>
+            {/* ── Section 1: Datenquellen ── */}
+            <section id="datenquellen" className="section-block">
+              <h2>{tx.s1Title}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <p>{tx.s1Desc}</p>
 
-        {/* Section 4: Datenqualität */}
-        <section id="datenqualitaet" className="section-block">
-          <h2>{t.s4.heading}</h2>
-          <div className="bauhaus-accent-line"></div>
-          <p>{t.s4.intro}</p>
-          <ul style={{ paddingLeft: '1.25rem' }}>
-            {t.s4.problems.map(function(p, i) {
-              return <li key={i} style={{ marginBottom: '0.4rem', lineHeight: '1.6' }}>{p}</li>;
-            })}
-          </ul>
-
-          <h3>{t.s4.pandasHeading}</h3>
-          <CodeBlock code={codeDataQuality} />
-
-          <h3>{t.s4.powerQueryHeading}</h3>
-          <div className="concept-box">
-            <ol style={{ margin: 0, paddingLeft: '1.25rem' }}>
-              {t.s4.powerQuerySteps.map(function(step, i) {
-                return <li key={i} style={{ marginBottom: '0.5rem', lineHeight: '1.6', fontSize: '0.95rem' }}>{step}</li>;
-              })}
-            </ol>
-          </div>
-        </section>
-
-        {/* Section 5: Übungsaufgabe */}
-        <section id="uebung" className="section-block">
-          <h2>{t.s5.heading}</h2>
-          <div className="bauhaus-accent-line"></div>
-
-          <div className="concept-box">
-            <h4 style={{ marginTop: 0 }}>{t.s5.taskHeading}</h4>
-            <p style={{ marginBottom: '0.5rem' }}>{t.s5.taskDesc}</p>
-            <ol style={{ margin: 0, paddingLeft: '1.25rem' }}>
-              {t.s5.tasks.map(function(task, i) {
-                return <li key={i} style={{ marginBottom: '0.4rem', lineHeight: '1.6', fontSize: '0.95rem' }}>{task}</li>;
-              })}
-            </ol>
-          </div>
-
-          <h3>{t.s5.solutionHeading}</h3>
-          <CodeBlock code={codeExercise} />
-        </section>
-
-        {/* Section 6: Ressourcen */}
-        <section id="ressourcen" className="section-block">
-          <h2>{t.s6.heading}</h2>
-          <div className="bauhaus-accent-line"></div>
-          <p>{t.s6.intro}</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {t.s6.resources.map(function(r, i) {
-              return (
-                <div key={i} className="tip-box" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  <div>
-                    <strong style={{ fontSize: '0.95rem' }}>{r.title}</strong>
-                    <span style={{ color: '#555', fontSize: '0.88rem', marginLeft: '0.5rem' }}>{String.fromCharCode(8211)} {r.channel}</span>
+              <h3 style={{ marginTop: '1.5rem' }}>{tx.s1CategoriesTitle}</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem', margin: '1rem 0' }}>
+                {tx.s1Categories.map((cat, i) => (
+                  <div key={i} className="bauhaus-card">
+                    <div style={{
+                      display: 'inline-block', background: cat.color, color: 'white',
+                      fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700,
+                      fontSize: '0.72rem', letterSpacing: '0.1em', textTransform: 'uppercase',
+                      padding: '0.2rem 0.6rem', borderRadius: '3px', marginBottom: '0.75rem'
+                    }}>
+                      {cat.label}
+                    </div>
+                    <p style={{ margin: '0 0 0.75rem', fontSize: '0.875rem', color: '#4B5563', lineHeight: 1.5 }}>{cat.desc}</p>
+                    <div>
+                      {cat.examples.map((ex, j) => (
+                        <span key={j} className="source-tag">{ex}</span>
+                      ))}
+                    </div>
                   </div>
-                  <a href={r.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.85rem', color: '#2563EB', fontWeight: 600, textDecoration: 'none' }}>{r.url.replace('https://', '')}</a>
+                ))}
+              </div>
+
+              <h3 style={{ marginTop: '2rem' }}>{tx.s1PowerBITitle}</h3>
+              <div className="info-box">
+                <p style={{ margin: 0 }}>{tx.s1PowerBIText}</p>
+              </div>
+
+              <h3 style={{ marginTop: '2rem' }}>{tx.s1PythonTitle}</h3>
+              <p style={{ marginBottom: '0.5rem' }}>{tx.s1PythonDesc}</p>
+              <CodeBlock code={tx.s1CodePython} />
+            </section>
+
+            {/* ── Section 2: Datenmodellierung ── */}
+            <section id="modellierung" className="section-block">
+              <h2>{tx.s2Title}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <p>{tx.s2Desc}</p>
+
+              <h3 style={{ marginTop: '1.5rem' }}>{tx.s2StarTitle}</h3>
+              <p>{tx.s2StarDesc}</p>
+
+              <CodeBlock code={tx.s2DiagramCode} />
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', margin: '1.5rem 0' }}>
+                <div className="concept-box" style={{ margin: 0 }}>
+                  <h4 style={{ marginTop: 0, color: '#1E3A8A' }}>{tx.s2FactTitle}</h4>
+                  <p style={{ margin: 0, fontSize: '0.875rem', color: '#374151', lineHeight: 1.6 }}>{tx.s2FactText}</p>
                 </div>
-              );
-            })}
-          </div>
-        </section>
+                <div className="tip-box" style={{ margin: 0 }}>
+                  <h4 style={{ marginTop: 0, color: '#1E3A8A' }}>{tx.s2DimTitle}</h4>
+                  <p style={{ margin: 0, fontSize: '0.875rem', color: '#374151', lineHeight: 1.6 }}>{tx.s2DimText}</p>
+                </div>
+              </div>
 
-        {/* Bottom Navigation */}
-        <div className="nav-bottom">
-          <a href="lab-01-grundlagen.html" className="nav-btn">{t.navBack}</a>
-          <a href="lab-03-kpis.html" className="nav-btn primary">{t.navNext}</a>
+              <h3 style={{ marginTop: '2rem' }}>{tx.s2CompareTitle}</h3>
+              <table>
+                <thead>
+                  <tr>{tx.s2CompareHeaders.map((h, i) => <th key={i}>{h}</th>)}</tr>
+                </thead>
+                <tbody>
+                  {tx.s2CompareRows.map((row, i) => (
+                    <tr key={i}>{row.map((cell, j) => <td key={j}>{cell}</td>)}</tr>
+                  ))}
+                </tbody>
+              </table>
+
+              <div className="info-box" style={{ marginTop: '1.5rem' }}>
+                <h4 style={{ margin: '0 0 0.4rem', color: '#1E3A8A' }}>{tx.s2TipTitle}</h4>
+                <p style={{ margin: 0 }}>{tx.s2TipText}</p>
+              </div>
+            </section>
+
+            {/* ── Section 3: Datenqualitat ── */}
+            <section id="qualitaet" className="section-block">
+              <h2>{tx.s3Title}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <p>{tx.s3Desc}</p>
+
+              <h3 style={{ marginTop: '1.5rem' }}>{tx.s3ProblemsTitle}</h3>
+              <div style={{ margin: '1rem 0' }}>
+                {tx.s3Problems.map((prob, i) => (
+                  <div key={i} style={{
+                    display: 'flex', gap: '1rem', padding: '0.9rem 0',
+                    borderBottom: '1px solid #E5E7EB', alignItems: 'flex-start'
+                  }}>
+                    <div style={{
+                      flexShrink: 0, width: '28px', height: '28px',
+                      background: '#1E3A8A', color: 'white',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: '0.8rem',
+                      borderRadius: '4px'
+                    }}>{i + 1}</div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: '0.95rem', color: '#1E3A8A', marginBottom: '0.2rem' }}>{prob.name}</div>
+                      <div style={{ fontSize: '0.875rem', color: '#4B5563', lineHeight: 1.5, marginBottom: '0.35rem' }}>{prob.desc}</div>
+                      <div style={{ fontSize: '0.82rem', color: '#374151', background: '#F3F4F6', padding: '0.2rem 0.55rem', borderRadius: '4px', display: 'inline-block', fontFamily: "'Fira Code', 'Courier New', monospace" }}>
+                        {'\u2192 '}{prob.fix}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <h3 style={{ marginTop: '2rem' }}>{tx.s3PandasTitle}</h3>
+              <CodeBlock code={tx.s3CodePandas} />
+
+              <h3 style={{ marginTop: '2rem' }}>{tx.s3PowerBITitle}</h3>
+              <div className="concept-box">
+                <p style={{ margin: '0 0 0.75rem' }}>{tx.s3PowerBIText}</p>
+                <ul style={{ margin: 0, paddingLeft: '1.25rem' }}>
+                  {tx.s3PowerBISteps.map((step, i) => (
+                    <li key={i} style={{ fontSize: '0.875rem', color: '#374151', lineHeight: 1.8, fontFamily: "'Fira Code', 'Courier New', monospace" }}>{step}</li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+
+            {/* ── Section 4: YouTube-Ressourcen ── */}
+            <section id="youtube" className="section-block">
+              <h2>{tx.s4Title}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <p>{tx.s4Desc}</p>
+
+              <div className="youtube-box">
+                <h3>{'YouTube'}</h3>
+                {tx.s4Resources.map((res, i) => (
+                  <div key={i} style={{
+                    marginBottom: i < tx.s4Resources.length - 1 ? '1.25rem' : 0,
+                    paddingBottom: i < tx.s4Resources.length - 1 ? '1.25rem' : 0,
+                    borderBottom: i < tx.s4Resources.length - 1 ? '1px solid #FED7AA' : 'none'
+                  }}>
+                    <a href={res.url} target="_blank" rel="noopener noreferrer" className="youtube-link">{res.title}</a>
+                    <p style={{ margin: '0.25rem 0 0', fontSize: '0.875rem', color: '#78350F' }}>{res.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* ── Nav Bottom ── */}
+            <div className="nav-bottom">
+              <a href={'lab-01-grundlagen.html' + (lang === 'en' ? '?lang=en' : '')} className="nav-btn">
+                {tx.navPrev}
+              </a>
+              <a href={'lab-03-kpis.html' + (lang === 'en' ? '?lang=en' : '')} className="nav-btn primary">
+                {tx.navNext}
+              </a>
+            </div>
+
+          </main>
+
+          {/* Footer */}
+          <footer className="footer">
+            {'THWS Business School \u00B7 BI Lab \u00B7 Prof. Dr. Robert Butscher \u00B7 2026'}
+          </footer>
+
         </div>
-      </main>
+      );
+    }
 
-      {/* Footer */}
-      <footer className="footer">
-        <p className="footer-text">{'THWS Business School \u2013 Business Intelligence Lab \u2013 Lab 02: Daten'}</p>
-      </footer>
-    </div>
-  );
-}
-
-var root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
-</script>
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
 </body>
 </html>
