@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lab 04 – Dashboard-Design &amp; Plotly Dash · THWS BI Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -10,106 +10,160 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
-    :root { --primary: #1E3A8A; --accent: #2563EB; --dark: #1A1A1A; --light-bg: #FAFAFA; }
+    :root {
+      --primary: #1E3A8A;
+      --accent: #2563EB;
+      --dark: #1A1A1A;
+      --light-bg: #FAFAFA;
+      --primary-light: rgba(30,58,138,0.08);
+    }
     *, *::before, *::after { box-sizing: border-box; }
-    body { background: #FAFAFA; font-family: 'Space Grotesk', -apple-system, sans-serif; margin: 0; color: #1A1A1A; }
+    body { background: #FAFAFA; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; color: #1A1A1A; }
     h2 { color: #1E3A8A; font-weight: 800; font-family: 'Space Grotesk', sans-serif; margin-top: 0; }
     h3 { color: #1E3A8A; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
     h4 { font-family: 'Space Grotesk', sans-serif; font-weight: 600; margin: 0.5rem 0; }
     p { line-height: 1.7; }
+
+    /* Bauhaus */
+    .bauhaus-card { border: 1px solid #E5E7EB; border-radius: 10px; padding: 1.5rem; background: white; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
     .bauhaus-accent-line { width: 48px; height: 4px; background: #2563EB; margin: 0.5rem 0 1rem 0; }
-    .bauhaus-badge { background: #2563EB; color: white; padding: 0.2rem 0.7rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; display: inline-block; }
-    .code-block { background: #F3F4F6; color: #1A1A1A; border-left: 4px solid #D1D5DB; font-family: 'Courier New', monospace; font-size: 0.82rem; padding: 1rem 1.25rem; border-radius: 0 8px 8px 0; white-space: pre; overflow-x: auto; position: relative; margin: 1rem 0; }
+    .bauhaus-badge { background: #2563EB; color: white; padding: 0.2rem 0.7rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border-radius: 0; display: inline-block; }
+
+    /* Code */
+    .code-block { background: #F3F4F6; color: #1A1A1A; padding: 1.25rem; border-left: 4px solid #D1D5DB; font-family: 'Fira Code', 'Courier New', monospace; font-size: 0.85rem; overflow-x: auto; position: relative; border-radius: 0 8px 8px 0; white-space: pre; margin: 1rem 0; }
+
+    /* Info boxes */
     .tip-box { border-left: 4px solid #2563EB; background: #EFF6FF; padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
     .info-box { border-left: 4px solid #3b82f6; background: #eff6ff; padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
-    .concept-box { border-left: 4px solid #1E3A8A; background: rgba(30,58,138,0.06); padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
-    .header { position: fixed; top: 0; left: 0; right: 0; height: 56px; z-index: 100; background: white; border-bottom: 1px solid #E5E7EB; box-shadow: 0 1px 8px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; }
+    .concept-box { border-left: 4px solid #1E3A8A; background: rgba(30,58,138,0.08); padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+    .install-box { border-left: 4px solid #059669; background: #ECFDF5; padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+
+    /* Layout */
+    .header {
+      position: fixed; top: 0; left: 0; right: 0; height: 56px; z-index: 100;
+      background: white; border-bottom: 1px solid #E5E7EB; box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 1.5rem;
+    }
     .header-left { display: flex; align-items: center; gap: 1.5rem; }
     .header-logo { font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1.1rem; color: #1E3A8A; text-decoration: none; }
     .header-back { font-size: 0.85rem; color: #555; text-decoration: none; font-weight: 500; }
     .header-back:hover { color: #1E3A8A; }
-    .lang-btn { border: 2px solid #1A1A1A; background: white; padding: 0.2rem 0.6rem; font-size: 0.78rem; font-weight: 700; cursor: pointer; letter-spacing: 0.05em; font-family: 'Space Grotesk', sans-serif; }
-    .lang-btn.active { background: #2563EB; color: white; border-color: #2563EB; }
+    .lang-btn { border: 2px solid #1A1A1A; background: white; padding: 0.2rem 0.6rem; font-size: 0.78rem; font-weight: 700; cursor: pointer; border-radius: 4px; letter-spacing: 0.05em; }
+    .lang-btn.active { background: #1E3A8A; color: white; border-color: #1E3A8A; }
     .lang-btn:hover:not(.active) { background: #f5f5f5; }
-    .sidebar { position: fixed; top: 56px; left: 0; width: 260px; height: calc(100vh - 56px); overflow-y: auto; border-right: 1px solid #E5E7EB; background: white; padding: 1.5rem 0; }
+
+    .sidebar {
+      position: fixed; top: 56px; left: 0; width: 260px;
+      height: calc(100vh - 56px); overflow-y: auto;
+      border-right: 1px solid #E5E7EB; background: white;
+      padding: 1.5rem 0;
+    }
     .sidebar-title { font-family: 'Space Grotesk', sans-serif; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #888; padding: 0 1.25rem; margin-bottom: 0.75rem; }
-    .sidebar-link { display: block; padding: 0.55rem 1.25rem; font-size: 0.88rem; color: #444; text-decoration: none; border-left: 3px solid transparent; transition: background 0.12s, color 0.12s, border-color 0.12s; font-weight: 500; }
+    .sidebar-link {
+      display: block; padding: 0.55rem 1.25rem; font-size: 0.88rem; color: #444;
+      text-decoration: none; border-left: 3px solid transparent;
+      transition: background 0.12s, color 0.12s, border-color 0.12s;
+      font-weight: 500;
+    }
     .sidebar-link:hover { color: #1E3A8A; background: rgba(30,58,138,0.04); }
-    .sidebar-link.active { color: #1E3A8A; border-left-color: #2563EB; background: rgba(30,58,138,0.06); font-weight: 700; }
-    .main-content { margin-left: 260px; padding-top: 72px; padding-bottom: 4rem; padding-left: 3rem; padding-right: 3rem; max-width: 960px; }
+    .sidebar-link.active { color: #1E3A8A; border-left-color: #1E3A8A; background: rgba(30,58,138,0.06); font-weight: 700; }
+
+    .main-content {
+      margin-left: 260px; padding-top: 72px; padding-bottom: 4rem;
+      padding-left: 3rem; padding-right: 3rem; max-width: 960px;
+    }
     .section-block { margin-bottom: 4rem; }
+
+    /* Tables */
     table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
     th { background: #1E3A8A; color: white; padding: 0.65rem 1rem; text-align: left; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.82rem; letter-spacing: 0.05em; }
     td { padding: 0.6rem 1rem; border-bottom: 1px solid #e5e7eb; }
     tr:nth-child(even) td { background: #f9fafb; }
-    .nav-bottom { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; margin-top: 2rem; border-top: 1px solid #e5e7eb; }
-    .nav-btn { border: 2px solid #1A1A1A; background: white; padding: 0.65rem 1.25rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; text-decoration: none; color: #1A1A1A; font-family: 'Space Grotesk', sans-serif; display: inline-block; }
-    .nav-btn:hover { background: #2563EB; color: white; border-color: #2563EB; }
+    tr:hover td { background: rgba(30,58,138,0.03); }
+    td code { font-family: 'Fira Code', 'Courier New', monospace; font-size: 0.82rem; background: #F3F4F6; padding: 0.1rem 0.35rem; border-radius: 3px; }
+
+    /* Nav bottom */
+    .nav-bottom { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 2rem; padding: 1.5rem 0; border-top: 1px solid #E5E7EB; }
+    .nav-btn { border: 2px solid #1A1A1A; background: white; padding: 0.65rem 1.25rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; text-decoration: none; color: #1A1A1A; font-family: 'Space Grotesk', sans-serif; display: inline-block; border-radius: 4px; }
+    .nav-btn:hover { background: #1E3A8A; color: white; border-color: #1E3A8A; }
     .nav-btn.primary { background: #1E3A8A; border-color: #1E3A8A; color: white; }
     .nav-btn.primary:hover { background: #1e40af; border-color: #1e40af; }
-    .lernziele-box { background: #EFF6FF; border-left: 4px solid #2563EB; padding: 1.25rem 1.5rem; margin-top: 1.5rem; }
-    .lernziele-heading { color: #1E3A8A; margin: 0 0 0.75rem; font-family: 'Space Grotesk', sans-serif; font-weight: 700; }
-    .footer { background: #1A1A1A; padding: 2rem 3rem 2rem calc(260px + 3rem); }
-    .footer-text { color: #6B7280; font-size: 0.875rem; }
-    @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding-left: 1.25rem; padding-right: 1.25rem; } .footer { padding: 2rem 1.25rem; } }
-    [data-lang="en"] h2, [data-lang="en"] h3 { color: #0D9488; }
-    [data-lang="en"] .bauhaus-accent-line { background: #14B8A6; }
-    [data-lang="en"] .bauhaus-badge { background: #0D9488; }
-    [data-lang="en"] .header-logo { color: #0D9488; }
-    [data-lang="en"] .lang-btn.active { background: #0D9488; border-color: #0D9488; color: white; }
-    [data-lang="en"] .sidebar-link.active { color: #0D9488; border-left-color: #14B8A6; background: rgba(13,148,136,0.06); }
-    [data-lang="en"] .sidebar-link:hover { color: #0D9488; }
-    [data-lang="en"] .header-back:hover { color: #0D9488; }
-    [data-lang="en"] th { background: #0D9488; }
-    [data-lang="en"] .tip-box { border-left-color: #14B8A6; background: #F0FDFA; }
-    [data-lang="en"] .concept-box { border-left-color: #0D9488; background: rgba(13,148,136,0.06); }
-    [data-lang="en"] .lernziele-box { border-left-color: #14B8A6; background: #F0FDFA; }
-    [data-lang="en"] .lernziele-heading { color: #0D9488; }
-    [data-lang="en"] .nav-btn:hover { background: #0D9488; border-color: #0D9488; color: white; }
-    [data-lang="en"] .nav-btn.primary { background: #0D9488; border-color: #0D9488; }
+
+    /* Lab header */
+    .lab-header { padding: 3rem 3rem 2rem; margin-left: 260px; padding-top: 88px; }
+    .lab-num { font-family: 'Space Grotesk', sans-serif; font-size: 4rem; font-weight: 900; color: #2563EB; line-height: 1; margin-bottom: 0.5rem; }
+    .lab-title-h1 { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 800; color: #1A1A1A; margin-bottom: 0.75rem; }
+    .lab-desc-intro { font-size: 1.1rem; color: #4B5563; line-height: 1.6; max-width: 680px; margin-bottom: 1.5rem; }
+    .lernziele-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+    .lernziel-chip { background: rgba(30,58,138,0.08); color: #1E3A8A; border: 1px solid rgba(30,58,138,0.2); padding: 0.3rem 0.75rem; font-size: 0.8rem; font-weight: 600; border-radius: 20px; font-family: 'Space Grotesk', sans-serif; }
+
+    /* YouTube box */
+    .youtube-box { background: #FFF7ED; border: 1px solid #FED7AA; border-radius: 10px; padding: 1.5rem; margin: 2rem 0; }
+    .youtube-box h3 { color: #EA580C; margin-top: 0; }
+    .youtube-link { color: #EA580C; text-decoration: none; font-weight: 600; }
+    .youtube-link:hover { text-decoration: underline; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-content { margin-left: 0; padding-left: 1.25rem; padding-right: 1.25rem; }
+      .lab-header { margin-left: 0; padding-left: 1.25rem; padding-right: 1.25rem; }
+    }
+
+    /* Footer */
+    .footer { background: #1A1A1A; color: rgba(255,255,255,0.6); text-align: center; padding: 1.5rem; margin-left: 260px; font-size: 0.85rem; }
+    @media (max-width: 768px) { .footer { margin-left: 0; } }
   </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel">
+  <div id="root"></div>
 
-function CodeBlock({ code }) {
-  var [copied, setCopied] = React.useState(false);
-  var copy = function() {
-    navigator.clipboard.writeText(code).then(function() {
-      setCopied(true);
-      setTimeout(function() { setCopied(false); }, 1500);
-    }).catch(function() {
-      var el = document.createElement('textarea');
-      el.value = code;
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand('copy');
-      document.body.removeChild(el);
-      setCopied(true);
-      setTimeout(function() { setCopied(false); }, 1500);
-    });
-  };
-  return (
-    <div style={{ position: 'relative', marginBottom: '1rem' }}>
-      <pre className="code-block">{code}</pre>
-      <button onClick={copy} style={{
-        position: 'absolute', top: '0.5rem', right: '0.5rem',
-        background: copied ? '#059669' : '#E5E7EB',
-        color: copied ? 'white' : '#374151',
-        border: 'none', padding: '0.2rem 0.5rem', fontSize: '0.75rem',
-        cursor: 'pointer', fontFamily: 'Space Grotesk, sans-serif'
-      }}>{copied ? '\u2713 Kopiert' : 'Kopieren'}</button>
-    </div>
-  );
-}
+  <script type="text/babel">
+    const { useState, useEffect } = React;
 
-var codePlotlyExpress = `import plotly.express as px
+    // ─── CodeBlock Component ──────────────────────────────────────────────────
+    function CodeBlock({ code }) {
+      const [copied, setCopied] = React.useState(false);
+      const copy = () => {
+        navigator.clipboard.writeText(code).then(() => {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1500);
+        }).catch(() => {
+          const el = document.createElement('textarea');
+          el.value = code;
+          document.body.appendChild(el);
+          el.select();
+          document.execCommand('copy');
+          document.body.removeChild(el);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1500);
+        });
+      };
+      return (
+        <div style={{ position: 'relative', marginBottom: '1rem' }}>
+          <pre className="code-block">{code}</pre>
+          <button onClick={copy} style={{
+            position: 'absolute', top: '0.5rem', right: '0.5rem',
+            background: copied ? '#059669' : '#E5E7EB',
+            color: copied ? 'white' : '#374151',
+            border: 'none', borderRadius: '4px',
+            padding: '0.2rem 0.5rem', fontSize: '0.75rem',
+            cursor: 'pointer', fontFamily: 'Space Grotesk, sans-serif'
+          }}>
+            {copied ? '\u2713 Kopiert' : 'Kopieren'}
+          </button>
+        </div>
+      );
+    }
+
+    // ─── Code Strings ─────────────────────────────────────────────────────────
+    const CODE_PX_BAR = `import plotly.express as px
 import pandas as pd
 
-df = pd.read_csv('superstore.csv')
+df = pd.read_csv('superstore.csv', encoding='latin-1')
 
-# Balkendiagramm: Umsatz nach Kategorie
+# Umsatz nach Kategorie (Balkendiagramm)
 fig = px.bar(
     df.groupby('Category')['Sales'].sum().reset_index(),
     x='Category',
@@ -117,521 +171,553 @@ fig = px.bar(
     title='Umsatz nach Kategorie',
     color_discrete_sequence=['#2563EB']
 )
-fig.update_layout(plot_bgcolor='white', paper_bgcolor='white')
-fig.show()
+fig.update_layout(
+    plot_bgcolor='white',
+    paper_bgcolor='white',
+    font_family='Space Grotesk'
+)
+fig.show()`;
 
-# Liniendiagramm: Umsatz-Trend
+    const CODE_PX_LINE = `# Umsatz-Trend über Zeit (Linie)
 df['Order Date'] = pd.to_datetime(df['Order Date'])
-monthly = df.resample('ME', on='Order Date')['Sales'].sum().reset_index()
-fig2 = px.line(monthly, x='Order Date', y='Sales',
-               title='Monatlicher Umsatz')
+monthly = df.groupby(df['Order Date'].dt.to_period('M'))['Sales'].sum().reset_index()
+monthly['Order Date'] = monthly['Order Date'].astype(str)
 
-# Scatter: Umsatz vs. Gewinn
-fig3 = px.scatter(df, x='Sales', y='Profit',
-                  color='Category',
-                  hover_data=['Product Name'],
-                  title='Umsatz vs. Gewinn')`;
+fig2 = px.line(
+    monthly,
+    x='Order Date',
+    y='Sales',
+    title='Monatlicher Umsatz-Trend'
+)
+fig2.show()`;
 
-var codeArchitektur = `Browser                    Dash Server (Flask)
-  |                              |
-  |  HTTP Request (GET /)        |
-  |----------------------------->|
-  |                              |
-  |  HTML + React Bundle         |
-  |<-----------------------------|
-  |                              |
-  |  User interacts (Dropdown)   |
-  |----------------------------->|
-  |  Callback POST               |
-  |                              |---> Python-Funktion
-  |                              |     filtert Daten
-  |                              |     erstellt Plotly-Chart
-  |  Updated Plotly JSON         |
-  |<-----------------------------|
-  |  React rendert neuen Chart   |`;
+    const CODE_PX_SCATTER = `# Scatter: Umsatz vs. Gewinn
+fig3 = px.scatter(
+    df,
+    x='Sales',
+    y='Profit',
+    color='Category',
+    hover_data=['Product Name'],
+    title='Umsatz vs. Gewinn nach Kategorie'
+)
+fig3.show()`;
 
-var codeDashApp = `# app.py \u2013 Superstore Sales Dashboard
+    const CODE_DASH_APP = `# app.py – Vollständiges Dash-Dashboard
 import dash
 from dash import dcc, html, Input, Output
 import plotly.express as px
 import pandas as pd
 
 app = dash.Dash(__name__)
-
 df = pd.read_csv('superstore.csv', encoding='latin-1')
-df['Order Date'] = pd.to_datetime(df['Order Date'])
 
 app.layout = html.Div([
-    html.H1('Superstore Sales Dashboard',
-            style={'fontFamily': 'sans-serif', 'padding': '20px'}),
+    html.H1('Sales Dashboard', style={'fontFamily': 'Space Grotesk', 'color': '#1E3A8A'}),
 
-    html.Div([
-        html.Label('Region:'),
-        dcc.Dropdown(
-            id='region-filter',
-            options=[{'label': r, 'value': r}
-                     for r in df['Region'].unique()],
-            value=df['Region'].unique().tolist(),
-            multi=True
-        ),
-    ], style={'padding': '0 20px', 'maxWidth': '400px'}),
+    html.Label('Kategorie auswählen:'),
+    dcc.Dropdown(
+        id='category-filter',
+        options=[{'label': c, 'value': c} for c in df['Category'].unique()],
+        value=df['Category'].unique()[0],
+        clearable=False
+    ),
 
-    html.Div([
-        dcc.Graph(id='umsatz-trend'),
-        dcc.Graph(id='kategorie-bar'),
-    ], style={'display': 'grid', 'gridTemplateColumns': '1fr 1fr',
-              'gap': '20px', 'padding': '20px'}),
-])
+    dcc.Graph(id='subcategory-chart'),
+    dcc.Graph(id='profit-scatter')
+], style={'maxWidth': '1200px', 'margin': '0 auto', 'padding': '2rem'})
+
 
 @app.callback(
-    Output('umsatz-trend', 'figure'),
-    Output('kategorie-bar', 'figure'),
-    Input('region-filter', 'value')
+    Output('subcategory-chart', 'figure'),
+    Input('category-filter', 'value')
 )
-def update_charts(regions):
-    filtered = df[df['Region'].isin(regions)]
+def update_bar(category):
+    filtered = df[df['Category'] == category]
+    sales_by_sub = filtered.groupby('Sub-Category')['Sales'].sum().reset_index()
+    fig = px.bar(
+        sales_by_sub,
+        x='Sub-Category',
+        y='Sales',
+        title=f'Umsatz nach Sub-Kategorie: {category}',
+        color_discrete_sequence=['#2563EB']
+    )
+    return fig
 
-    # Trend
-    monthly = (filtered.resample('ME', on='Order Date')['Sales']
-               .sum().reset_index())
-    fig1 = px.line(monthly, x='Order Date', y='Sales',
-                   title='Umsatz-Trend')
 
-    # Kategorie
-    by_cat = (filtered.groupby('Category')['Sales']
-              .sum().reset_index())
-    fig2 = px.bar(by_cat, x='Category', y='Sales',
-                  title='Umsatz nach Kategorie',
-                  color_discrete_sequence=['#2563EB'])
-    return fig1, fig2
+@app.callback(
+    Output('profit-scatter', 'figure'),
+    Input('category-filter', 'value')
+)
+def update_scatter(category):
+    filtered = df[df['Category'] == category]
+    fig = px.scatter(
+        filtered,
+        x='Sales',
+        y='Profit',
+        hover_data=['Product Name'],
+        title=f'Umsatz vs. Gewinn: {category}',
+        color_discrete_sequence=['#0D9488']
+    )
+    return fig
+
 
 if __name__ == '__main__':
     app.run(debug=True)`;
 
-function App() {
-  var urlLang = new URLSearchParams(window.location.search).get('lang');
-  var [lang, setLang] = React.useState(function() { return localStorage.getItem('bi-lang') || urlLang || 'de'; });
-  var [activeSection, setActiveSection] = React.useState('ueberblick');
+    const CODE_INSTALL = `pip install dash plotly pandas
+python app.py
+# Öffne http://localhost:8050`;
 
-  var toggleLang = function(l) { setLang(l); localStorage.setItem('bi-lang', l); };
+    // ─── Translations ─────────────────────────────────────────────────────────
+    const translations = {
+      de: {
+        title: 'Dashboard-Design & Plotly Dash',
+        desc: 'In diesem Lab lernen Sie, wie Sie nach bewährten Design-Prinzipien professionelle Dashboards gestalten, interaktive Charts mit Plotly Express erstellen und vollständige Web-Dashboards mit Plotly Dash bauen.',
+        lernziele: [
+          'Dashboard-Design-Prinzipien anwenden',
+          'Plotly Express Charts erstellen',
+          'Plotly Dash App mit Layout und Callbacks bauen',
+          'Power BI vs. Plotly Dash architektonisch vergleichen',
+        ],
+        navContents: 'Inhalt',
+        nav: [
+          { href: '#design-prinzipien', label: 'Design-Prinzipien' },
+          { href: '#plotly-express',    label: 'Plotly Express' },
+          { href: '#plotly-dash',       label: 'Plotly Dash' },
+          { href: '#vergleich',         label: 'Power BI vs. Dash' },
+          { href: '#youtube',           label: 'Ressourcen' },
+        ],
+        backLabel: '\u2190 Übersicht',
 
-  React.useEffect(function() {
-    document.documentElement.setAttribute('data-lang', lang);
-  }, [lang]);
+        s1Title: 'Dashboard-Design',
+        s1Desc: 'Ein gutes Dashboard kommuniziert Erkenntnisse schnell und klar. Diese Prinzipien helfen dabei, visuelle Überladung zu vermeiden und den Fokus auf das Wesentliche zu legen.',
+        s1Principles: [
+          {
+            title: 'Data-Ink Ratio (Tufte)',
+            desc: 'Nur nötige visuelle Elemente verwenden. Jede Tinte muss Daten repräsentieren – kein Dekor, keine Verzierungen.',
+          },
+          {
+            title: '5-Second Rule',
+            desc: 'Die Kernaussage des Dashboards muss in 5 Sekunden erkennbar sein. Wenn Nutzer suchen müssen, scheitert das Design.',
+          },
+          {
+            title: 'Visual Hierarchy',
+            desc: 'Wichtigstes oben links, Details unten rechts. Nutzer lesen Dashboards wie Text – in Z-Mustern.',
+          },
+          {
+            title: 'Farbe sparsam einsetzen',
+            desc: 'Max. 3–4 Farben, mit semantischer Bedeutung (Rot = schlecht, Grün = gut). Farbe zur Hervorhebung, nicht zur Dekoration.',
+          },
+        ],
+        s1ChartTitle: 'Richtiger Chart-Typ',
+        s1ChartDesc: 'Die Wahl des falschen Chart-Typs kann Daten verzerren oder Aussagen unklar machen.',
+        s1ChartHeaders: ['Situation', 'Empfohlener Chart-Typ'],
+        s1ChartRows: [
+          ['Vergleich über Zeit', 'Linien- oder Balkendiagramm'],
+          ['Rangliste', 'Horizontales Balkendiagramm'],
+          ['Anteil/Komposition (≤ 4 Kategorien)', 'Gestapeltes Balken (NICHT Torte bei >4)'],
+          ['Korrelation', 'Streudiagramm (Scatter Plot)'],
+          ['Geografisch', 'Choropleth / Karte'],
+          ['KPI-Einzelwert', 'Card / Scorecard'],
+        ],
+        s1TipTitle: 'Wann KEIN Tortendiagramm?',
+        s1TipText: 'Bei mehr als 4 Kategorien oder wenn exakte Wertevergleiche wichtig sind. Das menschliche Auge vergleicht Winkel schlecht. Ein horizontales Balkendiagramm ist fast immer besser.',
 
-  React.useEffect(function() {
-    var sections = ['ueberblick', 'designprinzipien', 'plotly-express', 'dash-architektur', 'vergleich', 'ressourcen'];
-    var observer = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id);
-        }
-      });
-    }, { rootMargin: '-30% 0px -60% 0px' });
-    sections.forEach(function(id) {
-      var el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-    return function() { observer.disconnect(); };
-  }, []);
+        s2Title: 'Plotly Express',
+        s2Desc: 'Plotly Express ist eine High-Level Python-Bibliothek für interaktive Charts. Mit wenigen Zeilen Code entstehen publikationsreife Visualisierungen, die im Browser als interaktive HTML-Grafiken dargestellt werden.',
+        s2Code1Title: 'Balkendiagramm: Umsatz nach Kategorie',
+        s2Code2Title: 'Liniendiagramm: Umsatz-Trend über Zeit',
+        s2Code3Title: 'Scatter Plot: Umsatz vs. Gewinn',
 
-  var de = {
-    sidebarTitle: 'Lab 04',
-    nav: [
-      { id: 'ueberblick', label: '1. \u00dcberblick' },
-      { id: 'designprinzipien', label: '2. Design-Prinzipien' },
-      { id: 'plotly-express', label: '3. Plotly Express' },
-      { id: 'dash-architektur', label: '4. Dash Architektur' },
-      { id: 'vergleich', label: '5. Power BI vs. Dash' },
-      { id: 'ressourcen', label: '6. Ressourcen' },
-    ],
-    back: '\u2190 Zur\u00fcck zur \u00dcbersicht',
-    badge: 'Lab 04',
-    pageTitle: 'Dashboard-Design & Plotly Dash',
-    s1: {
-      heading: '\u00dcberblick',
-      lernzieleHeading: 'Lernziele',
-      goals: [
-        'Dashboard-Design-Prinzipien anwenden',
-        'Plotly Express Charts erstellen',
-        'Plotly Dash App mit Layout und Callbacks bauen',
-        'Power BI vs. Plotly Dash architektonisch vergleichen',
-      ],
-    },
-    s2: {
-      heading: 'Dashboard-Design-Prinzipien',
-      principlesHeading: 'Grundprinzipien',
-      principles: [
-        {
-          title: 'Data-Ink Ratio (Tufte)',
-          desc: 'Nur n\u00f6tige visuelle Elemente. Jede Tinte muss Daten repr\u00e4sentieren.',
-        },
-        {
-          title: '5-Second Rule',
-          desc: 'Die Kernaussage eines Dashboards muss in 5 Sekunden erkennbar sein.',
-        },
-        {
-          title: 'Visual Hierarchy',
-          desc: 'Wichtigstes oben links, Details unten rechts.',
-        },
-        {
-          title: 'Farbe sparsam',
-          desc: 'Max. 3\u20134 Farben, semantische Bedeutung (Rot = schlecht, Gr\u00fcn = gut).',
-        },
-      ],
-      tableHeading: 'Chart-Auswahl',
-      colSituation: 'Situation',
-      colChart: 'Empfohlener Chart-Typ',
-      chartRows: [
-        ['Vergleich \u00fcber Zeit', 'Linien- oder Balkendiagramm'],
-        ['Rangliste', 'Horizontales Balkendiagramm'],
-        ['Anteil/Komposition (max. 4 Kategorien)', 'Kreisdiagramm m\u00f6glich'],
-        ['Anteil/Komposition (mehr als 4 Kategorien)', 'Gestapeltes Balkendiagramm'],
-        ['Korrelation zweier Variablen', 'Streudiagramm (Scatter Plot)'],
-        ['Geografische Verteilung', 'Choropleth / Karte'],
-        ['Einzelner KPI-Wert', 'Card / Scorecard'],
-      ],
-      tipTitle: 'Wann KEIN Tortendiagramm?',
-      tipText: 'Wenn mehr als 4 Kategorien existieren oder exakte Wertvergleiche wichtig sind. Dann ist ein horizontales Balkendiagramm besser.',
-    },
-    s3: {
-      heading: 'Plotly Express',
-      intro: 'Plotly Express ist eine High-Level Python-Bibliothek f\u00fcr interaktive Charts.',
-      codeHeading: 'Beispiele mit dem Superstore-Datensatz',
-    },
-    s4: {
-      heading: 'Plotly Dash Architektur',
-      intro: 'Dash verbindet ein Flask-Backend mit einem automatisch generierten React-Frontend.',
-      conceptsHeading: 'Kernkonzepte',
-      concepts: [
-        { title: 'App', desc: 'Flask Backend + React Frontend (automatisch generiert)' },
-        { title: 'Layout', desc: 'Deklarativ (wie HTML, aber Python-Objekte)' },
-        { title: 'Callbacks', desc: 'Reaktivit\u00e4t (Input \u2192 Output, \u00e4hnlich wie Event-Listener)' },
-      ],
-      archHeading: 'Ablauf einer Nutzerinteraktion',
-      appHeading: 'Vollst\u00e4ndige Dash-App',
-    },
-    s5: {
-      heading: 'Power BI vs. Plotly Dash',
-      colAspect: 'Aspekt',
-      colPowerBI: 'Power BI',
-      colDash: 'Plotly Dash',
-      tableRows: [
-        ['Lernkurve', 'Niedrig (GUI)', 'Mittel (Python)'],
-        ['Flexibilit\u00e4t', 'Mittel', 'Sehr hoch'],
-        ['Deployment', 'Power BI Service (Cloud)', 'Eigener Server / Cloud'],
-        ['Kosten', 'Freemium + Abo (ca. 9 EUR/Monat)', 'Kostenlos (Open Source)'],
-        ['Datenhoheit', 'Microsoft Azure Cloud', 'Vollst\u00e4ndig selbst kontrolliert'],
-        ['Customization', 'Begrenzt auf eingebaute Visuals', 'Unbegrenzt (Python-\u00d6kosystem)'],
-        ['KI-Integration', 'Built-in Copilot', 'Manuell via Python-Bibliotheken'],
-        ['Ideal f\u00fcr', 'Schnelle Business Reports', 'Entwickler, komplexe Web-Apps'],
-      ],
-      conceptBoxText: 'Empfehlung: F\u00fcr interne Business Reports \u2192 Power BI. F\u00fcr \u00f6ffentliche Web-Dashboards oder sehr individuelle Anforderungen \u2192 Plotly Dash.',
-    },
-    s6: {
-      heading: 'YouTube-Ressourcen',
-      intro: 'Empfohlene Kan\u00e4le zur Vertiefung:',
-      resources: [
-        { title: '"Charming Data" \u2013 Plotly Dash Tutorials', channel: 'Charming Data', url: 'https://www.youtube.com/@CharmingData' },
-        { title: '"Plotly Express Full Tutorial" \u2013 Rob Mulla', channel: 'Rob Mulla', url: 'https://www.youtube.com/@RobMulla' },
-      ],
-    },
-    navBack: '\u2190 Lab 03: KPIs',
-    navNext: 'Weiter: Lab 05 \u2013 Fallstudie \u2192',
-  };
+        s3Title: 'Plotly Dash',
+        s3Desc: 'Plotly Dash ist ein Python-Framework zum Erstellen vollständiger Web-Dashboards. Es verbindet ein Flask-Backend mit einem automatisch generierten React-Frontend. Das Layout ist deklarativ, die Reaktivität wird durch Callbacks gesteuert.',
+        s3ArchTitle: 'Architektur-Konzepte',
+        s3Concepts: [
+          { title: 'App', desc: 'Flask-Backend + React-Frontend (automatisch generiert). Dash übernimmt die gesamte Infrastruktur.' },
+          { title: 'Layout', desc: 'Deklarativ wie HTML, aber als Python-Objekte. html.Div(), dcc.Graph(), dcc.Dropdown() usw.' },
+          { title: 'Callbacks', desc: 'Reaktivität durch @app.callback: Input → Python-Funktion → Output. Ähnlich wie Event-Listener.' },
+        ],
+        s3AppTitle: 'Vollständige Dash-App (app.py)',
+        s3InstallTitle: 'Installation & Start',
 
-  var en = {
-    sidebarTitle: 'Lab 04',
-    nav: [
-      { id: 'ueberblick', label: '1. Overview' },
-      { id: 'designprinzipien', label: '2. Design Principles' },
-      { id: 'plotly-express', label: '3. Plotly Express' },
-      { id: 'dash-architektur', label: '4. Dash Architecture' },
-      { id: 'vergleich', label: '5. Power BI vs. Dash' },
-      { id: 'ressourcen', label: '6. Resources' },
-    ],
-    back: '\u2190 Back to Overview',
-    badge: 'Lab 04',
-    pageTitle: 'Dashboard Design & Plotly Dash',
-    s1: {
-      heading: 'Overview',
-      lernzieleHeading: 'Learning Objectives',
-      goals: [
-        'Apply dashboard design principles',
-        'Create Plotly Express charts',
-        'Build a Plotly Dash app with layout and callbacks',
-        'Compare Power BI vs. Plotly Dash architecturally',
-      ],
-    },
-    s2: {
-      heading: 'Dashboard Design Principles',
-      principlesHeading: 'Core Principles',
-      principles: [
-        {
-          title: 'Data-Ink Ratio (Tufte)',
-          desc: 'Only necessary visual elements. Every drop of ink must represent data.',
-        },
-        {
-          title: '5-Second Rule',
-          desc: 'The key message of a dashboard must be recognizable within 5 seconds.',
-        },
-        {
-          title: 'Visual Hierarchy',
-          desc: 'Most important content top-left, details bottom-right.',
-        },
-        {
-          title: 'Use Color Sparingly',
-          desc: 'Max. 3\u20134 colors, with semantic meaning (red = bad, green = good).',
-        },
-      ],
-      tableHeading: 'Chart Selection Guide',
-      colSituation: 'Situation',
-      colChart: 'Recommended Chart Type',
-      chartRows: [
-        ['Comparison over time', 'Line or bar chart'],
-        ['Ranking', 'Horizontal bar chart'],
-        ['Part-to-whole (max. 4 categories)', 'Pie chart possible'],
-        ['Part-to-whole (more than 4 categories)', 'Stacked bar chart'],
-        ['Correlation between two variables', 'Scatter plot'],
-        ['Geographic distribution', 'Choropleth / Map'],
-        ['Single KPI value', 'Card / Scorecard'],
-      ],
-      tipTitle: 'When NOT to use a pie chart?',
-      tipText: 'When more than 4 categories exist or exact value comparisons matter. In that case, a horizontal bar chart is better.',
-    },
-    s3: {
-      heading: 'Plotly Express',
-      intro: 'Plotly Express is a high-level Python library for interactive charts.',
-      codeHeading: 'Examples with the Superstore Dataset',
-    },
-    s4: {
-      heading: 'Plotly Dash Architecture',
-      intro: 'Dash connects a Flask backend with an automatically generated React frontend.',
-      conceptsHeading: 'Core Concepts',
-      concepts: [
-        { title: 'App', desc: 'Flask Backend + React Frontend (automatically generated)' },
-        { title: 'Layout', desc: 'Declarative (like HTML, but Python objects)' },
-        { title: 'Callbacks', desc: 'Reactivity (Input \u2192 Output, similar to event listeners)' },
-      ],
-      archHeading: 'Flow of a User Interaction',
-      appHeading: 'Complete Dash App',
-    },
-    s5: {
-      heading: 'Power BI vs. Plotly Dash',
-      colAspect: 'Aspect',
-      colPowerBI: 'Power BI',
-      colDash: 'Plotly Dash',
-      tableRows: [
-        ['Learning Curve', 'Low (GUI)', 'Medium (Python)'],
-        ['Flexibility', 'Medium', 'Very high'],
-        ['Deployment', 'Power BI Service (Cloud)', 'Own server / cloud'],
-        ['Cost', 'Freemium + subscription (~9 EUR/month)', 'Free (Open Source)'],
-        ['Data Sovereignty', 'Microsoft Azure Cloud', 'Fully self-controlled'],
-        ['Customization', 'Limited to built-in visuals', 'Unlimited (Python ecosystem)'],
-        ['AI Integration', 'Built-in Copilot', 'Manual via Python libraries'],
-        ['Ideal for', 'Quick business reports', 'Developers, complex web apps'],
-      ],
-      conceptBoxText: 'Recommendation: For internal business reports \u2192 Power BI. For public web dashboards or highly individual requirements \u2192 Plotly Dash.',
-    },
-    s6: {
-      heading: 'YouTube Resources',
-      intro: 'Recommended channels for further study:',
-      resources: [
-        { title: '"Charming Data" \u2013 Plotly Dash Tutorials', channel: 'Charming Data', url: 'https://www.youtube.com/@CharmingData' },
-        { title: '"Plotly Express Full Tutorial" \u2013 Rob Mulla', channel: 'Rob Mulla', url: 'https://www.youtube.com/@RobMulla' },
-      ],
-    },
-    navBack: '\u2190 Lab 03: KPIs',
-    navNext: 'Next: Lab 05 \u2013 Case Study \u2192',
-  };
+        s4Title: 'Power BI vs. Plotly Dash',
+        s4Desc: 'Beide Tools eignen sich für Business Intelligence – aber für unterschiedliche Anwendungsfälle und Nutzerprofile.',
+        s4Headers: ['Aspekt', 'Power BI', 'Plotly Dash'],
+        s4Rows: [
+          ['Lernkurve', 'Niedrig (GUI)', 'Mittel (Python)'],
+          ['Flexibilität', 'Mittel', 'Sehr hoch'],
+          ['Deployment', 'Power BI Service (Cloud)', 'Eigener Server / Cloud'],
+          ['Kosten', 'Freemium + Abo ab ~9 €', 'Kostenlos (Open Source)'],
+          ['Datenhoheit', 'Microsoft Cloud', 'Selbst kontrolliert'],
+          ['Customization', 'Begrenzt', 'Unbegrenzt'],
+          ['KI-Integration', 'Built-in (Copilot)', 'Manuell (Python-Ökosystem)'],
+          ['Ideal für', 'Schnelle Business Reports', 'Entwickler, komplexe Apps'],
+        ],
+        s4RecommTitle: 'Empfehlung',
+        s4RecommText: 'Für interne Business Reports ohne Programmieraufwand → Power BI. Für öffentliche Web-Dashboards, individuelle Anforderungen oder volle Datenkontrolle → Plotly Dash.',
 
-  var t = lang === 'en' ? en : de;
+        s5Title: 'YouTube-Ressourcen',
+        s5Desc: 'Empfohlene Kanäle zur Vertiefung von Plotly und Dash:',
+        s5Resources: [
+          {
+            title: '"Charming Data" – Plotly Dash Tutorials',
+            url: 'https://www.youtube.com/@CharmingData',
+            desc: 'Der beste YouTube-Kanal für Plotly Dash. Praxisnahe Tutorials für alle Erfahrungsstufen.',
+          },
+          {
+            title: '"Plotly Express Full Tutorial" – Rob Mulla',
+            url: 'https://www.youtube.com/@RobMulla',
+            desc: 'Umfangreiche Tutorials zu Plotly Express und Python Data Visualization.',
+          },
+        ],
 
-  var scrollTo = function(id) {
-    var el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+        navPrev: '\u2190 Lab 03: KPIs',
+        navNext: 'Lab 05: Fallstudie \u2192',
+      },
 
-  return (
-    <div data-lang={lang}>
-      <header className="header">
-        <div className="header-left">
-          <a href="index.html" className="header-logo">THWS BI Lab</a>
-          <a href="index.html" className="header-back">{t.back}</a>
-        </div>
-        <div style={{ display: 'flex', gap: '0.35rem' }}>
-          <button className={'lang-btn' + (lang === 'de' ? ' active' : '')} onClick={function() { toggleLang('de'); }}>DE</button>
-          <button className={'lang-btn' + (lang === 'en' ? ' active' : '')} onClick={function() { toggleLang('en'); }}>EN</button>
-        </div>
-      </header>
+      en: {
+        title: 'Dashboard Design & Plotly Dash',
+        desc: 'In this lab you will learn how to design professional dashboards following proven design principles, create interactive charts with Plotly Express, and build complete web dashboards with Plotly Dash.',
+        lernziele: [
+          'Apply dashboard design principles',
+          'Create Plotly Express charts',
+          'Build a Plotly Dash app with layout and callbacks',
+          'Compare Power BI vs. Plotly Dash architecturally',
+        ],
+        navContents: 'Contents',
+        nav: [
+          { href: '#design-prinzipien', label: 'Design Principles' },
+          { href: '#plotly-express',    label: 'Plotly Express' },
+          { href: '#plotly-dash',       label: 'Plotly Dash' },
+          { href: '#vergleich',         label: 'Power BI vs. Dash' },
+          { href: '#youtube',           label: 'Resources' },
+        ],
+        backLabel: '\u2190 Overview',
 
-      <nav className="sidebar">
-        <div className="sidebar-title">{t.sidebarTitle}</div>
-        {t.nav.map(function(item) {
-          return (
-            <a
-              key={item.id}
-              href={'#' + item.id}
-              className={'sidebar-link' + (activeSection === item.id ? ' active' : '')}
-              onClick={function(e) { e.preventDefault(); scrollTo(item.id); }}
-            >{item.label}</a>
-          );
-        })}
-      </nav>
+        s1Title: 'Dashboard Design',
+        s1Desc: 'A good dashboard communicates insights quickly and clearly. These principles help avoid visual overload and keep focus on what matters.',
+        s1Principles: [
+          {
+            title: 'Data-Ink Ratio (Tufte)',
+            desc: 'Use only necessary visual elements. Every drop of ink must represent data – no decoration, no ornaments.',
+          },
+          {
+            title: '5-Second Rule',
+            desc: 'The key message of the dashboard must be recognizable within 5 seconds. If users need to search, the design has failed.',
+          },
+          {
+            title: 'Visual Hierarchy',
+            desc: 'Most important content top-left, details bottom-right. Users read dashboards like text – in Z-patterns.',
+          },
+          {
+            title: 'Use Color Sparingly',
+            desc: 'Max. 3–4 colors, with semantic meaning (red = bad, green = good). Color for emphasis, not decoration.',
+          },
+        ],
+        s1ChartTitle: 'Choosing the Right Chart Type',
+        s1ChartDesc: 'Choosing the wrong chart type can distort data or make insights unclear.',
+        s1ChartHeaders: ['Situation', 'Recommended Chart Type'],
+        s1ChartRows: [
+          ['Comparison over time', 'Line or bar chart'],
+          ['Ranking', 'Horizontal bar chart'],
+          ['Part-to-whole (≤ 4 categories)', 'Stacked bar (NOT pie for >4)'],
+          ['Correlation', 'Scatter plot'],
+          ['Geographic distribution', 'Choropleth / Map'],
+          ['Single KPI value', 'Card / Scorecard'],
+        ],
+        s1TipTitle: 'When NOT to use a pie chart?',
+        s1TipText: 'When more than 4 categories exist or when exact value comparisons matter. The human eye is poor at comparing angles. A horizontal bar chart is almost always better.',
 
-      <main className="main-content">
+        s2Title: 'Plotly Express',
+        s2Desc: 'Plotly Express is a high-level Python library for interactive charts. With just a few lines of code you can create publication-ready visualizations displayed as interactive HTML graphics in the browser.',
+        s2Code1Title: 'Bar Chart: Revenue by Category',
+        s2Code2Title: 'Line Chart: Revenue Trend over Time',
+        s2Code3Title: 'Scatter Plot: Revenue vs. Profit',
 
-        <section id="ueberblick" className="section-block">
-          <span className="bauhaus-badge">{t.badge}</span>
-          <h2 style={{ marginTop: '0.75rem', fontSize: '2rem' }}>{t.pageTitle}</h2>
-          <div className="bauhaus-accent-line"></div>
-          <div className="lernziele-box">
-            <h3 className="lernziele-heading">{t.s1.lernzieleHeading}</h3>
-            <ol style={{ margin: 0, paddingLeft: '1.25rem' }}>
-              {t.s1.goals.map(function(g, i) {
-                return <li key={i} style={{ marginBottom: '0.4rem', lineHeight: '1.6' }}>{g}</li>;
-              })}
-            </ol>
-          </div>
-        </section>
+        s3Title: 'Plotly Dash',
+        s3Desc: 'Plotly Dash is a Python framework for building complete web dashboards. It connects a Flask backend with an automatically generated React frontend. The layout is declarative and reactivity is controlled through callbacks.',
+        s3ArchTitle: 'Architecture Concepts',
+        s3Concepts: [
+          { title: 'App', desc: 'Flask backend + React frontend (automatically generated). Dash handles the entire infrastructure.' },
+          { title: 'Layout', desc: 'Declarative like HTML, but as Python objects. html.Div(), dcc.Graph(), dcc.Dropdown() etc.' },
+          { title: 'Callbacks', desc: 'Reactivity via @app.callback: Input → Python function → Output. Similar to event listeners.' },
+        ],
+        s3AppTitle: 'Complete Dash App (app.py)',
+        s3InstallTitle: 'Installation & Start',
 
-        <section id="designprinzipien" className="section-block">
-          <h2>{t.s2.heading}</h2>
-          <div className="bauhaus-accent-line"></div>
-          <h3>{t.s2.principlesHeading}</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', margin: '1.25rem 0' }}>
-            {t.s2.principles.map(function(p, i) {
-              return (
-                <div key={i} className="concept-box">
-                  <h4 style={{ marginTop: 0 }}>{p.title}</h4>
-                  <p style={{ margin: 0, fontSize: '0.9rem' }}>{p.desc}</p>
-                </div>
-              );
-            })}
+        s4Title: 'Power BI vs. Plotly Dash',
+        s4Desc: 'Both tools are suitable for Business Intelligence – but for different use cases and user profiles.',
+        s4Headers: ['Aspect', 'Power BI', 'Plotly Dash'],
+        s4Rows: [
+          ['Learning Curve', 'Low (GUI)', 'Medium (Python)'],
+          ['Flexibility', 'Medium', 'Very high'],
+          ['Deployment', 'Power BI Service (Cloud)', 'Own server / cloud'],
+          ['Cost', 'Freemium + subscription from ~€9', 'Free (Open Source)'],
+          ['Data Sovereignty', 'Microsoft Cloud', 'Self-controlled'],
+          ['Customization', 'Limited', 'Unlimited'],
+          ['AI Integration', 'Built-in (Copilot)', 'Manual (Python ecosystem)'],
+          ['Ideal for', 'Quick business reports', 'Developers, complex apps'],
+        ],
+        s4RecommTitle: 'Recommendation',
+        s4RecommText: 'For internal business reports without programming effort → Power BI. For public web dashboards, custom requirements or full data control → Plotly Dash.',
+
+        s5Title: 'YouTube Resources',
+        s5Desc: 'Recommended channels for deepening your knowledge of Plotly and Dash:',
+        s5Resources: [
+          {
+            title: '"Charming Data" – Plotly Dash Tutorials',
+            url: 'https://www.youtube.com/@CharmingData',
+            desc: 'The best YouTube channel for Plotly Dash. Practical tutorials for all experience levels.',
+          },
+          {
+            title: '"Plotly Express Full Tutorial" – Rob Mulla',
+            url: 'https://www.youtube.com/@RobMulla',
+            desc: 'Extensive tutorials on Plotly Express and Python data visualization.',
+          },
+        ],
+
+        navPrev: '\u2190 Lab 03: KPIs',
+        navNext: 'Lab 05: Case Study \u2192',
+      },
+    };
+
+    // ─── App Component ────────────────────────────────────────────────────────
+    function App() {
+      const urlLang = new URLSearchParams(window.location.search).get('lang');
+      const [lang, setLang] = useState(() => localStorage.getItem('bi-lang') || urlLang || 'de');
+      const [activeSection, setActiveSection] = useState('design-prinzipien');
+
+      const setLangAndStore = (l) => {
+        setLang(l);
+        localStorage.setItem('bi-lang', l);
+      };
+
+      useEffect(() => {
+        const sections = ['design-prinzipien', 'plotly-express', 'plotly-dash', 'vergleich', 'youtube'];
+        const handler = () => {
+          for (let i = sections.length - 1; i >= 0; i--) {
+            const el = document.getElementById(sections[i]);
+            if (el && el.getBoundingClientRect().top <= 100) {
+              setActiveSection(sections[i]);
+              return;
+            }
+          }
+          setActiveSection('design-prinzipien');
+        };
+        window.addEventListener('scroll', handler, { passive: true });
+        return () => window.removeEventListener('scroll', handler);
+      }, []);
+
+      const tx = translations[lang];
+
+      return (
+        <div data-lang={lang}>
+
+          {/* Fixed Header */}
+          <header className="header">
+            <div className="header-left">
+              <a href="index.html" className="header-logo">{'BI Lab'}</a>
+              <a href={'index.html' + (lang === 'en' ? '?lang=en' : '')} className="header-back">{tx.backLabel}</a>
+            </div>
+            <div style={{ display: 'flex', gap: '0.35rem' }}>
+              <button className={'lang-btn' + (lang === 'de' ? ' active' : '')} onClick={() => setLangAndStore('de')}>{'DE'}</button>
+              <button className={'lang-btn' + (lang === 'en' ? ' active' : '')} onClick={() => setLangAndStore('en')}>{'EN'}</button>
+            </div>
+          </header>
+
+          {/* Sidebar */}
+          <nav className="sidebar">
+            <div className="sidebar-title">{tx.navContents}</div>
+            {tx.nav.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className={'sidebar-link' + (activeSection === item.href.slice(1) ? ' active' : '')}
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+
+          {/* Lab Header */}
+          <div className="lab-header">
+            <div className="lab-num">{'04'}</div>
+            <h1 className="lab-title-h1">{tx.title}</h1>
+            <p className="lab-desc-intro">{tx.desc}</p>
+            <div className="lernziele-chips">
+              {tx.lernziele.map((lz, i) => (
+                <span key={i} className="lernziel-chip">{lz}</span>
+              ))}
+            </div>
           </div>
 
-          <h3 style={{ marginTop: '2rem' }}>{t.s2.tableHeading}</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>{t.s2.colSituation}</th>
-                <th>{t.s2.colChart}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {t.s2.chartRows.map(function(row, i) {
-                return (
-                  <tr key={i}>
-                    <td>{row[0]}</td>
-                    <td>{row[1]}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          {/* Main Content */}
+          <main className="main-content">
 
-          <div className="tip-box">
-            <strong>{t.s2.tipTitle}</strong>
-            <p style={{ margin: '0.4rem 0 0', fontSize: '0.9rem' }}>{t.s2.tipText}</p>
-          </div>
-        </section>
+            {/* ── Section 1: Dashboard-Design ── */}
+            <section id="design-prinzipien" className="section-block">
+              <h2>{tx.s1Title}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <p>{tx.s1Desc}</p>
 
-        <section id="plotly-express" className="section-block">
-          <h2>{t.s3.heading}</h2>
-          <div className="bauhaus-accent-line"></div>
-          <p>{t.s3.intro}</p>
-          <h3>{t.s3.codeHeading}</h3>
-          <CodeBlock code={codePlotlyExpress} />
-        </section>
-
-        <section id="dash-architektur" className="section-block">
-          <h2>{t.s4.heading}</h2>
-          <div className="bauhaus-accent-line"></div>
-          <p>{t.s4.intro}</p>
-
-          <h3>{t.s4.conceptsHeading}</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', margin: '1rem 0 1.5rem' }}>
-            {t.s4.concepts.map(function(c, i) {
-              return (
-                <div key={i} className="info-box">
-                  <h4 style={{ marginTop: 0 }}>{c.title}</h4>
-                  <p style={{ margin: 0, fontSize: '0.9rem' }}>{c.desc}</p>
-                </div>
-              );
-            })}
-          </div>
-
-          <h3>{t.s4.archHeading}</h3>
-          <CodeBlock code={codeArchitektur} />
-
-          <h3 style={{ marginTop: '2rem' }}>{t.s4.appHeading}</h3>
-          <CodeBlock code={codeDashApp} />
-        </section>
-
-        <section id="vergleich" className="section-block">
-          <h2>{t.s5.heading}</h2>
-          <div className="bauhaus-accent-line"></div>
-          <table>
-            <thead>
-              <tr>
-                <th>{t.s5.colAspect}</th>
-                <th>{t.s5.colPowerBI}</th>
-                <th>{t.s5.colDash}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {t.s5.tableRows.map(function(row, i) {
-                return (
-                  <tr key={i}>
-                    <td><strong>{row[0]}</strong></td>
-                    <td>{row[1]}</td>
-                    <td>{row[2]}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-
-          <div className="concept-box">
-            <p style={{ margin: 0 }}>{t.s5.conceptBoxText}</p>
-          </div>
-        </section>
-
-        <section id="ressourcen" className="section-block">
-          <h2>{t.s6.heading}</h2>
-          <div className="bauhaus-accent-line"></div>
-          <p>{t.s6.intro}</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {t.s6.resources.map(function(r, i) {
-              return (
-                <div key={i} className="tip-box" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  <div>
-                    <strong style={{ fontSize: '0.95rem' }}>{r.title}</strong>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1rem', margin: '1.5rem 0' }}>
+                {tx.s1Principles.map((p, i) => (
+                  <div key={i} className="bauhaus-card">
+                    <div style={{
+                      display: 'inline-block', background: '#1E3A8A', color: 'white',
+                      fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700,
+                      fontSize: '0.72rem', letterSpacing: '0.08em', textTransform: 'uppercase',
+                      padding: '0.2rem 0.6rem', borderRadius: '3px', marginBottom: '0.75rem'
+                    }}>
+                      {'0' + (i + 1)}
+                    </div>
+                    <h4 style={{ color: '#1E3A8A', marginTop: 0 }}>{p.title}</h4>
+                    <p style={{ margin: 0, fontSize: '0.875rem', color: '#374151', lineHeight: 1.6 }}>{p.desc}</p>
                   </div>
-                  <a href={r.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.85rem', color: '#2563EB', fontWeight: 600, textDecoration: 'none' }}>{r.url.replace('https://', '')}</a>
-                </div>
-              );
-            })}
-          </div>
-        </section>
+                ))}
+              </div>
 
-        <div className="nav-bottom">
-          <a href="lab-03-kpis.html" className="nav-btn">{t.navBack}</a>
-          <a href="lab-05-fallstudie.html" className="nav-btn primary">{t.navNext}</a>
+              <h3 style={{ marginTop: '2rem' }}>{tx.s1ChartTitle}</h3>
+              <p style={{ color: '#4B5563' }}>{tx.s1ChartDesc}</p>
+              <table>
+                <thead>
+                  <tr>
+                    {tx.s1ChartHeaders.map((h, i) => <th key={i}>{h}</th>)}
+                  </tr>
+                </thead>
+                <tbody>
+                  {tx.s1ChartRows.map((row, i) => (
+                    <tr key={i}>
+                      <td style={{ fontWeight: 600, color: '#374151' }}>{row[0]}</td>
+                      <td>{row[1]}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              <div className="tip-box" style={{ marginTop: '1.5rem' }}>
+                <strong style={{ color: '#1E3A8A' }}>{tx.s1TipTitle}</strong>
+                <p style={{ margin: '0.4rem 0 0', fontSize: '0.9rem', color: '#1e40af' }}>{tx.s1TipText}</p>
+              </div>
+            </section>
+
+            {/* ── Section 2: Plotly Express ── */}
+            <section id="plotly-express" className="section-block">
+              <h2>{tx.s2Title}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <p>{tx.s2Desc}</p>
+
+              <h3 style={{ marginTop: '1.5rem' }}>{tx.s2Code1Title}</h3>
+              <CodeBlock code={CODE_PX_BAR} />
+
+              <h3 style={{ marginTop: '1.5rem' }}>{tx.s2Code2Title}</h3>
+              <CodeBlock code={CODE_PX_LINE} />
+
+              <h3 style={{ marginTop: '1.5rem' }}>{tx.s2Code3Title}</h3>
+              <CodeBlock code={CODE_PX_SCATTER} />
+            </section>
+
+            {/* ── Section 3: Plotly Dash ── */}
+            <section id="plotly-dash" className="section-block">
+              <h2>{tx.s3Title}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <p>{tx.s3Desc}</p>
+
+              <h3 style={{ marginTop: '1.5rem' }}>{tx.s3ArchTitle}</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem', margin: '1rem 0 2rem' }}>
+                {tx.s3Concepts.map((c, i) => (
+                  <div key={i} className="info-box" style={{ margin: 0 }}>
+                    <h4 style={{ marginTop: 0, color: '#1E3A8A' }}>{c.title}</h4>
+                    <p style={{ margin: 0, fontSize: '0.875rem', color: '#374151', lineHeight: 1.6 }}>{c.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <h3 style={{ marginTop: '2rem' }}>{tx.s3AppTitle}</h3>
+              <CodeBlock code={CODE_DASH_APP} />
+
+              <h3 style={{ marginTop: '1.5rem' }}>{tx.s3InstallTitle}</h3>
+              <div className="install-box">
+                <p style={{ margin: '0 0 0.5rem', fontWeight: 700, color: '#065F46', fontSize: '0.85rem', fontFamily: "'Space Grotesk', sans-serif" }}>
+                  {'Terminal'}
+                </p>
+                <CodeBlock code={CODE_INSTALL} />
+              </div>
+            </section>
+
+            {/* ── Section 4: Vergleich ── */}
+            <section id="vergleich" className="section-block">
+              <h2>{tx.s4Title}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <p>{tx.s4Desc}</p>
+
+              <table>
+                <thead>
+                  <tr>
+                    {tx.s4Headers.map((h, i) => <th key={i}>{h}</th>)}
+                  </tr>
+                </thead>
+                <tbody>
+                  {tx.s4Rows.map((row, i) => (
+                    <tr key={i}>
+                      <td style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, color: '#1E3A8A' }}>{row[0]}</td>
+                      <td>{row[1]}</td>
+                      <td>{row[2]}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              <div className="concept-box" style={{ marginTop: '1.5rem' }}>
+                <h4 style={{ marginTop: 0, color: '#1E3A8A' }}>{tx.s4RecommTitle}</h4>
+                <p style={{ margin: 0, fontSize: '0.9rem' }}>{tx.s4RecommText}</p>
+              </div>
+            </section>
+
+            {/* ── Section 5: YouTube-Ressourcen ── */}
+            <section id="youtube" className="section-block">
+              <h2>{tx.s5Title}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <p>{tx.s5Desc}</p>
+
+              <div className="youtube-box">
+                <h3>{'YouTube'}</h3>
+                {tx.s5Resources.map((res, i) => (
+                  <div key={i} style={{
+                    marginBottom: i < tx.s5Resources.length - 1 ? '1.25rem' : 0,
+                    paddingBottom: i < tx.s5Resources.length - 1 ? '1.25rem' : 0,
+                    borderBottom: i < tx.s5Resources.length - 1 ? '1px solid #FED7AA' : 'none'
+                  }}>
+                    <a href={res.url} target="_blank" rel="noopener noreferrer" className="youtube-link">{res.title}</a>
+                    <p style={{ margin: '0.25rem 0 0', fontSize: '0.875rem', color: '#78350F' }}>{res.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* ── Nav Bottom ── */}
+            <div className="nav-bottom">
+              <a href={'lab-03-kpis.html' + (lang === 'en' ? '?lang=en' : '')} className="nav-btn">
+                {tx.navPrev}
+              </a>
+              <a href={'lab-05-fallstudie.html' + (lang === 'en' ? '?lang=en' : '')} className="nav-btn primary">
+                {tx.navNext}
+              </a>
+            </div>
+
+          </main>
+
+          {/* Footer */}
+          <footer className="footer">
+            {'THWS Business School \u00B7 BI Lab \u00B7 Prof. Dr. Robert Butscher \u00B7 2026'}
+          </footer>
+
         </div>
-      </main>
+      );
+    }
 
-      <footer className="footer">
-        <p className="footer-text">{'THWS Business School \u2013 Business Intelligence Lab \u2013 Lab 04: Dashboard-Design & Plotly Dash'}</p>
-      </footer>
-    </div>
-  );
-}
-
-var root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
-</script>
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
 </body>
 </html>
