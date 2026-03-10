@@ -174,7 +174,7 @@ fig = px.bar(
 fig.update_layout(
     plot_bgcolor='white',
     paper_bgcolor='white',
-    font_family='Space Grotesk'
+    font_family='Space Grotesk'  # Font muss via Google Fonts geladen sein; lokal ggf. weglassen
 )
 fig.show()`;
 
@@ -209,6 +209,7 @@ import plotly.express as px
 import pandas as pd
 
 app = dash.Dash(__name__)
+server = app.server  # Nötig für gunicorn app:server
 df = pd.read_csv('superstore.csv', encoding='latin-1')
 
 app.layout = html.Div([
@@ -326,7 +327,7 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
         s1ChartRows: [
           ['Vergleich über Zeit', 'Linien- oder Balkendiagramm'],
           ['Rangliste', 'Horizontales Balkendiagramm'],
-          ['Anteil/Komposition (≤ 4 Kategorien)', 'Gestapeltes Balken (NICHT Torte bei >4)'],
+          ['Anteil/Komposition (≤ 4 Kategorien)', 'Gestapeltes Balken'],
           ['Korrelation', 'Streudiagramm (Scatter Plot)'],
           ['Geografisch', 'Choropleth / Karte'],
           ['KPI-Einzelwert', 'Card / Scorecard'],
@@ -442,7 +443,7 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
         s1ChartRows: [
           ['Comparison over time', 'Line or bar chart'],
           ['Ranking', 'Horizontal bar chart'],
-          ['Part-to-whole (≤ 4 categories)', 'Stacked bar (NOT pie for >4)'],
+          ['Part-to-whole (≤ 4 categories)', 'Stacked bar'],
           ['Correlation', 'Scatter plot'],
           ['Geographic distribution', 'Choropleth / Map'],
           ['Single KPI value', 'Card / Scorecard'],
@@ -675,10 +676,6 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
                   {'Terminal'}
                 </p>
                 <CodeBlock code={CODE_INSTALL} />
-              </div>
-
-              <div className="info-box" style={{ marginTop: '1rem' }}>
-                <strong>{'Google Colab:'}</strong>{' '}{tx.s3ColabNote}
               </div>
 
               <h3 style={{ marginTop: '2.5rem' }}>{tx.s3DeployTitle}</h3>

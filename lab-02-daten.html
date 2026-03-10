@@ -105,6 +105,17 @@
     /* Source category tags */
     .source-tag { display: inline-block; background: rgba(30,58,138,0.1); color: #1E3A8A; border: 1px solid rgba(30,58,138,0.25); border-radius: 4px; padding: 0.15rem 0.5rem; font-size: 0.75rem; font-weight: 600; font-family: 'Space Grotesk', sans-serif; margin: 0.15rem; }
 
+    /* Quiz */
+    .quiz-option { display: block; width: 100%; text-align: left; padding: 0.75rem 1rem; margin: 0.4rem 0; border: 2px solid #e5e7eb; border-radius: 6px; background: white; cursor: pointer; font-size: 0.95rem; transition: border-color 0.15s, background 0.15s; }
+    .quiz-option:hover:not(:disabled) { border-color: #1E3A8A; background: rgba(30,58,138,0.04); }
+    .quiz-option.correct { border-color: #22c55e; background: #f0fdf4; color: #166534; font-weight: 600; }
+    .quiz-option.wrong { border-color: #ef4444; background: #fef2f2; color: #991b1b; }
+    .quiz-option:disabled { cursor: default; }
+    .quiz-question-block { margin-bottom: 2rem; padding: 1.5rem; border: 1px solid #e5e7eb; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .quiz-question-block h4 { margin: 0 0 1rem; font-size: 1rem; line-height: 1.5; color: #1A1A1A; }
+    .quiz-explanation { margin-top: 0.75rem; padding: 0.75rem 1rem; background: #f0fdf4; border-left: 3px solid #22c55e; font-size: 0.88rem; color: #166534; border-radius: 0 6px 6px 0; }
+    .quiz-explanation.wrong-exp { background: #fef2f2; border-left-color: #ef4444; color: #991b1b; }
+
     /* Responsive */
     @media (max-width: 768px) {
       .sidebar { display: none; }
@@ -158,6 +169,33 @@
       );
     }
 
+    // ─── QuizQuestion Component ───────────────────────────────────────────────
+    function QuizQuestion({ question, options, correctIndex, explanation }) {
+      const [selected, setSelected] = React.useState(null);
+      return (
+        <div className="quiz-question-block">
+          <h4>{question}</h4>
+          {options.map((opt, i) => {
+            let cls = 'quiz-option';
+            if (selected !== null) {
+              if (i === correctIndex) cls += ' correct';
+              else if (i === selected) cls += ' wrong';
+            }
+            return (
+              <button key={i} className={cls} disabled={selected !== null} onClick={() => setSelected(i)}>
+                {opt}
+              </button>
+            );
+          })}
+          {selected !== null && (
+            <div className={'quiz-explanation' + (selected !== correctIndex ? ' wrong-exp' : '')}>
+              {explanation}
+            </div>
+          )}
+        </div>
+      );
+    }
+
     // ─── Translations ─────────────────────────────────────────────────────────
     const translations = {
       de: {
@@ -175,6 +213,7 @@
           { href: '#modellierung',  label: 'Datenmodellierung' },
           { href: '#qualitaet',     label: 'Datenqualit\u00E4t' },
           { href: '#youtube',       label: 'Ressourcen' },
+          { href: '#quiz',          label: 'Quiz' },
         ],
         backLabel: '\u2190 \u00DCbersicht',
 
@@ -191,13 +230,13 @@
           {
             label: 'Semi-strukturiert',
             color: '#2563EB',
-            examples: ['JSON', 'XML', 'REST-APIs', 'GraphQL'],
+            examples: ['JSON', 'XML', 'REST-APIs', 'GraphQL (API-Abfrageparadigma, Antwort: JSON)'],
             desc: 'Flexibles Schema, hierarchische oder verschachtelte Strukturen.',
           },
           {
             label: 'Cloud-Quellen',
             color: '#3B82F6',
-            examples: ['Google Sheets', 'Azure Blob Storage', 'SharePoint', 'Snowflake'],
+            examples: ['Google Sheets', 'Azure Blob Storage', 'SharePoint', 'Snowflake (Cloud Data Warehouse)'],
             desc: 'Online-Dienste mit API-Zugriff oder nativer Konnektorunterst\u00FCtzung.',
           },
         ],
@@ -205,7 +244,7 @@
         s1PowerBIText: 'In Power BI \u00F6ffnet der Dialog \u201EDaten abrufen\u201C (Home \u2192 Daten abrufen) eine Quellen-Auswahl mit \u00FCber 100 Konnektoren. Nach der Verbindung \u00F6ffnet sich der Power Query Editor zur Vorschau und Transformation.',
         s1PythonTitle: 'Daten laden in Python',
         s1PythonDesc: 'Mit pandas und der requests-Bibliothek k\u00F6nnen alle g\u00E4ngigen Datenquellen eingelesen werden:',
-        s1CodePython: '# Python: Daten laden\nimport pandas as pd\nimport requests\n\n# CSV laden\ndf = pd.read_csv(\'daten.csv\')\n\n# Excel laden\ndf_excel = pd.read_excel(\'bericht.xlsx\', sheet_name=\'Umsatz\')\n\n# REST API laden\nresponse = requests.get(\'https://api.example.com/sales\')\ndf_api = pd.json_normalize(response.json()[\'data\'])\n\nprint(df.head())\nprint(df.shape)   # (Zeilen, Spalten)',
+        s1CodePython: '# Python: Daten laden\nimport pandas as pd\nimport requests\n\n# CSV laden\ndf = pd.read_csv(\'daten.csv\')\n\n# Excel laden\ndf_excel = pd.read_excel(\'bericht.xlsx\', sheet_name=\'Umsatz\')\n\n# REST API laden\nresponse = requests.get(\'https://api.example.com/sales\')\ndf_api = pd.json_normalize(response.json()[\'data\'])  # Key je nach API verschieden \u2013 z.B. [\'results\'], [\'items\']\n\nprint(df.head())\nprint(df.shape)   # (Zeilen, Spalten)',
 
         s2Title: 'Datenmodellierung',
         s2Desc: 'Ein gutes Datenmodell ist entscheidend f\u00FCr die Performance und Verst\u00E4ndlichkeit eines BI-Systems. Das Star Schema ist das verbreitetste Modell im Data Warehousing.',
@@ -263,6 +302,44 @@
           },
         ],
 
+        s5Title: 'Quiz',
+        s5Desc: 'Testen Sie Ihr Wissen aus Lab 02.',
+        s5Questions: [
+          {
+            q: 'Was ist der Hauptunterschied zwischen Star Schema und Snowflake Schema?',
+            opts: [
+              'Star Schema hat mehrere Faktentabellen, Snowflake nur eine',
+              'Im Star Schema sind Dimensionen denormalisiert (flach), im Snowflake normalisiert (mehrere Tabellen)',
+              'Snowflake Schema wird nur in der Cloud verwendet',
+              'Star Schema ben\u00f6tigt mehr Speicher als Snowflake Schema',
+            ],
+            correct: 1,
+            exp: 'Im Star Schema liegen die Dimensionen denormalisiert (flach) vor \u2013 einfacher und schneller. Im Snowflake Schema sind Dimensionen in mehrere Tabellen normalisiert \u2013 spart Speicher, aber erfordert mehr JOINs.',
+          },
+          {
+            q: 'Welche Methode in pandas entfernt doppelte Zeilen aus einem DataFrame?',
+            opts: [
+              'df.remove_duplicates()',
+              'df.drop_duplicates()',
+              'df.deduplicate()',
+              'df.unique()',
+            ],
+            correct: 1,
+            exp: 'df.drop_duplicates() entfernt doppelte Zeilen aus einem pandas DataFrame. Mit subset=[] k\u00f6nnen spezifische Spalten f\u00fcr den Vergleich angegeben werden.',
+          },
+          {
+            q: 'Was ist GraphQL?',
+            opts: [
+              'Ein Dateiformat wie JSON oder XML',
+              'Eine Datenbanksprache wie SQL',
+              'Eine API-Abfragesprache \u2013 die Antwort ist JSON',
+              'Ein Cloud-Speicherdienst',
+            ],
+            correct: 2,
+            exp: 'GraphQL ist eine API-Abfragesprache (kein Datenformat). Die Antworten einer GraphQL-API werden als JSON zur\u00fcckgegeben.',
+          },
+        ],
+
         navPrev: '\u2190 Lab 01: Grundlagen',
         navNext: 'Lab 03: KPIs \u2192',
       },
@@ -282,6 +359,7 @@
           { href: '#modellierung',  label: 'Data Modelling' },
           { href: '#qualitaet',     label: 'Data Quality' },
           { href: '#youtube',       label: 'Resources' },
+          { href: '#quiz',          label: 'Quiz' },
         ],
         backLabel: '\u2190 Overview',
 
@@ -298,13 +376,13 @@
           {
             label: 'Semi-structured',
             color: '#2563EB',
-            examples: ['JSON', 'XML', 'REST APIs', 'GraphQL'],
+            examples: ['JSON', 'XML', 'REST APIs', 'GraphQL (API query paradigm, response: JSON)'],
             desc: 'Flexible schema, hierarchical or nested structures.',
           },
           {
             label: 'Cloud Sources',
             color: '#3B82F6',
-            examples: ['Google Sheets', 'Azure Blob Storage', 'SharePoint', 'Snowflake'],
+            examples: ['Google Sheets', 'Azure Blob Storage', 'SharePoint', 'Snowflake (Cloud Data Warehouse)'],
             desc: 'Online services with API access or native connector support.',
           },
         ],
@@ -312,7 +390,7 @@
         s1PowerBIText: 'In Power BI, the "Get Data" dialog (Home \u2192 Get Data) opens a source selection with over 100 connectors. After connecting, the Power Query Editor opens for preview and transformation.',
         s1PythonTitle: 'Loading Data in Python',
         s1PythonDesc: 'With pandas and the requests library, all common data sources can be read:',
-        s1CodePython: '# Python: Load data\nimport pandas as pd\nimport requests\n\n# Load CSV\ndf = pd.read_csv(\'data.csv\')\n\n# Load Excel\ndf_excel = pd.read_excel(\'report.xlsx\', sheet_name=\'Revenue\')\n\n# Load REST API\nresponse = requests.get(\'https://api.example.com/sales\')\ndf_api = pd.json_normalize(response.json()[\'data\'])\n\nprint(df.head())\nprint(df.shape)   # (rows, columns)',
+        s1CodePython: '# Python: Load data\nimport pandas as pd\nimport requests\n\n# Load CSV\ndf = pd.read_csv(\'data.csv\')\n\n# Load Excel\ndf_excel = pd.read_excel(\'report.xlsx\', sheet_name=\'Revenue\')\n\n# Load REST API\nresponse = requests.get(\'https://api.example.com/sales\')\ndf_api = pd.json_normalize(response.json()[\'data\'])  # Key varies by API \u2013 e.g. [\'results\'], [\'items\']\n\nprint(df.head())\nprint(df.shape)   # (rows, columns)',
 
         s2Title: 'Data Modelling',
         s2Desc: 'A good data model is crucial for the performance and comprehensibility of a BI system. The star schema is the most common model in data warehousing.',
@@ -370,6 +448,44 @@
           },
         ],
 
+        s5Title: 'Quiz',
+        s5Desc: 'Test your knowledge from Lab 02.',
+        s5Questions: [
+          {
+            q: 'What is the main difference between Star Schema and Snowflake Schema?',
+            opts: [
+              'Star Schema has multiple fact tables, Snowflake only one',
+              'In Star Schema dimensions are denormalised (flat), in Snowflake normalised (multiple tables)',
+              'Snowflake Schema is only used in the cloud',
+              'Star Schema requires more storage than Snowflake Schema',
+            ],
+            correct: 1,
+            exp: 'In the Star Schema, dimensions are denormalised (flat) \u2013 simpler and faster. In the Snowflake Schema, dimensions are normalised into multiple tables \u2013 saves storage but requires more JOINs.',
+          },
+          {
+            q: 'Which pandas method removes duplicate rows from a DataFrame?',
+            opts: [
+              'df.remove_duplicates()',
+              'df.drop_duplicates()',
+              'df.deduplicate()',
+              'df.unique()',
+            ],
+            correct: 1,
+            exp: 'df.drop_duplicates() removes duplicate rows from a pandas DataFrame. The subset=[] parameter can specify which columns to compare.',
+          },
+          {
+            q: 'What is GraphQL?',
+            opts: [
+              'A file format like JSON or XML',
+              'A database language like SQL',
+              'An API query language \u2013 the response is JSON',
+              'A cloud storage service',
+            ],
+            correct: 2,
+            exp: 'GraphQL is an API query language (not a data format). Responses from a GraphQL API are returned as JSON.',
+          },
+        ],
+
         navPrev: '\u2190 Lab 01: Foundations',
         navNext: 'Lab 03: KPIs \u2192',
       },
@@ -387,7 +503,7 @@
       };
 
       useEffect(() => {
-        const sections = ['datenquellen', 'modellierung', 'qualitaet', 'youtube'];
+        const sections = ['datenquellen', 'modellierung', 'qualitaet', 'youtube', 'quiz'];
         const handler = () => {
           for (let i = sections.length - 1; i >= 0; i--) {
             const el = document.getElementById(sections[i]);
@@ -590,6 +706,23 @@
                   </div>
                 ))}
               </div>
+            </section>
+
+            {/* ── Section 5: Quiz ── */}
+            <section id="quiz" className="section-block">
+              <h2>{tx.s5Title}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <p>{tx.s5Desc}</p>
+
+              {tx.s5Questions.map((q, i) => (
+                <QuizQuestion
+                  key={lang + '-' + i}
+                  question={(i + 1) + '. ' + q.q}
+                  options={q.opts}
+                  correctIndex={q.correct}
+                  explanation={q.exp}
+                />
+              ))}
             </section>
 
             {/* ── Nav Bottom ── */}

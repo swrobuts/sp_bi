@@ -184,7 +184,7 @@
           },
           {
             label: 'Power Query \u2013 Datentransformation',
-            text: 'Sicherstellen: Order Date als DateTime, Spalten pr\u00fcfen auf Nullwerte',
+            text: 'Sicherstellen: Order Date als Datum/Uhrzeit, Spalten pr\u00fcfen auf Nullwerte',
           },
           {
             label: 'Measures erstellen',
@@ -202,14 +202,13 @@
         ],
         s5Title: 'Schritt 4 – Plotly Dash Step by Step',
         s5Intro: 'Die folgende vollst\u00e4ndige Dash-App repliziert das Power-BI-Dashboard in Python. In app.py speichern und mit python app.py starten.',
-        s5ColabNote: 'Den vollst\u00e4ndigen Code kannst du direkt in Google Colab ausf\u00fchren \u2013 ohne lokale Installation, kostenlos im Browser. Notebooks werden in K\u00fcrze verf\u00fcgbar.',
         s6Title: 'Schritt 5 – Reflexion & Vergleich',
         s6BoxTitle: 'Reflexionsfragen',
         s6Questions: [
           'Was hat l\u00e4nger gedauert: Power BI oder Dash? Warum?',
           'Welches Dashboard l\u00e4sst sich leichter an neue Anforderungen anpassen?',
           'Welches w\u00fcrdest du bei einem Kunden ohne Python-Kenntnisse einsetzen?',
-          'Wie w\u00fcrdest du die Dash-App produktiv deployen (Heroku, Render, Docker)?',
+          'Wie w\u00fcrdest du die Dash-App produktiv deployen (Render, Railway, Docker)?',
           'Welches Tool eignet sich besser f\u00fcr nicht-technische Stakeholder \u2013 und warum?',
         ],
         s7Title: 'YouTube-Ressourcen',
@@ -232,7 +231,7 @@
         navBackHref: 'lab-04-dashboards.html',
         navNext: 'Weiter: Lab 06 \u2013 Souver\u00e4nit\u00e4t \u2192',
         navNextHref: 'lab-06-souveraenitaet.html',
-        footer: '\u00a9 2025 THWS Business School \u00b7 BI Lab \u00b7 Alle Rechte vorbehalten',
+        footer: '\u00a9 2026 THWS Business School \u00b7 BI Lab \u00b7 Alle Rechte vorbehalten',
       },
       en: {
         logo: 'THWS BI Lab',
@@ -283,7 +282,7 @@
           },
           {
             label: 'Power Query \u2013 Data Transformation',
-            text: 'Ensure: Order Date is DateTime, check columns for null values',
+            text: 'Ensure: Order Date is Date/Time, check columns for null values',
           },
           {
             label: 'Create Measures',
@@ -301,7 +300,6 @@
         ],
         s5Title: 'Step 4 \u2013 Plotly Dash Step by Step',
         s5Intro: 'The following complete Dash app replicates the Power BI dashboard in Python. Save as app.py and start with python app.py.',
-        s5ColabNote: 'Run the complete code directly in Google Colab \u2013 no local installation, free in the browser. Notebooks will be available shortly.',
         s6Title: 'Step 5 \u2013 Reflection & Comparison',
         s6BoxTitle: 'Reflection Questions',
         s6Questions: [
@@ -331,7 +329,7 @@
         navBackHref: 'lab-04-dashboards.html',
         navNext: 'Next: Lab 06 \u2013 Sovereignty \u2192',
         navNextHref: 'lab-06-souveraenitaet.html',
-        footer: '\u00a9 2025 THWS Business School \u00b7 BI Lab \u00b7 All rights reserved',
+        footer: '\u00a9 2026 THWS Business School \u00b7 BI Lab \u00b7 All rights reserved',
       },
     };
 
@@ -371,7 +369,7 @@ Bestellungen =
 COUNTROWS(Orders)
 
 Avg_Bestellwert =
-DIVIDE([Umsatz], [Bestellungen], 0)
+DIVIDE([Umsatz], DISTINCTCOUNT(Orders[Order ID]), 0)
 
 Umsatz_VJ =
 CALCULATE([Umsatz], SAMEPERIODLASTYEAR(Orders[Order Date]))
@@ -622,9 +620,6 @@ if __name__ == '__main__':
             <div className="bauhaus-accent-line"></div>
             <p>{c.s5Intro}</p>
             <CodeBlock code={codeDashApp} />
-            <div className="info-box">
-              <strong>{'Google Colab:'}</strong>{' '}{c.s5ColabNote}
-            </div>
           </div>
 
           <div id="reflexion" className="section-block">

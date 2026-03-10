@@ -215,7 +215,7 @@
         s3ConceptTitle: 'Lock-in-Risiken bei SaaS BI-Tools (allgemein)',
         s3ConceptItems: [
           'Daten liegen beim Anbieter \u2013 US-Server bei Microsoft (Power BI), Google (Looker), Salesforce (Tableau)',
-          'Lizenzen: Power BI, Tableau, Looker, Qlik haben \u00e4hnliche Preisstrukturen ab ~9\u201315 \u20ac/User/Monat',
+          'Lizenzen: Power BI, Tableau, Looker, Qlik haben \u00e4hnliche Preisstrukturen ab ~9\u201315 \u20ac/User/Monat; Looker: auf Anfrage (Enterprise-Pricing)',
           'Lock-in entsteht durch propriet\u00e4re Formate und API-Abh\u00e4ngigkeiten \u2013 bei allen Anbietern',
           'DSGVO-Komplikationen betreffen ALLE US-Cloud-Anbieter gleicherma\u00dfen (Patriot Act, CLOUD Act)',
           'On-Premises-Optionen: Power BI Report Server, Tableau Server, Qlik Sense Enterprise \u2013 Self-Hosted ist auch im Enterprise-Markt m\u00f6glich',
@@ -336,7 +336,7 @@
         s3ConceptTitle: 'Lock-in Risks with SaaS BI Tools (general)',
         s3ConceptItems: [
           'Data is stored with the provider \u2013 US servers at Microsoft (Power BI), Google (Looker), Salesforce (Tableau)',
-          'Licenses: Power BI, Tableau, Looker, Qlik have similar pricing structures from ~\u20ac9\u201315/user/month',
+          'Licenses: Power BI, Tableau, Looker, Qlik have similar pricing structures: Power BI from ~\u20ac9/user/month, Tableau from ~\u20ac15/user/month; Looker: on request (enterprise pricing)',
           'Lock-in arises from proprietary formats and API dependencies \u2013 across all vendors',
           'GDPR complications affect ALL US cloud providers equally (Patriot Act, CLOUD Act)',
           'On-premises options: Power BI Report Server, Tableau Server, Qlik Sense Enterprise \u2013 self-hosted is possible even in the enterprise market',
@@ -422,10 +422,10 @@
     var c = t[lang];
 
     var codeDockerCompose = `# docker-compose.yml f\u00fcr Self-Hosted Metabase
-version: '3'
+# version: '3' entfernt – in Compose Spec (v2) deprecated
 services:
   metabase:
-    image: metabase/metabase:latest
+    image: metabase/metabase:v0.50.x  # Version pinnen statt :latest verwenden (verhindert unkontrollierte Updates)
     ports:
       - "3000:3000"
     environment:
@@ -433,7 +433,7 @@ services:
       MB_DB_DBNAME: metabase
       MB_DB_HOST: postgres
       MB_DB_USER: metabase
-      MB_DB_PASS: metabasepassword
+      MB_DB_PASS: metabasepassword  # Nur für lokale Entwicklung – in Produktion .env-Datei und sichere Passwörter verwenden
     depends_on:
       - postgres
 
@@ -441,7 +441,7 @@ services:
     image: postgres:15
     environment:
       POSTGRES_USER: metabase
-      POSTGRES_PASSWORD: metabasepassword
+      POSTGRES_PASSWORD: metabasepassword  # Nur für lokale Entwicklung – in Produktion .env-Datei und sichere Passwörter verwenden
       POSTGRES_DB: metabase
     volumes:
       - metabase_data:/var/lib/postgresql/data
