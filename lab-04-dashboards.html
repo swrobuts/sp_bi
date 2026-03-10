@@ -10,6 +10,17 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
+
+    :root {
+      --col-primary: #1E3A8A;
+      --col-accent: #2563EB;
+      --col-primary-light: rgba(30,58,138,0.08);
+    }
+    [data-lang="en"] {
+      --col-primary: #0D9488;
+      --col-accent: #0D9488;
+      --col-primary-light: rgba(13,148,136,0.08);
+    }
     :root {
       --primary: #1E3A8A;
       --accent: #2563EB;
@@ -192,7 +203,7 @@ fig = px.bar(
     x='Category',
     y='Sales',
     title='Umsatz nach Kategorie',
-    color_discrete_sequence=['#2563EB']
+    color_discrete_sequence=['var(--col-accent)']
 )
 fig.update_layout(
     plot_bgcolor='white',
@@ -236,7 +247,7 @@ server = app.server  # Nötig für gunicorn app:server
 df = pd.read_csv('superstore.csv', encoding='latin-1')
 
 app.layout = html.Div([
-    html.H1('Sales Dashboard', style={'fontFamily': 'Space Grotesk', 'color': '#1E3A8A'}),
+    html.H1('Sales Dashboard', style={'fontFamily': 'Space Grotesk', 'color': 'var(--col-primary)'}),
 
     html.Label('Kategorie auswählen:'),
     dcc.Dropdown(
@@ -263,7 +274,7 @@ def update_bar(category):
         x='Sub-Category',
         y='Sales',
         title=f'Umsatz nach Sub-Kategorie: {category}',
-        color_discrete_sequence=['#2563EB']
+        color_discrete_sequence=['var(--col-accent)']
     )
     return fig
 
@@ -621,14 +632,14 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
                 {tx.s1Principles.map((p, i) => (
                   <div key={i} className="bauhaus-card">
                     <div style={{
-                      display: 'inline-block', background: '#1E3A8A', color: 'white',
+                      display: 'inline-block', background: 'var(--col-primary)', color: 'white',
                       fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700,
                       fontSize: '0.72rem', letterSpacing: '0.08em', textTransform: 'uppercase',
                       padding: '0.2rem 0.6rem', borderRadius: '3px', marginBottom: '0.75rem'
                     }}>
                       {'0' + (i + 1)}
                     </div>
-                    <h4 style={{ color: '#1E3A8A', marginTop: 0 }}>{p.title}</h4>
+                    <h4 style={{ color: 'var(--col-primary)', marginTop: 0 }}>{p.title}</h4>
                     <p style={{ margin: 0, fontSize: '0.875rem', color: '#374151', lineHeight: 1.6 }}>{p.desc}</p>
                   </div>
                 ))}
@@ -653,7 +664,7 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
               </table>
 
               <div className="tip-box" style={{ marginTop: '1.5rem' }}>
-                <strong style={{ color: '#1E3A8A' }}>{tx.s1TipTitle}</strong>
+                <strong style={{ color: 'var(--col-primary)' }}>{tx.s1TipTitle}</strong>
                 <p style={{ margin: '0.4rem 0 0', fontSize: '0.9rem', color: '#1e40af' }}>{tx.s1TipText}</p>
               </div>
             </section>
@@ -684,7 +695,7 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem', margin: '1rem 0 2rem' }}>
                 {tx.s3Concepts.map((c, i) => (
                   <div key={i} className="info-box" style={{ margin: 0 }}>
-                    <h4 style={{ marginTop: 0, color: '#1E3A8A' }}>{c.title}</h4>
+                    <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{c.title}</h4>
                     <p style={{ margin: 0, fontSize: '0.875rem', color: '#374151', lineHeight: 1.6 }}>{c.desc}</p>
                   </div>
                 ))}
@@ -703,19 +714,19 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
 
               <h3 style={{ marginTop: '2.5rem' }}>{tx.s3DeployTitle}</h3>
               <div className="concept-box">
-                <p style={{ margin: '0 0 0.5rem', fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, color: '#1E3A8A', fontSize: '0.9rem' }}>{tx.s3DeployDesc}</p>
+                <p style={{ margin: '0 0 0.5rem', fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, color: 'var(--col-primary)', fontSize: '0.9rem' }}>{tx.s3DeployDesc}</p>
               </div>
 
-              <h4 style={{ marginTop: '1.5rem', color: '#1E3A8A' }}>{tx.s3GunicornTitle}</h4>
+              <h4 style={{ marginTop: '1.5rem', color: 'var(--col-primary)' }}>{tx.s3GunicornTitle}</h4>
               <p style={{ margin: '0.25rem 0 0.5rem', fontSize: '0.9rem', color: '#374151' }}>{tx.s3GunicornDesc}</p>
               <CodeBlock code={CODE_GUNICORN} />
 
-              <h4 style={{ marginTop: '1.5rem', color: '#1E3A8A' }}>{tx.s3DockerTitle}</h4>
+              <h4 style={{ marginTop: '1.5rem', color: 'var(--col-primary)' }}>{tx.s3DockerTitle}</h4>
               <p style={{ margin: '0.25rem 0 0.5rem', fontSize: '0.9rem', color: '#374151' }}>{tx.s3DockerDesc}</p>
               <CodeBlock code={CODE_DOCKERFILE} />
 
               <div className="tip-box" style={{ marginTop: '1rem' }}>
-                <strong style={{ color: '#1E3A8A' }}>{tx.s3TraefikTitle}:</strong>{' '}
+                <strong style={{ color: 'var(--col-primary)' }}>{tx.s3TraefikTitle}:</strong>{' '}
                 <span style={{ fontSize: '0.9rem', color: '#1e40af' }}>{tx.s3TraefikDesc}</span>
               </div>
             </section>
@@ -735,7 +746,7 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
                 <tbody>
                   {tx.s4Rows.map((row, i) => (
                     <tr key={i}>
-                      <td style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, color: '#1E3A8A' }}>{row[0]}</td>
+                      <td style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, color: 'var(--col-primary)' }}>{row[0]}</td>
                       <td>{row[1]}</td>
                       <td>{row[2]}</td>
                     </tr>
@@ -744,7 +755,7 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
               </table>
 
               <div className="concept-box" style={{ marginTop: '1.5rem' }}>
-                <h4 style={{ marginTop: 0, color: '#1E3A8A' }}>{tx.s4RecommTitle}</h4>
+                <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.s4RecommTitle}</h4>
                 <p style={{ margin: 0, fontSize: '0.9rem' }}>{tx.s4RecommText}</p>
               </div>
               <div className="tip-box" style={{ marginTop: '1rem' }}>

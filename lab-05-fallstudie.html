@@ -10,6 +10,17 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
+
+    :root {
+      --col-primary: #1E3A8A;
+      --col-accent: #2563EB;
+      --col-primary-light: rgba(30,58,138,0.08);
+    }
+    [data-lang="en"] {
+      --col-primary: #0D9488;
+      --col-accent: #0D9488;
+      --col-primary-light: rgba(13,148,136,0.08);
+    }
     :root { --primary: #1E3A8A; --accent: #2563EB; --dark: #1A1A1A; --light-bg: #FAFAFA; }
     *, *::before, *::after { box-sizing: border-box; }
     body { background: #FAFAFA; font-family: 'Space Grotesk', -apple-system, sans-serif; margin: 0; color: #1A1A1A; }
@@ -410,7 +421,7 @@ app.layout = html.Div([
     html.Div([
         html.H1('Superstore Analytics Dashboard',
                 style={'margin': '0', 'fontSize': '1.5rem'}),
-    ], style={'background': '#1E3A8A', 'color': 'white',
+    ], style={'background': 'var(--col-primary)', 'color': 'white',
               'padding': '1rem 2rem'}),
 
     # Filter
@@ -455,7 +466,7 @@ app.layout = html.Div([
               style={'padding': '0 2rem 2rem'}),
 ])
 
-def kpi_card(title, value, color='#1E3A8A'):
+def kpi_card(title, value, color='var(--col-primary)'):
     return html.Div([
         html.Div(value, style={'fontSize': '1.75rem', 'fontWeight': '800',
                                'color': color}),
@@ -487,7 +498,7 @@ def update_dashboard(segments, regions):
     cards = [
         kpi_card('Umsatz', f'${total_sales:,.0f}'),
         kpi_card('Gewinn', f'${total_profit:,.0f}'),
-        kpi_card('Marge', f'{margin:.1f}%', '#2563EB'),
+        kpi_card('Marge', f'{margin:.1f}%', 'var(--col-accent)'),
         kpi_card('Bestellungen', f'{orders:,}'),
     ]
 
@@ -495,14 +506,14 @@ def update_dashboard(segments, regions):
     trend = fdf.groupby('Month')['Sales'].sum().reset_index()
     fig1 = px.line(trend, x='Month', y='Sales',
                    title='Umsatz-Trend (monatlich)',
-                   color_discrete_sequence=['#2563EB'])
+                   color_discrete_sequence=['var(--col-accent)'])
     fig1.update_layout(plot_bgcolor='white', paper_bgcolor='white')
 
     # Kategorie
     by_cat = fdf.groupby('Category')['Sales'].sum().reset_index()
     fig2 = px.bar(by_cat, x='Category', y='Sales',
                   title='Umsatz nach Kategorie',
-                  color_discrete_sequence=['#1E3A8A'])
+                  color_discrete_sequence=['var(--col-primary)'])
     fig2.update_layout(plot_bgcolor='white', paper_bgcolor='white')
 
     # Scatter
@@ -512,7 +523,7 @@ def update_dashboard(segments, regions):
     fig3 = px.scatter(by_sub, x='Sales', y='Profit',
                       text='Sub-Category', size='Sales',
                       title='Umsatz vs. Gewinn nach Sub-Kategorie',
-                      color_discrete_sequence=['#2563EB'])
+                      color_discrete_sequence=['var(--col-accent)'])
     fig3.update_layout(plot_bgcolor='white', paper_bgcolor='white')
 
     return cards, fig1, fig2, fig3

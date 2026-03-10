@@ -10,6 +10,17 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
+
+    :root {
+      --col-primary: #1E3A8A;
+      --col-accent: #2563EB;
+      --col-primary-light: rgba(30,58,138,0.08);
+    }
+    [data-lang="en"] {
+      --col-primary: #0D9488;
+      --col-accent: #0D9488;
+      --col-primary-light: rgba(13,148,136,0.08);
+    }
     :root {
       --primary: #1E3A8A;
       --accent: #2563EB;
@@ -208,7 +219,7 @@
         s1MeasuresDe: [
           {
             name: 'Measures (Kennzahlen)',
-            color: '#1E3A8A',
+            color: 'var(--col-primary)',
             points: [
               'Dynamisch \u2013 werden zur Laufzeit berechnet',
               'Abh\u00E4ngig vom aktuellen Filter-Kontext',
@@ -218,7 +229,7 @@
           },
           {
             name: 'Calculated Columns',
-            color: '#2563EB',
+            color: 'var(--col-accent)',
             points: [
               'Statisch \u2013 einmal berechnet und gespeichert',
               'Zeile f\u00FCr Zeile (Row Context)',
@@ -304,7 +315,7 @@
         s1MeasuresDe: [
           {
             name: 'Measures (Metrics)',
-            color: '#1E3A8A',
+            color: 'var(--col-primary)',
             points: [
               'Dynamic \u2013 calculated at runtime',
               'Dependent on the current filter context',
@@ -314,7 +325,7 @@
           },
           {
             name: 'Calculated Columns',
-            color: '#2563EB',
+            color: 'var(--col-accent)',
             points: [
               'Static \u2013 calculated once and stored',
               'Row by row (Row Context)',
@@ -480,7 +491,7 @@
               </div>
 
               <div className="concept-box" style={{ marginTop: '1.5rem' }}>
-                <h4 style={{ marginTop: 0, color: '#1E3A8A' }}>{tx.s1GoldenRule}</h4>
+                <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.s1GoldenRule}</h4>
                 <p style={{ margin: 0 }}>{tx.s1GoldenRuleText}</p>
               </div>
 
@@ -508,7 +519,7 @@
                 <tbody>
                   {tx.s3Rows.map((row, i) => (
                     <tr key={i}>
-                      <td style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, color: '#1E3A8A' }}>{row[0]}</td>
+                      <td style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, color: 'var(--col-primary)' }}>{row[0]}</td>
                       <td>{row[1]}</td>
                       <td><code>{row[2]}</code></td>
                       <td><code>{row[3]}</code></td>
@@ -526,11 +537,11 @@
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1rem', margin: '1rem 0 1.5rem' }}>
                 <div className="concept-box" style={{ margin: 0 }}>
-                  <h4 style={{ marginTop: 0, color: '#1E3A8A' }}>{tx.s4RowTitle}</h4>
+                  <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.s4RowTitle}</h4>
                   <p style={{ margin: 0, fontSize: '0.875rem', color: '#374151', lineHeight: 1.6 }}>{tx.s4RowText}</p>
                 </div>
                 <div className="tip-box" style={{ margin: 0 }}>
-                  <h4 style={{ marginTop: 0, color: '#1E3A8A' }}>{tx.s4FilterTitle}</h4>
+                  <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.s4FilterTitle}</h4>
                   <p style={{ margin: 0, fontSize: '0.875rem', color: '#374151', lineHeight: 1.6 }}>{tx.s4FilterText}</p>
                 </div>
               </div>

@@ -10,6 +10,17 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
+
+    :root {
+      --col-primary: #1E3A8A;
+      --col-accent: #2563EB;
+      --col-primary-light: rgba(30,58,138,0.08);
+    }
+    [data-lang="en"] {
+      --col-primary: #0D9488;
+      --col-accent: #0D9488;
+      --col-primary-light: rgba(13,148,136,0.08);
+    }
     :root {
       --primary: #1E3A8A;
       --accent: #2563EB;
@@ -614,7 +625,7 @@
                 {tx.s1HistItems.map((item, i) => (
                   <div key={i} className="bauhaus-card">
                     <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B7280', marginBottom: '0.25rem' }}>{item.era}</div>
-                    <h4 style={{ color: '#1E3A8A', margin: '0 0 0.4rem' }}>{item.label}</h4>
+                    <h4 style={{ color: 'var(--col-primary)', margin: '0 0 0.4rem' }}>{item.label}</h4>
                     <p style={{ margin: 0, fontSize: '0.875rem', color: '#4B5563', lineHeight: 1.5 }}>{item.desc}</p>
                   </div>
                 ))}
@@ -646,13 +657,13 @@
                 <div key={i} style={{ display: 'flex', gap: '1rem', padding: '0.75rem 0', borderBottom: '1px solid #E5E7EB', alignItems: 'flex-start' }}>
                   <div style={{
                     flexShrink: 0, width: '28px', height: '28px',
-                    background: '#1E3A8A', color: 'white',
+                    background: 'var(--col-primary)', color: 'white',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: '0.8rem',
                     borderRadius: '4px'
                   }}>{i + 1}</div>
                   <div>
-                    <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: '0.95rem', color: '#1E3A8A', marginBottom: '0.2rem' }}>{layer.name}</div>
+                    <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: '0.95rem', color: 'var(--col-primary)', marginBottom: '0.2rem' }}>{layer.name}</div>
                     <div style={{ fontSize: '0.875rem', color: '#4B5563', lineHeight: 1.5 }}>{layer.desc}</div>
                   </div>
                 </div>
@@ -673,7 +684,7 @@
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: '1rem', margin: '1rem 0' }}>
                 {tx.s3Types.map((type, i) => (
                   <div key={i} className="bauhaus-card">
-                    <h4 style={{ color: '#1E3A8A', margin: '0 0 0.3rem' }}>{type.cat}</h4>
+                    <h4 style={{ color: 'var(--col-primary)', margin: '0 0 0.3rem' }}>{type.cat}</h4>
                     <div style={{ fontSize: '0.8rem', color: '#6B7280', marginBottom: '0.4rem' }}>{type.desc}</div>
                     <div style={{ fontSize: '0.82rem', color: '#374151', fontStyle: 'italic' }}>{type.example}</div>
                   </div>
@@ -691,13 +702,13 @@
                   <div key={i} style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                     <div style={{
                       flexShrink: 0, width: '36px', height: '36px',
-                      background: '#2563EB', color: 'white',
+                      background: 'var(--col-accent)', color: 'white',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontFamily: "'Space Grotesk', sans-serif", fontWeight: 900, fontSize: '1rem',
                       borderRadius: '6px'
                     }}>{s.letter}</div>
                     <div>
-                      <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, color: '#1E3A8A' }}>{s.word}</span>
+                      <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, color: 'var(--col-primary)' }}>{s.word}</span>
                       <span style={{ color: '#4B5563', marginLeft: '0.5rem', fontSize: '0.9rem' }}>{'\u2013 '}{s.desc}</span>
                     </div>
                   </div>
@@ -735,7 +746,7 @@
               </table>
 
               <div className="info-box" style={{ marginTop: '1.5rem' }}>
-                <h4 style={{ margin: '0 0 0.5rem', color: '#1E3A8A' }}>{tx.s4NoteTitle}</h4>
+                <h4 style={{ margin: '0 0 0.5rem', color: 'var(--col-primary)' }}>{tx.s4NoteTitle}</h4>
                 <p style={{ margin: 0 }}>{tx.s4NoteText}</p>
               </div>
             </section>

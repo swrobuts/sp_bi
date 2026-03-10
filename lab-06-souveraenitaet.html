@@ -10,6 +10,17 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
+
+    :root {
+      --col-primary: #1E3A8A;
+      --col-accent: #2563EB;
+      --col-primary-light: rgba(30,58,138,0.08);
+    }
+    [data-lang="en"] {
+      --col-primary: #0D9488;
+      --col-accent: #0D9488;
+      --col-primary-light: rgba(13,148,136,0.08);
+    }
     :root { --primary: #1E3A8A; --accent: #2563EB; --dark: #1A1A1A; --light-bg: #FAFAFA; }
     *, *::before, *::after { box-sizing: border-box; }
     body { background: #FAFAFA; font-family: 'Space Grotesk', -apple-system, sans-serif; margin: 0; color: #1A1A1A; }
@@ -601,7 +612,7 @@ docker compose ps
                   {c.s5ProgressLabel}: {doneCount} {c.s5Of} {checklistCount}
                 </span>
                 <div style={{ height: '6px', width: '140px', background: '#E5E7EB', borderRadius: '3px', overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: (doneCount / checklistCount * 100) + '%', background: '#2563EB', borderRadius: '3px', transition: 'width 0.3s ease' }}></div>
+                  <div style={{ height: '100%', width: (doneCount / checklistCount * 100) + '%', background: 'var(--col-accent)', borderRadius: '3px', transition: 'width 0.3s ease' }}></div>
                 </div>
               </div>
               {c.s5ChecklistItems.map(function(item, i) {

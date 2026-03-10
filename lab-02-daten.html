@@ -10,6 +10,17 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
+
+    :root {
+      --col-primary: #1E3A8A;
+      --col-accent: #2563EB;
+      --col-primary-light: rgba(30,58,138,0.08);
+    }
+    [data-lang="en"] {
+      --col-primary: #0D9488;
+      --col-accent: #0D9488;
+      --col-primary-light: rgba(13,148,136,0.08);
+    }
     :root {
       --primary: #1E3A8A;
       --accent: #2563EB;
@@ -246,13 +257,13 @@
         s1Categories: [
           {
             label: 'Strukturiert',
-            color: '#1E3A8A',
+            color: 'var(--col-primary)',
             examples: ['CSV', 'Excel', 'SQL (MySQL, PostgreSQL)', 'SAP-Exporte'],
             desc: 'Klar definiertes Schema, Zeilen und Spalten. Einfach zu verarbeiten.',
           },
           {
             label: 'Semi-strukturiert',
-            color: '#2563EB',
+            color: 'var(--col-accent)',
             examples: ['JSON', 'XML', 'REST-APIs', 'GraphQL (API-Abfrageparadigma, Antwort: JSON)'],
             desc: 'Flexibles Schema, hierarchische oder verschachtelte Strukturen.',
           },
@@ -392,13 +403,13 @@
         s1Categories: [
           {
             label: 'Structured',
-            color: '#1E3A8A',
+            color: 'var(--col-primary)',
             examples: ['CSV', 'Excel', 'SQL (MySQL, PostgreSQL)', 'SAP exports'],
             desc: 'Clearly defined schema, rows and columns. Easy to process.',
           },
           {
             label: 'Semi-structured',
-            color: '#2563EB',
+            color: 'var(--col-accent)',
             examples: ['JSON', 'XML', 'REST APIs', 'GraphQL (API query paradigm, response: JSON)'],
             desc: 'Flexible schema, hierarchical or nested structures.',
           },
@@ -638,11 +649,11 @@
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', margin: '1.5rem 0' }}>
                 <div className="concept-box" style={{ margin: 0 }}>
-                  <h4 style={{ marginTop: 0, color: '#1E3A8A' }}>{tx.s2FactTitle}</h4>
+                  <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.s2FactTitle}</h4>
                   <p style={{ margin: 0, fontSize: '0.875rem', color: '#374151', lineHeight: 1.6 }}>{tx.s2FactText}</p>
                 </div>
                 <div className="tip-box" style={{ margin: 0 }}>
-                  <h4 style={{ marginTop: 0, color: '#1E3A8A' }}>{tx.s2DimTitle}</h4>
+                  <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.s2DimTitle}</h4>
                   <p style={{ margin: 0, fontSize: '0.875rem', color: '#374151', lineHeight: 1.6 }}>{tx.s2DimText}</p>
                 </div>
               </div>
@@ -660,7 +671,7 @@
               </table>
 
               <div className="info-box" style={{ marginTop: '1.5rem' }}>
-                <h4 style={{ margin: '0 0 0.4rem', color: '#1E3A8A' }}>{tx.s2TipTitle}</h4>
+                <h4 style={{ margin: '0 0 0.4rem', color: 'var(--col-primary)' }}>{tx.s2TipTitle}</h4>
                 <p style={{ margin: 0 }}>{tx.s2TipText}</p>
               </div>
             </section>
@@ -680,13 +691,13 @@
                   }}>
                     <div style={{
                       flexShrink: 0, width: '28px', height: '28px',
-                      background: '#1E3A8A', color: 'white',
+                      background: 'var(--col-primary)', color: 'white',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: '0.8rem',
                       borderRadius: '4px'
                     }}>{i + 1}</div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: '0.95rem', color: '#1E3A8A', marginBottom: '0.2rem' }}>{prob.name}</div>
+                      <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: '0.95rem', color: 'var(--col-primary)', marginBottom: '0.2rem' }}>{prob.name}</div>
                       <div style={{ fontSize: '0.875rem', color: '#4B5563', lineHeight: 1.5, marginBottom: '0.35rem' }}>{prob.desc}</div>
                       <div style={{ fontSize: '0.82rem', color: '#374151', background: '#F3F4F6', padding: '0.2rem 0.55rem', borderRadius: '4px', display: 'inline-block', fontFamily: "'Fira Code', 'Courier New', monospace" }}>
                         {'\u2192 '}{prob.fix}
