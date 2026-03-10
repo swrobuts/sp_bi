@@ -169,7 +169,7 @@
     const { useState, useEffect } = React;
 
     // ─── CodeBlock Component ──────────────────────────────────────────────────
-    function CodeBlock({ code, language }) {
+    function CodeBlock({ code, language, lang }) {
       const [copied, setCopied] = React.useState(false);
       const copy = () => {
         navigator.clipboard.writeText(code).then(() => {
@@ -197,7 +197,7 @@
             padding: '0.2rem 0.5rem', fontSize: '0.75rem',
             cursor: 'pointer', fontFamily: 'Space Grotesk, sans-serif'
           }}>
-            {copied ? '\u2713 Kopiert' : 'Kopieren'}
+            {copied ? (lang === 'en' ? '\u2713 Copied' : '\u2713 Kopiert') : (lang === 'en' ? 'Copy' : 'Kopieren')}
           </button>
         </div>
       );
@@ -255,6 +255,7 @@
           { href: '#tools',       label: 'Tool-\u00DCberblick' },
           { href: '#youtube',     label: 'Ressourcen' },
           { href: '#quiz',        label: 'Quiz' },
+          { href: '#zusammenfassung', label: 'Zusammenfassung' },
         ],
         backLabel: '\u2190 \u00DCbersicht',
 
@@ -263,12 +264,14 @@
         s1DefLabel: 'Definition',
         s1DefText: 'Business Intelligence (BI) bezeichnet Systeme und Prozesse zur Sammlung, Integration, Analyse und Visualisierung von Gesch\u00E4ftsdaten mit dem Ziel, datenbasierte Entscheidungen zu unterst\u00FCtzen.',
         s1HistTitle: 'Geschichte der BI',
+        s1OriginNote: 'Der Begriff „Business Intelligence" wurde 1958 von Hans Peter Luhn (IBM) geprägt. Er beschrieb damit die Fähigkeit, Zusammenhänge aus Daten zu erkennen und Handlungsempfehlungen abzuleiten.',
         s1HistItems: [
-          { era: '1960er\u201380er', label: 'Mainframe-Reports', desc: 'Statische Berichte aus zentralen Rechenanlagen' },
-          { era: '1990er', label: 'Data Warehouses', desc: 'Zentralisierte Datenhaltung, OLAP-W\u00FCrfel, erste BI-Tools' },
-          { era: '2000er', label: 'Fr\u00FChe Self-Service BI', desc: 'Tableau (2003), fr\u00FChe Self-Service BI-Tools' },
-          { era: '2010er', label: 'Self-Service BI', desc: 'Power BI \u2013 Analysen ohne IT-Abteilung' },
-          { era: 'Heute', label: 'KI-gest\u00FCtzte BI', desc: 'AutoML, Natural Language Querying, Predictive Analytics' },
+          { era: '1958', label: 'Begriffspr\u00E4gung', desc: 'Hans Peter Luhn (IBM) pr\u00E4gt den Begriff „Business Intelligence" in seinem Artikel „A Business Intelligence System"' },
+          { era: '1960er\u201380er', label: 'Mainframe-Reports', desc: 'Statische Berichte aus zentralen Rechenanlagen, Decision Support Systems (DSS)' },
+          { era: '1990er', label: 'Data Warehouses', desc: 'Bill Inmon (1992) und Ralph Kimball (1996) begr\u00FCnden das Data Warehousing, OLAP-W\u00FCrfel, erste BI-Tools' },
+          { era: '2000er', label: 'Fr\u00FChe Self-Service BI', desc: 'Tableau (gegr. 2003), QlikView \u2013 erste visuelle BI-Werkzeuge f\u00FCr Fachanwender' },
+          { era: '2010er', label: 'Self-Service BI', desc: 'Power BI (Release 2015) \u2013 Analysen ohne IT-Abteilung, Cloud-DWH (BigQuery 2010, Snowflake 2014)' },
+          { era: 'Heute', label: 'KI-gest\u00FCtzte BI', desc: 'Copilot in Power BI, Tableau Pulse, AutoML, Natural Language Querying, Data Lakehouse (Databricks)' },
         ],
         s1AbgrTitle: 'Abgrenzung: BI vs. Data Science vs. Analytics',
         s1AbgrHeaders: ['Disziplin', 'Fokus', 'Typische Frage', 'Werkzeuge'],
@@ -276,7 +279,7 @@
           ['Business Intelligence', 'Berichterstattung & Dashboards', 'Was ist passiert?', 'Power BI, Tableau, Superset'],
           ['Diagnostic Analytics', 'Muster & Trends', 'Warum ist es passiert?', 'SQL, Excel, Python'],
           ['Data Science', 'Vorhersage & ML', 'Was wird passieren?', 'Python, R, TensorFlow'],
-          ['Prescriptive Analytics', 'Was sollen wir tun?', 'Wie optimieren wir?', 'Optimierungsmodelle'],
+          ['Prescriptive Analytics', 'Handlungsempfehlungen & Optimierung', 'Was sollen wir tun?', 'OR-Modelle, Simulation, Gurobi'],
         ],
 
         // Section 2
@@ -286,9 +289,9 @@
         s2LayersTitle: 'Die Schichten im Detail',
         s2Layers: [
           { name: 'Datenquellen', desc: 'ERP-Systeme (SAP), CRM (Salesforce), CSV-Exporte, APIs, IoT-Sensoren' },
-          { name: 'ETL/ELT', desc: 'Extract, Transform, Load \u2013 Daten bereinigen, harmonisieren und in das Warehouse laden' },
-          { name: 'Data Warehouse', desc: 'Zentrales Repository f\u00FCr bereinigte, historische Daten (z.\u202FB. Snowflake, BigQuery, PostgreSQL)' },
-          { name: 'BI-Tool', desc: 'Visualisierungsschicht: Abfragen, Dashboards, KPI-Monitore' },
+          { name: 'ETL/ELT', desc: 'Extract, Transform, Load \u2013 Daten bereinigen, harmonisieren und laden. Tools: dbt, Airbyte, Fivetran, SSIS' },
+          { name: 'Data Warehouse', desc: 'Zentrales Repository f\u00FCr bereinigte, historische Daten (Snowflake, BigQuery, PostgreSQL). Modernes Konzept: Data Lakehouse (Databricks) vereint DWH + Data Lake' },
+          { name: 'Semantic Layer / BI-Tool', desc: 'Datenmodellierung (DAX, LookML) + Visualisierungsschicht: Abfragen, Dashboards, KPI-Monitore' },
           { name: 'Dashboard', desc: 'Entscheidungstr\u00E4ger sehen konsolidierte KPIs in Echtzeit oder als Snapshot' },
         ],
 
@@ -333,6 +336,9 @@
           ['Plotly Dash', 'Open-Source', 'Kostenlos', 'Selbst gehostet'],
           ['Apache Superset', 'Open-Source', 'Kostenlos', 'Selbst gehostet'],
           ['Metabase', 'Open-Source', 'Kostenlos / Abo', 'Flexibel'],
+          ['Looker (Google)', 'Closed-Source', 'Abo (Google Cloud)', 'Google Cloud'],
+          ['Qlik Sense', 'Closed-Source', 'Abo', 'Cloud / On-Premises'],
+          ['DeltaMaster (Bissantz)', 'Closed-Source', 'Abo', 'On-Premises / Cloud'],
         ],
         s4NoteTitle: 'Hinweis zur Datensouver\u00E4nit\u00E4t',
         s4NoteText: 'Open-Source-Tools wie Apache Superset und Metabase erm\u00F6glichen self-hosted Betrieb und sind damit vollst\u00E4ndig DSGVO-konform. In Lab 06 vertiefen wir diesen Ansatz.',
@@ -383,6 +389,50 @@
             correct: 2,
             exp: 'Apache Superset ist ein vollst\u00E4ndig Open-Source BI-Tool, das selbst gehostet werden kann und keine Lizenzkosten verursacht.',
           },
+          {
+            q: 'Wer prägte 1958 den Begriff „Business Intelligence"?',
+            opts: [
+              'Bill Inmon',
+              'Ralph Kimball',
+              'Hans Peter Luhn (IBM)',
+              'Howard Dresner (Gartner)',
+            ],
+            correct: 2,
+            exp: 'Hans Peter Luhn (IBM) veröffentlichte 1958 den Artikel „A Business Intelligence System" und prägte damit den Begriff.',
+          },
+          {
+            q: 'Wofür steht das „M" im SMART-Prinzip für KPIs?',
+            opts: [
+              'Manageable',
+              'Measurable',
+              'Motivating',
+              'Modular',
+            ],
+            correct: 1,
+            exp: 'SMART steht für Specific, Measurable, Achievable, Relevant, Time-bound. Das „M" bedeutet „Measurable" – numerisch messbar.',
+          },
+          {
+            q: 'Welche Schicht der BI-Architektur ist für die Datenbereinigung zuständig?',
+            opts: [
+              'Dashboard',
+              'Data Warehouse',
+              'ETL/ELT',
+              'BI-Tool',
+            ],
+            correct: 2,
+            exp: 'ETL/ELT (Extract, Transform, Load) ist für das Bereinigen, Harmonisieren und Laden der Rohdaten zuständig. Tools wie dbt, Airbyte oder Fivetran automatisieren diesen Prozess.',
+          },
+        ],
+        // Zusammenfassung
+        summaryTitle: 'Zusammenfassung',
+        summaryItems: [
+          'Business Intelligence (BI) wurde 1958 von Hans Peter Luhn (IBM) geprägt und bezeichnet die systematische Sammlung, Integration, Analyse und Visualisierung von Geschäftsdaten zur Entscheidungsunterstützung.',
+          'BI grenzt sich von Diagnostic Analytics (Warum?), Data Science (Was wird passieren?) und Prescriptive Analytics (Was sollen wir tun?) ab – jede Disziplin hat eigene Werkzeuge und Fragestellungen.',
+          'Die BI-Architektur besteht aus fünf Schichten: Datenquellen → ETL/ELT (z.\u00A0B. dbt, Airbyte) → Data Warehouse (Snowflake, BigQuery) → Semantic Layer / BI-Tool → Dashboard.',
+          'Moderne Konzepte wie Data Lakehouse (Databricks) vereinen die Vorteile von Data Warehouse und Data Lake in einer Plattform.',
+          'KPIs werden nach Typ (quantitativ/qualitativ, absolut/relativ) und Zeitrichtung (Lead = vorausschauend, Lag = rückblickend) klassifiziert. Gute KPIs folgen dem SMART-Prinzip.',
+          'Der BI-Markt teilt sich in kommerzielle Lösungen (Power BI seit 2015, Tableau, Looker, Qlik) und Open-Source-Alternativen (Apache Superset, Metabase, Plotly Dash) mit voller Datenhoheit.',
+          'Bill Inmon (1992) und Ralph Kimball (1996) begründeten das Data Warehousing – die Grundlage moderner BI-Architektur.',
         ],
         navNext: 'Lab 02: Daten \u2192',
       },
@@ -404,6 +454,7 @@
           { href: '#tools',       label: 'Tool Overview' },
           { href: '#youtube',     label: 'Resources' },
           { href: '#quiz',        label: 'Quiz' },
+          { href: '#zusammenfassung', label: 'Summary' },
         ],
         backLabel: '\u2190 Overview',
 
@@ -412,12 +463,14 @@
         s1DefLabel: 'Definition',
         s1DefText: 'Business Intelligence (BI) refers to systems and processes for collecting, integrating, analysing, and visualising business data with the goal of supporting data-driven decisions.',
         s1HistTitle: 'History of BI',
+        s1OriginNote: 'The term "Business Intelligence" was coined in 1958 by Hans Peter Luhn (IBM). He described the ability to recognise relationships in data and derive actionable recommendations.',
         s1HistItems: [
-          { era: '1960s\u201380s', label: 'Mainframe Reports', desc: 'Static reports from centralised computing systems' },
-          { era: '1990s', label: 'Data Warehouses', desc: 'Centralised data storage, OLAP cubes, first BI tools' },
-          { era: '2000s', label: 'Early Self-Service BI', desc: 'Tableau (2003), early self-service BI tools' },
-          { era: '2010s', label: 'Self-Service BI', desc: 'Power BI \u2013 analysis without the IT department' },
-          { era: 'Today', label: 'AI-Powered BI', desc: 'AutoML, Natural Language Querying, Predictive Analytics' },
+          { era: '1958', label: 'Term Coined', desc: 'Hans Peter Luhn (IBM) coins "Business Intelligence" in his paper "A Business Intelligence System"' },
+          { era: '1960s\u201380s', label: 'Mainframe Reports', desc: 'Static reports from centralised computing systems, Decision Support Systems (DSS)' },
+          { era: '1990s', label: 'Data Warehouses', desc: 'Bill Inmon (1992) and Ralph Kimball (1996) establish data warehousing, OLAP cubes, first BI tools' },
+          { era: '2000s', label: 'Early Self-Service BI', desc: 'Tableau (founded 2003), QlikView \u2013 first visual BI tools for business users' },
+          { era: '2010s', label: 'Self-Service BI', desc: 'Power BI (released 2015) \u2013 analysis without IT, Cloud DWH (BigQuery 2010, Snowflake 2014)' },
+          { era: 'Today', label: 'AI-Powered BI', desc: 'Copilot in Power BI, Tableau Pulse, AutoML, Natural Language Querying, Data Lakehouse (Databricks)' },
         ],
         s1AbgrTitle: 'Distinguishing: BI vs. Data Science vs. Analytics',
         s1AbgrHeaders: ['Discipline', 'Focus', 'Typical Question', 'Tools'],
@@ -425,7 +478,7 @@
           ['Business Intelligence', 'Reporting & Dashboards', 'What happened?', 'Power BI, Tableau, Superset'],
           ['Diagnostic Analytics', 'Patterns & Trends', 'Why did it happen?', 'SQL, Excel, Python'],
           ['Data Science', 'Prediction & ML', 'What will happen?', 'Python, R, TensorFlow'],
-          ['Prescriptive Analytics', 'What should we do?', 'How do we optimise?', 'Optimisation models'],
+          ['Prescriptive Analytics', 'Recommendations & Optimisation', 'What should we do?', 'OR models, Simulation, Gurobi'],
         ],
 
         // Section 2
@@ -435,9 +488,9 @@
         s2LayersTitle: 'The Layers in Detail',
         s2Layers: [
           { name: 'Data Sources', desc: 'ERP systems (SAP), CRM (Salesforce), CSV exports, APIs, IoT sensors' },
-          { name: 'ETL/ELT', desc: 'Extract, Transform, Load \u2013 clean, harmonise, and load data into the warehouse' },
-          { name: 'Data Warehouse', desc: 'Central repository for cleaned, historical data (e.g. Snowflake, BigQuery, PostgreSQL)' },
-          { name: 'BI Tool', desc: 'Visualisation layer: queries, dashboards, KPI monitors' },
+          { name: 'ETL/ELT', desc: 'Extract, Transform, Load \u2013 clean, harmonise, and load data. Tools: dbt, Airbyte, Fivetran, SSIS' },
+          { name: 'Data Warehouse', desc: 'Central repository for cleaned, historical data (Snowflake, BigQuery, PostgreSQL). Modern concept: Data Lakehouse (Databricks) unifies DWH + Data Lake' },
+          { name: 'Semantic Layer / BI Tool', desc: 'Data modelling (DAX, LookML) + visualisation layer: queries, dashboards, KPI monitors' },
           { name: 'Dashboard', desc: 'Decision makers see consolidated KPIs in real time or as a snapshot' },
         ],
 
@@ -482,6 +535,9 @@
           ['Plotly Dash', 'Open-Source', 'Free', 'Self-hosted'],
           ['Apache Superset', 'Open-Source', 'Free', 'Self-hosted'],
           ['Metabase', 'Open-Source', 'Free / Subscription', 'Flexible'],
+          ['Looker (Google)', 'Closed-Source', 'Subscription (Google Cloud)', 'Google Cloud'],
+          ['Qlik Sense', 'Closed-Source', 'Subscription', 'Cloud / On-Premises'],
+          ['DeltaMaster (Bissantz)', 'Closed-Source', 'Subscription', 'On-Premises / Cloud'],
         ],
         s4NoteTitle: 'Note on Data Sovereignty',
         s4NoteText: 'Open-source tools like Apache Superset and Metabase allow self-hosted operation and are therefore fully GDPR-compliant. In Lab 06 we explore this approach in depth.',
@@ -532,6 +588,50 @@
             correct: 2,
             exp: 'Apache Superset is a fully open-source BI tool that can be self-hosted and incurs no licensing costs.',
           },
+          {
+            q: 'Who coined the term "Business Intelligence" in 1958?',
+            opts: [
+              'Bill Inmon',
+              'Ralph Kimball',
+              'Hans Peter Luhn (IBM)',
+              'Howard Dresner (Gartner)',
+            ],
+            correct: 2,
+            exp: 'Hans Peter Luhn (IBM) published the paper "A Business Intelligence System" in 1958, coining the term.',
+          },
+          {
+            q: 'What does the "M" stand for in the SMART principle for KPIs?',
+            opts: [
+              'Manageable',
+              'Measurable',
+              'Motivating',
+              'Modular',
+            ],
+            correct: 1,
+            exp: 'SMART stands for Specific, Measurable, Achievable, Relevant, Time-bound. The "M" means "Measurable" – numerically quantifiable.',
+          },
+          {
+            q: 'Which layer of the BI architecture is responsible for data cleansing?',
+            opts: [
+              'Dashboard',
+              'Data Warehouse',
+              'ETL/ELT',
+              'BI Tool',
+            ],
+            correct: 2,
+            exp: 'ETL/ELT (Extract, Transform, Load) is responsible for cleansing, harmonising, and loading raw data. Tools like dbt, Airbyte, or Fivetran automate this process.',
+          },
+        ],
+        // Summary
+        summaryTitle: 'Summary',
+        summaryItems: [
+          'Business Intelligence (BI) was coined in 1958 by Hans Peter Luhn (IBM) and refers to the systematic collection, integration, analysis, and visualisation of business data for decision support.',
+          'BI is distinct from Diagnostic Analytics (Why?), Data Science (What will happen?) and Prescriptive Analytics (What should we do?) – each discipline has its own tools and questions.',
+          'The BI architecture consists of five layers: Data Sources → ETL/ELT (e.g. dbt, Airbyte) → Data Warehouse (Snowflake, BigQuery) → Semantic Layer / BI Tool → Dashboard.',
+          'Modern concepts like Data Lakehouse (Databricks) combine the advantages of Data Warehouse and Data Lake into a single platform.',
+          'KPIs are classified by type (quantitative/qualitative, absolute/relative) and time direction (Lead = forward-looking, Lag = backward-looking). Good KPIs follow the SMART principle.',
+          'The BI market is split between commercial solutions (Power BI since 2015, Tableau, Looker, Qlik) and open-source alternatives (Apache Superset, Metabase, Plotly Dash) with full data sovereignty.',
+          'Bill Inmon (1992) and Ralph Kimball (1996) established data warehousing – the foundation of modern BI architecture.',
         ],
         navNext: 'Lab 02: Data \u2192',
       },
@@ -549,7 +649,7 @@
       };
 
       useEffect(() => {
-        const sections = ['was-ist-bi', 'architektur', 'kpis', 'tools', 'youtube', 'quiz'];
+        const sections = ['was-ist-bi', 'architektur', 'kpis', 'tools', 'youtube', 'quiz', 'zusammenfassung'];
         const handler = () => {
           for (let i = sections.length - 1; i >= 0; i--) {
             const el = document.getElementById(sections[i]);
@@ -620,6 +720,10 @@
                 <p style={{ margin: '0.75rem 0 0' }}>{tx.s1DefText}</p>
               </div>
 
+              <div className="info-box" style={{ marginTop: '1rem' }}>
+                {tx.s1OriginNote}
+              </div>
+
               <h3 style={{ marginTop: '2rem' }}>{tx.s1HistTitle}</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem', margin: '1rem 0' }}>
                 {tx.s1HistItems.map((item, i) => (
@@ -650,7 +754,7 @@
               <div className="bauhaus-accent-line"></div>
               <p>{tx.s2Desc}</p>
 
-              <CodeBlock code={tx.s2DiagramCode} />
+              <CodeBlock code={tx.s2DiagramCode} lang={lang} />
 
               <h3 style={{ marginTop: '2rem' }}>{tx.s2LayersTitle}</h3>
               {tx.s2Layers.map((layer, i) => (
@@ -787,6 +891,18 @@
                   explanation={q.exp}
                 />
               ))}
+            </section>
+
+            {/* ── Section 7: Zusammenfassung ── */}
+            <section id="zusammenfassung" className="section-block">
+              <span className="bauhaus-badge">{lang === 'de' ? 'ZUSAMMENFASSUNG' : 'SUMMARY'}</span>
+              <div className="bauhaus-accent-line" />
+              <h2>{tx.summaryTitle}</h2>
+              <div className="concept-box">
+                <ul style={{ margin: 0, paddingLeft: '1.2rem', lineHeight: 1.85 }}>
+                  {tx.summaryItems.map((item, i) => <li key={i} style={{ fontSize: '0.92rem', marginBottom: '0.3rem' }}>{item}</li>)}
+                </ul>
+              </div>
             </section>
 
             {/* ── Nav Bottom ── */}
