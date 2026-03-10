@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab 06 – Digitale Souver&#228;nit&#228;t &amp; Open-Source BI · THWS BI Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    :root { --primary: #1E3A8A; --accent: #2563EB; --dark: #1A1A1A; --light-bg: #FAFAFA; }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { background: #FAFAFA; font-family: 'Space Grotesk', -apple-system, sans-serif; margin: 0; color: #1A1A1A; }
+    h2 { color: #1E3A8A; font-weight: 800; font-family: 'Space Grotesk', sans-serif; margin-top: 0; }
+    h3 { color: #1E3A8A; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
+    h4 { font-family: 'Space Grotesk', sans-serif; font-weight: 600; margin: 0.5rem 0; }
+    p { line-height: 1.7; }
+    .bauhaus-accent-line { width: 48px; height: 4px; background: #2563EB; margin: 0.5rem 0 1rem 0; }
+    .bauhaus-badge { background: #2563EB; color: white; padding: 0.2rem 0.7rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; display: inline-block; }
+    .code-block { background: #F3F4F6; color: #1A1A1A; border-left: 4px solid #D1D5DB; font-family: 'Courier New', monospace; font-size: 0.82rem; padding: 1rem 1.25rem; border-radius: 0 8px 8px 0; white-space: pre; overflow-x: auto; position: relative; margin: 1rem 0; }
+    .tip-box { border-left: 4px solid #2563EB; background: #EFF6FF; padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+    .info-box { border-left: 4px solid #3b82f6; background: #eff6ff; padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+    .concept-box { border-left: 4px solid #1E3A8A; background: rgba(30,58,138,0.06); padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+    .warning-box { border-left: 4px solid #F59E0B; background: #FFFBEB; padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+    .checklist { list-style: none; padding: 0; margin: 0; }
+    .checklist li { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.6rem 0; border-bottom: 1px solid #f0f0f0; font-size: 0.95rem; }
+    .checklist li:last-child { border-bottom: none; }
+    .check-icon { color: #2563EB; font-weight: 700; font-size: 1.1rem; flex-shrink: 0; }
+    .header { position: fixed; top: 0; left: 0; right: 0; height: 56px; z-index: 100; background: white; border-bottom: 1px solid #E5E7EB; box-shadow: 0 1px 8px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; }
+    .header-left { display: flex; align-items: center; gap: 1.5rem; }
+    .header-logo { font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1.1rem; color: #1E3A8A; text-decoration: none; }
+    .header-back { font-size: 0.85rem; color: #555; text-decoration: none; font-weight: 500; }
+    .header-back:hover { color: #1E3A8A; }
+    .lang-btn { border: 2px solid #1A1A1A; background: white; padding: 0.2rem 0.6rem; font-size: 0.78rem; font-weight: 700; cursor: pointer; letter-spacing: 0.05em; font-family: 'Space Grotesk', sans-serif; }
+    .lang-btn.active { background: #2563EB; color: white; border-color: #2563EB; }
+    .lang-btn:hover:not(.active) { background: #f5f5f5; }
+    .sidebar { position: fixed; top: 56px; left: 0; width: 260px; height: calc(100vh - 56px); overflow-y: auto; border-right: 1px solid #E5E7EB; background: white; padding: 1.5rem 0; }
+    .sidebar-title { font-family: 'Space Grotesk', sans-serif; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #888; padding: 0 1.25rem; margin-bottom: 0.75rem; }
+    .sidebar-link { display: block; padding: 0.55rem 1.25rem; font-size: 0.88rem; color: #444; text-decoration: none; border-left: 3px solid transparent; transition: background 0.12s, color 0.12s, border-color 0.12s; font-weight: 500; }
+    .sidebar-link:hover { color: #1E3A8A; background: rgba(30,58,138,0.04); }
+    .sidebar-link.active { color: #1E3A8A; border-left-color: #2563EB; background: rgba(30,58,138,0.06); font-weight: 700; }
+    .main-content { margin-left: 260px; padding-top: 72px; padding-bottom: 4rem; padding-left: 3rem; padding-right: 3rem; max-width: 960px; }
+    .section-block { margin-bottom: 4rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+    th { background: #1E3A8A; color: white; padding: 0.65rem 1rem; text-align: left; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.82rem; letter-spacing: 0.05em; }
+    td { padding: 0.6rem 1rem; border-bottom: 1px solid #e5e7eb; }
+    tr:nth-child(even) td { background: #f9fafb; }
+    .nav-bottom { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; margin-top: 2rem; border-top: 1px solid #e5e7eb; }
+    .nav-btn { border: 2px solid #1A1A1A; background: white; padding: 0.65rem 1.25rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; text-decoration: none; color: #1A1A1A; font-family: 'Space Grotesk', sans-serif; display: inline-block; }
+    .nav-btn:hover { background: #2563EB; color: white; border-color: #2563EB; }
+    .nav-btn.primary { background: #1E3A8A; border-color: #1E3A8A; color: white; }
+    .nav-btn.primary:hover { background: #1e40af; border-color: #1e40af; }
+    .lernziele-box { background: #EFF6FF; border-left: 4px solid #2563EB; padding: 1.25rem 1.5rem; margin-top: 1.5rem; }
+    .lernziele-heading { color: #1E3A8A; margin: 0 0 0.75rem; font-family: 'Space Grotesk', sans-serif; font-weight: 700; }
+    .footer { background: #1A1A1A; padding: 2rem 3rem 2rem calc(260px + 3rem); }
+    .footer-text { color: #6B7280; font-size: 0.875rem; }
+    @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding-left: 1.25rem; padding-right: 1.25rem; } .footer { padding: 2rem 1.25rem; } }
+    [data-lang="en"] h2, [data-lang="en"] h3 { color: #0D9488; }
+    [data-lang="en"] .bauhaus-accent-line { background: #14B8A6; }
+    [data-lang="en"] .bauhaus-badge { background: #0D9488; }
+    [data-lang="en"] .header-logo { color: #0D9488; }
+    [data-lang="en"] .lang-btn.active { background: #0D9488; border-color: #0D9488; color: white; }
+    [data-lang="en"] .sidebar-link.active { color: #0D9488; border-left-color: #14B8A6; background: rgba(13,148,136,0.06); }
+    [data-lang="en"] .sidebar-link:hover { color: #0D9488; }
+    [data-lang="en"] .header-back:hover { color: #0D9488; }
+    [data-lang="en"] th { background: #0D9488; }
+    [data-lang="en"] .tip-box { border-left-color: #14B8A6; background: #F0FDFA; }
+    [data-lang="en"] .concept-box { border-left-color: #0D9488; background: rgba(13,148,136,0.06); }
+    [data-lang="en"] .lernziele-box { border-left-color: #14B8A6; background: #F0FDFA; }
+    [data-lang="en"] .lernziele-heading { color: #0D9488; }
+    [data-lang="en"] .nav-btn:hover { background: #0D9488; border-color: #0D9488; color: white; }
+    [data-lang="en"] .nav-btn.primary { background: #0D9488; border-color: #0D9488; }
+    [data-lang="en"] .check-icon { color: #0D9488; }
+    .checklist-row { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.7rem 0.75rem; border-bottom: 1px solid #f0f0f0; font-size: 0.95rem; cursor: pointer; border-radius: 4px; transition: background 0.1s; user-select: none; }
+    .checklist-row:last-child { border-bottom: none; }
+    .checklist-row:hover { background: rgba(30,58,138,0.04); }
+    .checklist-row.checked { background: rgba(37,99,235,0.06); }
+    [data-lang="en"] .checklist-row:hover { background: rgba(13,148,136,0.04); }
+    [data-lang="en"] .checklist-row.checked { background: rgba(13,148,136,0.06); }
+    .checklist-checkbox { width: 20px; height: 20px; border: 2px solid #D1D5DB; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; transition: background 0.1s, border-color 0.1s; }
+    .checklist-checkbox.checked { background: #2563EB; border-color: #2563EB; }
+    [data-lang="en"] .checklist-checkbox.checked { background: #0D9488; border-color: #0D9488; }
+    .checklist-checkbox svg { display: none; }
+    .checklist-checkbox.checked svg { display: block; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+  var urlLang = new URLSearchParams(window.location.search).get('lang');
+
+  function CodeBlock({ code }) {
+    const [copied, setCopied] = React.useState(false);
+    const copy = () => {
+      navigator.clipboard.writeText(code).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500); }).catch(() => { const el = document.createElement('textarea'); el.value = code; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); setCopied(true); setTimeout(() => setCopied(false), 1500); });
+    };
+    return (
+      <div style={{ position: 'relative', marginBottom: '1rem' }}>
+        <pre className="code-block">{code}</pre>
+        <button onClick={copy} style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', background: copied ? '#059669' : '#E5E7EB', color: copied ? 'white' : '#374151', border: 'none', padding: '0.2rem 0.5rem', fontSize: '0.75rem', cursor: 'pointer', fontFamily: 'Space Grotesk, sans-serif' }}>{copied ? '✓ Kopiert' : 'Kopieren'}</button>
+      </div>
+    );
+  }
+
+  var metabaseComposeCode = `version: '3'
+services:
+  metabase:
+    image: metabase/metabase:latest
+    ports:
+      - "3000:3000"
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabase
+      MB_DB_HOST: postgres
+      MB_DB_USER: metabase
+      MB_DB_PASS: metabasepassword
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: metabase
+      POSTGRES_PASSWORD: metabasepassword
+      POSTGRES_DB: metabase
+    volumes:
+      - metabase_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  metabase_data:`;
+
+  var metabaseStartCode = `# Metabase starten
+docker compose up -d
+
+# Status pr\u00fcfen
+docker compose ps
+
+# Logs anzeigen
+docker compose logs -f metabase
+
+# Zugriff im Browser: http://localhost:3000`;
+
+  function App() {
+    const [lang, setLang] = React.useState(() => localStorage.getItem('bi-lang') || urlLang || 'de');
+    const [activeSection, setActiveSection] = React.useState('ueberblick');
+    const [checks, setChecks] = React.useState(Array(6).fill(false));
+
+    const toggleLang = (l) => { setLang(l); localStorage.setItem('bi-lang', l); };
+    const toggleCheck = (i) => { const c = [...checks]; c[i] = !c[i]; setChecks(c); };
+
+    const de = lang === 'de';
+
+    React.useEffect(() => {
+      document.documentElement.setAttribute('data-lang', lang);
+    }, [lang]);
+
+    React.useEffect(() => {
+      const handleScroll = () => {
+        var sections = ['ueberblick', 'souveraenitaet', 'cloud-lockin', 'open-source', 'docker-setup', 'dsgvo', 'entscheidung', 'abschlussprojekt', 'ressourcen'];
+        var current = 'ueberblick';
+        for (var i = 0; i < sections.length; i++) {
+          var el = document.getElementById(sections[i]);
+          if (el) {
+            var rect = el.getBoundingClientRect();
+            if (rect.top <= 100) current = sections[i];
+          }
+        }
+        setActiveSection(current);
+      };
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    var dsgvoItemsDE = [
+      'Verarbeitungsverzeichnis angelegt?',
+      'Auftragsverarbeitungsvertrag (AVV) mit Cloud-Anbieter geschlossen?',
+      'Datentransfer in Drittl\u00e4nder dokumentiert?',
+      'Datenschutzfolgenabsch\u00e4tzung (DSFA) bei sensiblen Daten durchgef\u00fchrt?',
+      'L\u00f6schkonzept vorhanden?',
+      'Daten in EU-Infrastruktur (kein Transfer in USA)?'
+    ];
+
+    var dsgvoItemsEN = [
+      'Record of processing activities (ROPA) created?',
+      'Data Processing Agreement (DPA) signed with cloud provider?',
+      'Data transfers to third countries documented?',
+      'Data Protection Impact Assessment (DPIA) for sensitive data completed?',
+      'Data deletion concept in place?',
+      'Data stored in EU infrastructure (no transfer to USA)?'
+    ];
+
+    var dsgvoItems = de ? dsgvoItemsDE : dsgvoItemsEN;
+
+    var navSections = de ? [
+      { id: 'ueberblick', label: '\u00dcberblick' },
+      { id: 'souveraenitaet', label: 'Digitale Souver\u00e4nit\u00e4t' },
+      { id: 'cloud-lockin', label: 'Cloud Lock-in' },
+      { id: 'open-source', label: 'Open-Source Alternativen' },
+      { id: 'docker-setup', label: 'Docker Self-Hosted Setup' },
+      { id: 'dsgvo', label: 'DSGVO & Compliance' },
+      { id: 'entscheidung', label: 'Entscheidungsmatrix' },
+      { id: 'abschlussprojekt', label: 'Abschlussprojekt-Idee' },
+      { id: 'ressourcen', label: 'Ressourcen' }
+    ] : [
+      { id: 'ueberblick', label: 'Overview' },
+      { id: 'souveraenitaet', label: 'Digital Sovereignty' },
+      { id: 'cloud-lockin', label: 'Cloud Lock-in' },
+      { id: 'open-source', label: 'Open-Source Alternatives' },
+      { id: 'docker-setup', label: 'Docker Self-Hosted Setup' },
+      { id: 'dsgvo', label: 'GDPR & Compliance' },
+      { id: 'entscheidung', label: 'Decision Matrix' },
+      { id: 'abschlussprojekt', label: 'Final Project Idea' },
+      { id: 'ressourcen', label: 'Resources' }
+    ];
+
+    return (
+      <div data-lang={lang}>
+        {/* Header */}
+        <header className="header">
+          <div className="header-left">
+            <a href="index.html" className="header-logo">THWS BI Lab</a>
+            <a href="index.html" className="header-back">{'←'} {de ? 'Zur \u00dcbersicht' : 'Back to Overview'}</a>
+          </div>
+          <div style={{ display: 'flex', gap: '0.4rem' }}>
+            <button className={`lang-btn${lang === 'de' ? ' active' : ''}`} onClick={() => toggleLang('de')}>DE</button>
+            <button className={`lang-btn${lang === 'en' ? ' active' : ''}`} onClick={() => toggleLang('en')}>EN</button>
+          </div>
+        </header>
+
+        {/* Sidebar */}
+        <nav className="sidebar">
+          <div className="sidebar-title">{de ? 'Lab 06 – Inhalt' : 'Lab 06 – Contents'}</div>
+          {navSections.map(s => (
+            <a key={s.id} href={`#${s.id}`} className={`sidebar-link${activeSection === s.id ? ' active' : ''}`}>{s.label}</a>
+          ))}
+        </nav>
+
+        {/* Main Content */}
+        <main className="main-content">
+
+          {/* Section 1: Überblick */}
+          <section id="ueberblick" className="section-block">
+            <div className="bauhaus-badge">Lab 06</div>
+            <h2 style={{ fontSize: '2rem', marginTop: '0.75rem' }}>
+              {de ? 'Digitale Souver\u00e4nit\u00e4t & Open-Source BI' : 'Digital Sovereignty & Open-Source BI'}
+            </h2>
+            <div className="bauhaus-accent-line"></div>
+            <p>
+              {de
+                ? 'In diesem Lab besch\u00e4ftigen wir uns mit der Frage, wem Ihre Daten geh\u00f6ren und wie Sie mit Open-Source-Tools und Self-Hosted-L\u00f6sungen vollst\u00e4ndige Kontrolle \u00fcber Ihre BI-Infrastruktur behalten k\u00f6nnen.'
+                : 'In this lab, we explore the question of who owns your data and how you can maintain full control over your BI infrastructure using open-source tools and self-hosted solutions.'}
+            </p>
+            <div className="lernziele-box">
+              <h4 className="lernziele-heading">{de ? 'Lernziele' : 'Learning Objectives'}</h4>
+              <ul className="checklist">
+                <li>
+                  <span className="check-icon">1</span>
+                  <span>{de ? 'Begriff "Digitale Souver\u00e4nit\u00e4t" definieren und kontextualisieren' : 'Define and contextualise the term "Digital Sovereignty"'}</span>
+                </li>
+                <li>
+                  <span className="check-icon">2</span>
+                  <span>{de ? 'Open-Source BI-Tools kennen und einordnen' : 'Know and classify open-source BI tools'}</span>
+                </li>
+                <li>
+                  <span className="check-icon">3</span>
+                  <span>{de ? 'Kritische Abh\u00e4ngigkeiten von Cloud-Anbietern erkennen' : 'Identify critical dependencies on cloud providers'}</span>
+                </li>
+                <li>
+                  <span className="check-icon">4</span>
+                  <span>{de ? 'Einfachen Self-Hosted BI-Stack mit Docker beschreiben' : 'Describe a simple self-hosted BI stack with Docker'}</span>
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          {/* Section 2: Was ist Digitale Souveränität? */}
+          <section id="souveraenitaet" className="section-block">
+            <h2>{de ? 'Was ist Digitale Souver\u00e4nit\u00e4t?' : 'What is Digital Sovereignty?'}</h2>
+            <div className="bauhaus-accent-line"></div>
+            <p>
+              {de
+                ? 'Digitale Souver\u00e4nit\u00e4t bezeichnet die F\u00e4higkeit von Organisationen und Staaten, ihre eigene digitale Infrastruktur zu kontrollieren, unabh\u00e4ngig von externen Anbietern Entscheidungen zu treffen und die Hoheit \u00fcber ihre Daten zu behalten.'
+                : 'Digital sovereignty refers to the ability of organisations and states to control their own digital infrastructure, make decisions independently of external providers, and retain ownership of their data.'}
+            </p>
+            <h3>{de ? 'EU-Perspektive: GAIA-X und European Cloud Initiative' : 'EU Perspective: GAIA-X and the European Cloud Initiative'}</h3>
+            <p>
+              {de
+                ? 'Die Europ\u00e4ische Union hat mit Initiativen wie GAIA-X und der European Cloud Initiative reagiert. Ziel ist der Aufbau einer europ\u00e4ischen Cloud-Infrastruktur, die europ\u00e4ischen Datenschutzstandards entspricht und die Abh\u00e4ngigkeit von US-amerikanischen und chinesischen Hyperscalern reduziert.'
+                : 'The European Union has responded with initiatives such as GAIA-X and the European Cloud Initiative. The goal is to build a European cloud infrastructure that meets European data protection standards and reduces dependency on US and Chinese hyperscalers.'}
+            </p>
+            <h3>{de ? 'Konkret f\u00fcr BI: Die entscheidenden Fragen' : 'Concrete BI Questions'}</h3>
+            <ul style={{ lineHeight: '2' }}>
+              <li>{de ? 'Wo liegen meine Daten physisch gespeichert?' : 'Where are my data physically stored?'}</li>
+              <li>{de ? 'Wer kann auf meine Unternehmensdaten zugreifen?' : 'Who can access my corporate data?'}</li>
+              <li>{de ? 'Unter welchem Rechtssystem stehen meine Daten?' : 'Under which legal system do my data fall?'}</li>
+              <li>{de ? 'Was passiert mit meinen Daten bei einem Anbieter-Insolvenz?' : 'What happens to my data if the provider goes insolvent?'}</li>
+            </ul>
+            <div className="warning-box">
+              <strong>{de ? 'DSGVO-Relevanz:' : 'GDPR Relevance:'}</strong>{' '}
+              {de
+                ? 'Datentransfer in Drittl\u00e4nder (USA) ist bei personenbezogenen Daten ohne angemessenes Schutzniveau problematisch. Cloud-BI-Dienste wie Power BI Service oder Tableau Cloud speichern Daten auf US-Servern.'
+                : 'Data transfers to third countries (USA) are problematic for personal data without an adequate level of protection. Cloud BI services such as Power BI Service or Tableau Cloud store data on US servers.'}
+            </div>
+          </section>
+
+          {/* Section 3: Cloud Lock-in Analyse */}
+          <section id="cloud-lockin" className="section-block">
+            <h2>{de ? 'Cloud Lock-in Analyse' : 'Cloud Lock-in Analysis'}</h2>
+            <div className="bauhaus-accent-line"></div>
+            <h3>Power BI (Microsoft)</h3>
+            <ul style={{ lineHeight: '2' }}>
+              <li>{de ? 'Daten in Azure-Cloud (USA-Server)' : 'Data stored in Azure Cloud (US servers)'}</li>
+              <li>
+                {de
+                  ? 'Kosten: Desktop kostenlos, Service ab ca. 9 EUR/User/Monat'
+                  : 'Costs: Desktop free, Service from approx. 9 EUR/user/month'}
+              </li>
+              <li>
+                {de
+                  ? 'Risiko: Microsoft kann theoretisch auf Unternehmensdaten zugreifen (CLOUD Act)'
+                  : 'Risk: Microsoft can theoretically access corporate data (CLOUD Act)'}
+              </li>
+              <li>
+                {de
+                  ? 'Ausweg: Power BI Report Server (On-Premises) – aber teuer und begrenzt'
+                  : 'Escape route: Power BI Report Server (on-premises) – but expensive and limited'}
+              </li>
+            </ul>
+            <div className="concept-box">
+              <strong>{de ? 'US CLOUD Act (2018):' : 'US CLOUD Act (2018):'}</strong>{' '}
+              {de
+                ? 'Der US CLOUD Act (2018) verpflichtet US-Unternehmen, Beh\u00f6rden auf Anfrage Zugang zu gespeicherten Daten zu gew\u00e4hren – auch wenn diese au\u00dferhalb der USA liegen.'
+                : 'The US CLOUD Act (2018) requires US companies to provide government authorities with access to stored data upon request – even if that data is located outside the United States.'}
+            </div>
+            <h3>{de ? 'Weitere Lock-in-Risiken' : 'Further Lock-in Risks'}</h3>
+            <p>
+              {de
+                ? 'Vendor Lock-in entsteht nicht nur durch Datenspeicherung, sondern auch durch propriet\u00e4re Datenformate, API-Abh\u00e4ngigkeiten, lizenzgebundene Features und den Verlust von Know-how beim Wechsel. Ein gut geplanter Exit ist selten einfach.'
+                : 'Vendor lock-in arises not only through data storage, but also through proprietary data formats, API dependencies, license-bound features, and knowledge loss when switching. A well-planned exit is rarely straightforward.'}
+            </p>
+          </section>
+
+          {/* Section 4: Open-Source Alternativen */}
+          <section id="open-source" className="section-block">
+            <h2>{de ? 'Open-Source Alternativen' : 'Open-Source Alternatives'}</h2>
+            <div className="bauhaus-accent-line"></div>
+            <p>
+              {de
+                ? 'Die Open-Source-Community bietet ausgereifte BI-Tools, die auf eigener Infrastruktur betrieben werden k\u00f6nnen. Hier eine \u00dcbersicht der wichtigsten Optionen:'
+                : 'The open-source community offers mature BI tools that can be operated on your own infrastructure. Here is an overview of the most important options:'}
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Tool</th>
+                  <th>{de ? 'Typ' : 'Type'}</th>
+                  <th>Docker</th>
+                  <th>{de ? 'St\u00e4rken' : 'Strengths'}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Apache Superset</strong></td>
+                  <td>Self-Hosted</td>
+                  <td>{de ? 'Ja' : 'Yes'}</td>
+                  <td>{de ? 'M\u00e4chtig, SQL-first, gro\u00dfe Community' : 'Powerful, SQL-first, large community'}</td>
+                </tr>
+                <tr>
+                  <td><strong>Metabase</strong></td>
+                  <td>{de ? 'Self-Hosted + Cloud-Option' : 'Self-Hosted + Cloud option'}</td>
+                  <td>{de ? 'Ja' : 'Yes'}</td>
+                  <td>{de ? 'Einfach, gut f\u00fcr Non-Techniker' : 'Easy to use, great for non-technical users'}</td>
+                </tr>
+                <tr>
+                  <td><strong>Redash</strong></td>
+                  <td>Self-Hosted</td>
+                  <td>{de ? 'Ja' : 'Yes'}</td>
+                  <td>{de ? 'SQL-fokussiert, API-Zugriff' : 'SQL-focused, API access'}</td>
+                </tr>
+                <tr>
+                  <td><strong>Plotly Dash</strong></td>
+                  <td>Self-Hosted</td>
+                  <td>{de ? 'Ja' : 'Yes'}</td>
+                  <td>{de ? 'Maximale Flexibilit\u00e4t, Python-\u00d6kosystem' : 'Maximum flexibility, Python ecosystem'}</td>
+                </tr>
+                <tr>
+                  <td><strong>Grafana</strong></td>
+                  <td>{de ? 'Self-Hosted + Cloud' : 'Self-Hosted + Cloud'}</td>
+                  <td>{de ? 'Ja' : 'Yes'}</td>
+                  <td>{de ? 'Ideal f\u00fcr Metriken/Monitoring' : 'Ideal for metrics and monitoring'}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div className="tip-box">
+              <strong>Tipp:</strong>{' '}
+              {de
+                ? 'Apache Superset und Metabase sind die besten Power-BI-Alternativen f\u00fcr Unternehmen, die Datensouver\u00e4nit\u00e4t priorisieren.'
+                : 'Apache Superset and Metabase are the best Power BI alternatives for organisations that prioritise data sovereignty.'}
+            </div>
+          </section>
+
+          {/* Section 5: Docker Self-Hosted Setup */}
+          <section id="docker-setup" className="section-block">
+            <h2>{de ? 'Docker Self-Hosted Setup' : 'Docker Self-Hosted Setup'}</h2>
+            <div className="bauhaus-accent-line"></div>
+            <p>
+              {de
+                ? 'Mit Docker und Docker Compose l\u00e4sst sich ein vollst\u00e4ndiger BI-Stack in wenigen Minuten auf eigener Hardware oder einem eigenen Server aufsetzen. Das folgende Beispiel zeigt ein produktionsreifes Metabase-Setup mit PostgreSQL als Backend-Datenbank.'
+                : 'With Docker and Docker Compose, a complete BI stack can be set up on your own hardware or server in just a few minutes. The following example shows a production-ready Metabase setup with PostgreSQL as the backend database.'}
+            </p>
+            <h3>Metabase + PostgreSQL: docker-compose.yml</h3>
+            <CodeBlock code={metabaseComposeCode} />
+            <h3>{de ? 'Start-Befehle' : 'Start Commands'}</h3>
+            <CodeBlock code={metabaseStartCode} />
+            <div className="info-box">
+              <strong>{de ? 'Hinweis:' : 'Note:'}</strong>{' '}
+              {de
+                ? 'Nach dem ersten Start unter http://localhost:3000 f\u00fchrt Metabase durch einen Setup-Assistenten. Die Verbindung zur eigenen Datenbank kann direkt konfiguriert werden.'
+                : 'After the first launch at http://localhost:3000, Metabase walks you through a setup wizard. The connection to your own database can be configured directly.'}
+            </div>
+          </section>
+
+          {/* Section 6: DSGVO & Compliance-Checkliste */}
+          <section id="dsgvo" className="section-block">
+            <h2>{de ? 'DSGVO & Compliance-Checkliste' : 'GDPR & Compliance Checklist'}</h2>
+            <div className="bauhaus-accent-line"></div>
+            <p>
+              {de
+                ? 'Vor dem Einsatz eines BI-Tools – ob Cloud oder Self-Hosted – sollten folgende DSGVO-relevante Punkte gepr\u00fcft und dokumentiert sein. Klicken Sie auf einen Punkt, um ihn als erledigt zu markieren.'
+                : 'Before deploying a BI tool – whether cloud or self-hosted – the following GDPR-relevant points should be checked and documented. Click on an item to mark it as complete.'}
+            </p>
+            <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '0.5rem 0.75rem' }}>
+              {dsgvoItems.map((item, i) => (
+                <div
+                  key={i}
+                  className={`checklist-row${checks[i] ? ' checked' : ''}`}
+                  onClick={() => toggleCheck(i)}
+                  role="checkbox"
+                  aria-checked={checks[i]}
+                  tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggleCheck(i); } }}
+                >
+                  <div className={`checklist-checkbox${checks[i] ? ' checked' : ''}`}>
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                      <path d="M2 6L5 9L10 3" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <span style={{ textDecoration: checks[i] ? 'line-through' : 'none', color: checks[i] ? '#9CA3AF' : '#1A1A1A', transition: 'color 0.1s' }}>{item}</span>
+                </div>
+              ))}
+            </div>
+            <p style={{ fontSize: '0.85rem', color: '#6B7280', marginTop: '0.75rem' }}>
+              {de
+                ? `${checks.filter(Boolean).length} von ${checks.length} Punkten abgehakt`
+                : `${checks.filter(Boolean).length} of ${checks.length} items checked`}
+            </p>
+          </section>
+
+          {/* Section 7: Entscheidungsmatrix */}
+          <section id="entscheidung" className="section-block">
+            <h2>{de ? 'Entscheidungsmatrix' : 'Decision Matrix'}</h2>
+            <div className="bauhaus-accent-line"></div>
+            <p>
+              {de
+                ? 'Welches BI-Tool passt zu welchem Anwendungsfall? Diese Matrix hilft bei der schnellen Orientierung:'
+                : 'Which BI tool fits which use case? This matrix helps with quick orientation:'}
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>{de ? 'Szenario' : 'Scenario'}</th>
+                  <th>{de ? 'Empfehlung' : 'Recommendation'}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{de ? 'Kleines Team, keine IT-Infrastruktur' : 'Small team, no IT infrastructure'}</td>
+                  <td>Power BI / Metabase Cloud</td>
+                </tr>
+                <tr>
+                  <td>{de ? 'Personenbezogene Daten (HR, Kunden)' : 'Personal data (HR, customers)'}</td>
+                  <td>Metabase / Superset self-hosted</td>
+                </tr>
+                <tr>
+                  <td>{de ? 'Komplexe individuelle Dashboards' : 'Complex custom dashboards'}</td>
+                  <td>Plotly Dash</td>
+                </tr>
+                <tr>
+                  <td>{de ? 'Public Sector / Beh\u00f6rden' : 'Public sector / government agencies'}</td>
+                  <td>{de ? 'Open Source (EU-Richtlinien)' : 'Open Source (EU guidelines)'}</td>
+                </tr>
+                <tr>
+                  <td>{de ? 'Startup, schnell deployen' : 'Startup, deploy quickly'}</td>
+                  <td>Metabase + Docker</td>
+                </tr>
+                <tr>
+                  <td>{de ? 'Gro\u00dfunternehmen mit IT-Team' : 'Large enterprise with IT team'}</td>
+                  <td>Apache Superset</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          {/* Section 8: Abschlussprojekt-Idee */}
+          <section id="abschlussprojekt" className="section-block">
+            <h2>{de ? 'Abschlussprojekt-Idee' : 'Final Project Idea'}</h2>
+            <div className="bauhaus-accent-line"></div>
+            <p>
+              {de
+                ? 'Wenden Sie das Gelernte in einem praxisnahen Abschlussprojekt an:'
+                : 'Apply what you have learned in a hands-on final project:'}
+            </p>
+            <div className="concept-box">
+              <h4 style={{ marginTop: 0 }}>{de ? 'Vollst\u00e4ndiger Self-Hosted BI-Stack' : 'Complete Self-Hosted BI Stack'}</h4>
+              <p style={{ marginBottom: '0.5rem' }}>
+                {de
+                  ? 'Baue einen vollst\u00e4ndigen Self-Hosted BI-Stack:'
+                  : 'Build a complete self-hosted BI stack:'}
+              </p>
+              <ol style={{ margin: '0.5rem 0', paddingLeft: '1.25rem', lineHeight: '2' }}>
+                <li>{de ? 'PostgreSQL als Datenbank (Docker)' : 'PostgreSQL as database (Docker)'}</li>
+                <li>{de ? 'Metabase als BI-Frontend (Docker)' : 'Metabase as BI frontend (Docker)'}</li>
+                <li>{de ? 'Superstore-Daten importieren' : 'Import Superstore data'}</li>
+                <li>
+                  {de
+                    ? '3 Dashboards erstellen: Umsatz-\u00dcbersicht, Gewinn-Analyse, Regional-Vergleich'
+                    : 'Create 3 dashboards: Revenue overview, Profit analysis, Regional comparison'}
+                </li>
+              </ol>
+              <p style={{ margin: '0.5rem 0 0' }}>
+                <strong>{de ? 'Ziel:' : 'Goal:'}</strong>{' '}
+                {de
+                  ? 'Vollst\u00e4ndige Datensouver\u00e4nit\u00e4t ohne Cloud-Abh\u00e4ngigkeit'
+                  : 'Complete data sovereignty without cloud dependency'}
+              </p>
+            </div>
+          </section>
+
+          {/* Section 9: YouTube-Ressourcen */}
+          <section id="ressourcen" className="section-block">
+            <h2>{de ? 'YouTube-Ressourcen' : 'YouTube Resources'}</h2>
+            <div className="bauhaus-accent-line"></div>
+            <p>
+              {de
+                ? 'Weiterf\u00fchrende Video-Ressourcen zum Vertiefen der Themen dieses Labs:'
+                : 'Further video resources to deepen the topics of this lab:'}
+            </p>
+            <ul style={{ lineHeight: '2.2' }}>
+              <li>
+                <strong>Apache Superset Official: </strong>
+                <a href="https://www.youtube.com/@ApacheSuperset" target="_blank" rel="noopener noreferrer" style={{ color: '#2563EB' }}>
+                  youtube.com/@ApacheSuperset
+                </a>
+              </li>
+              <li>
+                <strong>Metabase Tutorials: </strong>
+                {de
+                  ? 'Suche nach "Metabase tutorial 2024" auf YouTube'
+                  : 'Search for "Metabase tutorial 2024" on YouTube'}
+              </li>
+            </ul>
+            <div className="tip-box">
+              <strong>{de ? 'Empfehlung:' : 'Recommendation:'}</strong>{' '}
+              {de
+                ? 'Die offiziellen Dokumentationen von Apache Superset (superset.apache.org) und Metabase (metabase.com/docs) sind sehr ausf\u00fchrlich und enthalten auch Docker-Setup-Anleitungen.'
+                : 'The official documentation for Apache Superset (superset.apache.org) and Metabase (metabase.com/docs) is very comprehensive and includes Docker setup guides.'}
+            </div>
+          </section>
+
+          {/* Bottom Navigation */}
+          <nav className="nav-bottom">
+            <a href="lab-05-fallstudie.html" className="nav-btn">
+              {'←'} {de ? 'Lab 05: Fallstudie' : 'Lab 05: Case Study'}
+            </a>
+            <a href="index.html" className="nav-btn primary">
+              {'←'} {de ? 'Zur \u00dcbersicht' : 'Back to Overview'}
+            </a>
+          </nav>
+
+        </main>
+
+        {/* Footer */}
+        <footer className="footer">
+          <p className="footer-text">
+            {'© 2024 THWS Business School – BI Lab · Lab 06: '}
+            {de ? 'Digitale Souver\u00e4nit\u00e4t & Open-Source BI' : 'Digital Sovereignty & Open-Source BI'}
+          </p>
+        </footer>
+      </div>
+    );
+  }
+
+  var root = ReactDOM.createRoot(document.getElementById('root'));
+  root.render(<App />);
+</script>
+</body>
+</html>
