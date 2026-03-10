@@ -429,12 +429,12 @@
     /* Bonus Card */
     .bonus-card {
       grid-column: span 3;
-      border: 1.5px dashed #2563EB;
-      padding: 28px 24px 0;
+      border: 2px dashed #93C5FD;
+      padding: 32px 32px 0;
       display: flex;
       flex-direction: column;
       position: relative;
-      background: white;
+      background: #F8FAFF;
     }
     @media (max-width: 640px) {
       .bonus-card { grid-column: span 1; }
@@ -442,111 +442,119 @@
     }
     .bonus-badge {
       display: inline-block;
-      font-size: 0.65rem;
+      font-size: 0.68rem;
       font-weight: 800;
       letter-spacing: 0.14em;
       text-transform: uppercase;
       color: white;
       background: #2563EB;
       border: none;
-      padding: 3px 10px;
-      margin-bottom: 14px;
+      padding: 4px 12px;
+      margin-bottom: 16px;
       width: fit-content;
     }
     .bonus-title {
-      font-size: 1.35rem;
+      font-size: 1.75rem;
       font-weight: 800;
-      color: #1A1A1A;
-      letter-spacing: -0.01em;
-      margin-bottom: 4px;
+      color: #1E3A8A;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+      line-height: 1.15;
     }
     .bonus-subtitle {
-      font-size: 0.8rem;
-      color: #6B7280;
-      font-weight: 500;
-      letter-spacing: 0.04em;
+      font-size: 0.85rem;
+      color: #4B5563;
+      font-weight: 600;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
     .bonus-highlights {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 20px;
+      gap: 8px;
+      margin-bottom: 28px;
     }
     .bonus-chip {
       font-size: 0.75rem;
-      font-weight: 600;
+      font-weight: 700;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: #374151;
-      background: #F3F4F6;
-      padding: 3px 8px;
-      border: 1px solid #E5E7EB;
+      color: #1E3A8A;
+      background: #DBEAFE;
+      padding: 5px 12px;
+      border: none;
     }
     .bonus-inner {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
+      grid-template-columns: 1fr 1px 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+    .bonus-divider {
+      background: #BFDBFE;
+      height: 100%;
+      min-height: 160px;
     }
     .bonus-why {
-      font-size: 0.8rem;
-      color: #6B7280;
-      line-height: 1.5;
-      margin-bottom: 14px;
+      font-size: 1rem;
+      color: #374151;
+      line-height: 1.65;
+      margin-bottom: 0;
     }
     .bonus-criteria {
       list-style: none;
       padding: 0; margin: 0;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 14px;
     }
     .bonus-criteria li {
       display: flex;
-      gap: 10px;
+      gap: 14px;
       align-items: flex-start;
     }
     .bonus-crit-num {
       flex-shrink: 0;
-      width: 18px; height: 18px;
+      width: 24px; height: 24px;
       background: #1E3A8A;
       color: white;
-      font-size: 0.6rem;
+      font-size: 0.7rem;
       font-weight: 800;
       display: flex; align-items: center; justify-content: center;
-      margin-top: 1px;
+      margin-top: 2px;
+      border-radius: 50%;
     }
     .bonus-crit-text strong {
       display: block;
-      font-size: 0.72rem;
+      font-size: 0.82rem;
       font-weight: 800;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: #1A1A1A;
-      margin-bottom: 1px;
+      color: #1E3A8A;
+      margin-bottom: 2px;
     }
     .bonus-crit-text span {
-      font-size: 0.75rem;
-      color: #6B7280;
-      line-height: 1.45;
+      font-size: 0.9rem;
+      color: #4B5563;
+      line-height: 1.5;
     }
     .btn-bonus-link {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-top: 1.5px dashed #2563EB;
-      padding: 14px 0;
-      font-size: 0.8rem;
+      border-top: 2px dashed #93C5FD;
+      padding: 16px 0;
+      font-size: 0.85rem;
       font-weight: 800;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #1A1A1A;
+      color: #1E3A8A;
       text-decoration: none;
-      margin-top: auto;
+      margin-top: 28px;
       transition: color 0.15s;
     }
-    .btn-bonus-link:hover { color: #1E3A8A; }
+    .btn-bonus-link:hover { color: #2563EB; }
 
     /* Footer */
     .footer {
@@ -631,9 +639,15 @@
     [data-lang="en"] .stat-label { color: #6B7280; }
     [data-lang="en"] .stat-item + .stat-item::before { background: rgba(0,0,0,0.12); }
     [data-lang="en"] .quote-name { color: #0D9488; }
-    [data-lang="en"] .bonus-card { border-color: #14B8A6; }
+    [data-lang="en"] .bonus-card { border-color: #99F6E4; background: #F0FDFA; }
     [data-lang="en"] .bonus-badge { background: #0D9488; }
-    [data-lang="en"] .btn-bonus-link { border-top-color: #14B8A6; }
+    [data-lang="en"] .bonus-chip { background: #CCFBF1; color: #0F766E; }
+    [data-lang="en"] .bonus-title { color: #0F766E; }
+    [data-lang="en"] .bonus-crit-num { background: #0D9488; }
+    [data-lang="en"] .bonus-crit-text strong { color: #0F766E; }
+    [data-lang="en"] .bonus-divider { background: #99F6E4; }
+    [data-lang="en"] .btn-bonus-link { border-top-color: #99F6E4; color: #0F766E; }
+    [data-lang="en"] .btn-bonus-link:hover { color: #0D9488; }
     [data-lang="en"] .btn-bonus-link:hover { color: #0D9488; }
     [data-lang="en"] .bonus-crit-num { background: #0D9488; }
     [data-lang="en"] .lang-btn.active { background: #0D9488; border-color: #0D9488; }
@@ -799,7 +813,7 @@
           },
         ],
         bonusBadge: 'BONUS-PROJEKT',
-        bonusTitle: 'BONUS-PROJEKT: Data Sovereignty Stack',
+        bonusTitle: 'Data Sovereignty Stack',
         bonusSubtitle: 'Self-Hosted BI f\u00FCr DSGVO-konforme Unternehmen',
         bonusWhy: 'Open-Source-BI-Tools auf eigener Infrastruktur erm\u00F6glichen volle Datensouver\u00E4nit\u00E4t \u2014 unabh\u00E4ngig von Cloud-Anbietern, vollst\u00E4ndig DSGVO-konform und kostenfrei.',
         bonusLink: 'Zum Lab \u2192',
@@ -881,7 +895,7 @@
           },
         ],
         bonusBadge: 'BONUS PROJECT',
-        bonusTitle: 'BONUS PROJECT: Data Sovereignty Stack',
+        bonusTitle: 'Data Sovereignty Stack',
         bonusSubtitle: 'Self-Hosted BI for GDPR-Compliant Organizations',
         bonusWhy: 'Open-source BI tools hosted on your own infrastructure give you full data sovereignty \u2014 independent of cloud vendors, fully GDPR-compliant, and cost-free.',
         bonusLink: 'Go to Lab \u2192',
@@ -1116,6 +1130,7 @@
                   <div>
                     <p className="bonus-why">{t.bonusWhy}</p>
                   </div>
+                  <div className="bonus-divider" />
                   <ul className="bonus-criteria">
                     {bonusCriteria.map((c, i) => (
                       <li key={i}>
