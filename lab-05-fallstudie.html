@@ -202,6 +202,7 @@
         ],
         s5Title: 'Schritt 4 – Plotly Dash Step by Step',
         s5Intro: 'Die folgende vollst\u00e4ndige Dash-App repliziert das Power-BI-Dashboard in Python. In app.py speichern und mit python app.py starten.',
+        s5ColabNote: 'Den vollst\u00e4ndigen Code kannst du direkt in Google Colab ausf\u00fchren \u2013 ohne lokale Installation, kostenlos im Browser. Notebooks werden in K\u00fcrze verf\u00fcgbar.',
         s6Title: 'Schritt 5 – Reflexion & Vergleich',
         s6BoxTitle: 'Reflexionsfragen',
         s6Questions: [
@@ -300,6 +301,7 @@
         ],
         s5Title: 'Step 4 \u2013 Plotly Dash Step by Step',
         s5Intro: 'The following complete Dash app replicates the Power BI dashboard in Python. Save as app.py and start with python app.py.',
+        s5ColabNote: 'Run the complete code directly in Google Colab \u2013 no local installation, free in the browser. Notebooks will be available shortly.',
         s6Title: 'Step 5 \u2013 Reflection & Comparison',
         s6BoxTitle: 'Reflection Questions',
         s6Questions: [
@@ -620,6 +622,9 @@ if __name__ == '__main__':
             <div className="bauhaus-accent-line"></div>
             <p>{c.s5Intro}</p>
             <CodeBlock code={codeDashApp} />
+            <div className="info-box">
+              <strong>{'Google Colab:'}</strong>{' '}{c.s5ColabNote}
+            </div>
           </div>
 
           <div id="reflexion" className="section-block">

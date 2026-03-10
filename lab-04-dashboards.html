@@ -268,6 +268,17 @@ if __name__ == '__main__':
 python app.py
 # Öffne http://localhost:8050`;
 
+    const CODE_GUNICORN = `# Starten mit Gunicorn (Production)
+gunicorn app:server -b 0.0.0.0:8050 --workers 2`;
+
+    const CODE_DOCKERFILE = `FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+EXPOSE 8050
+CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
+
     // ─── Translations ─────────────────────────────────────────────────────────
     const translations = {
       de: {
@@ -347,17 +358,28 @@ python app.py
           ['Lernkurve', 'Niedrig (GUI)', 'Mittel (Python)'],
           ['Flexibilität', 'Mittel', 'Sehr hoch'],
           ['Deployment', 'Power BI Service (Cloud)', 'Eigener Server / Cloud'],
-          ['Kosten', 'Freemium + Abo ab ~9 €', 'Kostenlos (Open Source)'],
-          ['Datenhoheit', 'Microsoft Cloud', 'Selbst kontrolliert'],
+          ['Kosten', 'Desktop kostenlos; Service ab ~10\u20AC/User/Monat', 'Kostenlos (Open Source)'],
+          ['Datenhoheit', 'Beim Anbieter (wie bei allen SaaS-Tools)', 'Vollst\u00E4ndig selbst kontrolliert'],
           ['Customization', 'Begrenzt', 'Unbegrenzt'],
           ['KI-Integration', 'Built-in (Copilot)', 'Manuell (Python-Ökosystem)'],
           ['Ideal für', 'Schnelle Business Reports', 'Entwickler, komplexe Apps'],
         ],
         s4RecommTitle: 'Empfehlung',
-        s4RecommText: 'Für interne Business Reports ohne Programmieraufwand → Power BI. Für öffentliche Web-Dashboards, individuelle Anforderungen oder volle Datenkontrolle → Plotly Dash.',
+        s4RecommText: 'F\u00FCr interne Business Reports ohne Programmieraufwand \u2192 Power BI. F\u00FCr \u00F6ffentliche Web-Dashboards, individuelle Anforderungen oder volle Datenkontrolle \u2192 Plotly Dash.',
+        s4VendorNote: 'Hinweis: Vendor Lock-in und Datensouver\u00E4nit\u00E4tsfragen betreffen alle Cloud-basierten BI-Tools \u2013 Tableau (Salesforce), Looker (Google), Qlik (Cloud) haben \u00E4hnliche Charakteristika. Die Wahl h\u00E4ngt von den spezifischen Anforderungen, dem Team und dem Compliance-Umfeld ab.',
+
+        s3DeployTitle: 'Produktiver Deployment-Stack',
+        s3DeployDesc: 'Lokale Entwicklung \u2192 Gunicorn (WSGI) \u2192 Docker Container \u2192 Traefik Reverse Proxy \u2192 HTTPS',
+        s3GunicornTitle: 'Gunicorn',
+        s3GunicornDesc: 'Production-WSGI-Server f\u00FCr Python/Dash (ersetzt den eingebauten Dev-Server).',
+        s3DockerTitle: 'Docker',
+        s3DockerDesc: 'Container-Image mit requirements.txt + app.py + Dockerfile.',
+        s3TraefikTitle: 'Traefik',
+        s3TraefikDesc: 'Automatisches HTTPS + Routing \u2013 kein manuelles nginx n\u00F6tig. Genau dieser Stack l\u00E4uft auf den Live-Dashboards der Kurs-Seite.',
+        s3ColabNote: 'Google Colab: Den vollst\u00E4ndigen Code kannst du direkt in Google Colab ausf\u00FChren \u2013 ohne lokale Installation, kostenlos im Browser. Notebooks werden in K\u00FCrze verf\u00FCgbar.',
 
         s5Title: 'YouTube-Ressourcen',
-        s5Desc: 'Empfohlene Kanäle zur Vertiefung von Plotly und Dash:',
+        s5Desc: 'Empfohlene Kan\u00E4le zur Vertiefung von Plotly und Dash:',
         s5Resources: [
           {
             title: '"Charming Data" – Plotly Dash Tutorials',
@@ -452,14 +474,25 @@ python app.py
           ['Learning Curve', 'Low (GUI)', 'Medium (Python)'],
           ['Flexibility', 'Medium', 'Very high'],
           ['Deployment', 'Power BI Service (Cloud)', 'Own server / cloud'],
-          ['Cost', 'Freemium + subscription from ~€9', 'Free (Open Source)'],
-          ['Data Sovereignty', 'Microsoft Cloud', 'Self-controlled'],
+          ['Cost', 'Desktop free; Service from ~\u20AC10/user/month', 'Free (Open Source)'],
+          ['Data Sovereignty', 'With provider (like all SaaS tools)', 'Fully self-controlled'],
           ['Customization', 'Limited', 'Unlimited'],
           ['AI Integration', 'Built-in (Copilot)', 'Manual (Python ecosystem)'],
           ['Ideal for', 'Quick business reports', 'Developers, complex apps'],
         ],
         s4RecommTitle: 'Recommendation',
-        s4RecommText: 'For internal business reports without programming effort → Power BI. For public web dashboards, custom requirements or full data control → Plotly Dash.',
+        s4RecommText: 'For internal business reports without programming effort \u2192 Power BI. For public web dashboards, custom requirements or full data control \u2192 Plotly Dash.',
+        s4VendorNote: 'Note: Vendor lock-in and data sovereignty concerns affect all cloud-based BI tools \u2013 Tableau (Salesforce), Looker (Google), Qlik (Cloud) have similar characteristics. The choice depends on specific requirements, the team, and the compliance environment.',
+
+        s3DeployTitle: 'Production Deployment Stack',
+        s3DeployDesc: 'Local Dev \u2192 Gunicorn (WSGI) \u2192 Docker Container \u2192 Traefik Reverse Proxy \u2192 HTTPS',
+        s3GunicornTitle: 'Gunicorn',
+        s3GunicornDesc: 'Production WSGI server for Python/Dash (replaces the built-in dev server).',
+        s3DockerTitle: 'Docker',
+        s3DockerDesc: 'Container image with requirements.txt + app.py + Dockerfile.',
+        s3TraefikTitle: 'Traefik',
+        s3TraefikDesc: 'Automatic HTTPS + routing \u2013 no manual nginx required. This exact stack powers the live dashboards on the course page.',
+        s3ColabNote: 'Google Colab: Run the complete code directly in Google Colab \u2013 no local installation, free in the browser. Notebooks will be available shortly.',
 
         s5Title: 'YouTube Resources',
         s5Desc: 'Recommended channels for deepening your knowledge of Plotly and Dash:',
@@ -643,6 +676,28 @@ python app.py
                 </p>
                 <CodeBlock code={CODE_INSTALL} />
               </div>
+
+              <div className="info-box" style={{ marginTop: '1rem' }}>
+                <strong>{'Google Colab:'}</strong>{' '}{tx.s3ColabNote}
+              </div>
+
+              <h3 style={{ marginTop: '2.5rem' }}>{tx.s3DeployTitle}</h3>
+              <div className="concept-box">
+                <p style={{ margin: '0 0 0.5rem', fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, color: '#1E3A8A', fontSize: '0.9rem' }}>{tx.s3DeployDesc}</p>
+              </div>
+
+              <h4 style={{ marginTop: '1.5rem', color: '#1E3A8A' }}>{tx.s3GunicornTitle}</h4>
+              <p style={{ margin: '0.25rem 0 0.5rem', fontSize: '0.9rem', color: '#374151' }}>{tx.s3GunicornDesc}</p>
+              <CodeBlock code={CODE_GUNICORN} />
+
+              <h4 style={{ marginTop: '1.5rem', color: '#1E3A8A' }}>{tx.s3DockerTitle}</h4>
+              <p style={{ margin: '0.25rem 0 0.5rem', fontSize: '0.9rem', color: '#374151' }}>{tx.s3DockerDesc}</p>
+              <CodeBlock code={CODE_DOCKERFILE} />
+
+              <div className="tip-box" style={{ marginTop: '1rem' }}>
+                <strong style={{ color: '#1E3A8A' }}>{tx.s3TraefikTitle}:</strong>{' '}
+                <span style={{ fontSize: '0.9rem', color: '#1e40af' }}>{tx.s3TraefikDesc}</span>
+              </div>
             </section>
 
             {/* ── Section 4: Vergleich ── */}
@@ -671,6 +726,9 @@ python app.py
               <div className="concept-box" style={{ marginTop: '1.5rem' }}>
                 <h4 style={{ marginTop: 0, color: '#1E3A8A' }}>{tx.s4RecommTitle}</h4>
                 <p style={{ margin: 0, fontSize: '0.9rem' }}>{tx.s4RecommText}</p>
+              </div>
+              <div className="tip-box" style={{ marginTop: '1rem' }}>
+                <p style={{ margin: 0, fontSize: '0.875rem', color: '#374151' }}><em>{tx.s4VendorNote}</em></p>
               </div>
             </section>
 
