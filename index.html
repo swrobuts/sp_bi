@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BI Lab – Business Intelligence · THWS Business School</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=EB+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* DESIGN DECISION: Bilingual color scheme
+       DE mode: Navy #1E3A8A (primary brand color)
+       EN mode: Teal #0D9488 (alternative accent)
+       The language toggle intentionally switches the entire color palette. */
+
+    :root {
+      --primary: #1E3A8A;
+      --accent: #2563EB;
+      --dark: #1A1A1A;
+      --light-bg: #FAFAFA;
+      --primary-light: rgba(30,58,138,0.08);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: #FFFFFF;
+      color: var(--dark);
+    }
+
+    h2 { color: #1E3A8A; font-weight: 800; font-family: 'Space Grotesk', sans-serif; }
+    h3 { color: #1E3A8A; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
+    a { color: var(--primary); }
+    button { transition: all 0.2s ease; }
+
+    .bauhaus-accent-line {
+      width: 48px;
+      height: 4px;
+      background: #2563EB;
+      margin: 0.5rem 0 1rem 0;
+    }
+
+    .bauhaus-badge {
+      background: #2563EB;
+      color: white;
+      padding: 0.2rem 0.7rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-radius: 0;
+      display: inline-block;
+    }
+
+    /* Geometric background animations */
+    @keyframes floatCircle {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-30px) scale(1.05); }
+    }
+    @keyframes floatSquare {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(20px) rotate(8deg); }
+    }
+
+    .geo-circle {
+      position: absolute;
+      width: 420px; height: 420px;
+      border-radius: 50%;
+      opacity: 0.15;
+      top: -80px; right: -100px;
+      animation: floatCircle 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .geo-square {
+      position: absolute;
+      width: 260px; height: 260px;
+      opacity: 0.2;
+      bottom: -60px; left: -60px;
+      animation: floatSquare 10s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      height: 56px;
+      background: white;
+      border-bottom: 1px solid #E5E7EB;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+    }
+
+    /* Lang toggle */
+    .lang-btn {
+      padding: 0.25rem 0.75rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      border: 1px solid #E5E7EB;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      background: transparent;
+      color: #1A1A1A;
+      transition: background 0.15s, color 0.15s;
+    }
+    .lang-btn.active {
+      background: #1E3A8A;
+      color: white;
+      border-color: #1E3A8A;
+    }
+    .lang-btn:hover:not(.active) { background: #f5f5f5; }
+
+    /* Hero */
+    .hero {
+      background: #1E3A8A;
+      position: relative;
+      min-height: calc(var(--vh, 100vh) - 156px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1.5rem 3.5rem;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 4rem 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .hero-tag {
+      border: 1.5px solid rgba(255,255,255,0.5);
+      color: rgba(255,255,255,0.85);
+      padding: 0.25rem 0.9rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: inline-block;
+      margin-bottom: 1.5rem;
+    }
+    .hero-eyebrow {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 500;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 1rem;
+    }
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 800;
+      font-size: 8rem;
+      color: white;
+      line-height: 0.95;
+      margin-bottom: 0.5rem;
+    }
+    .hero-subtitle {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 400;
+      font-size: 2rem;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 1.25rem;
+      letter-spacing: 0.02em;
+    }
+    .hero-desc {
+      color: rgba(255,255,255,0.88);
+      font-size: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+    .course-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-bottom: 2.5rem;
+    }
+    .course-badge {
+      border: 1.5px solid rgba(255,255,255,0.4);
+      color: rgba(255,255,255,0.75);
+      padding: 0.2rem 0.75rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+    .cta-row {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      background: white;
+      color: #1E3A8A;
+      padding: 0.75rem 1.75rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      border: 2px solid white;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.15s;
+    }
+    .btn-primary:hover { background: #E0E7FF; border-color: #E0E7FF; }
+    .btn-outline-white {
+      background: transparent;
+      color: white;
+      padding: 0.75rem 1.75rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      border: 2px solid rgba(255,255,255,0.6);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-outline-white:hover { border-color: white; color: white; }
+
+    /* Stats Bar */
+    .stats-bar {
+      background: white;
+      box-shadow: 0 -1px 0 rgba(30,58,138,0.08), 0 4px 20px rgba(0,0,0,0.05);
+    }
+    .stats-grid {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: space-around;
+      align-items: center;
+    }
+    .stat-item {
+      text-align: center;
+      min-width: 120px;
+      padding: 1.75rem 1.5rem;
+      position: relative;
+    }
+    .stat-item + .stat-item::before {
+      content: '';
+      position: absolute; left: 0; top: 25%; height: 50%;
+      width: 1px; background: rgba(30,58,138,0.12);
+    }
+    .stat-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 800;
+      font-size: 2.75rem;
+      color: #1E3A8A;
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+    .stat-label {
+      font-size: 0.9rem;
+      color: #6B7280;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 0.35rem;
+    }
+
+    /* Quote Section */
+    .quote-section {
+      background: #FAFAFA;
+      padding: 5rem 2rem;
+      border-top: 1px solid #E5E7EB;
+      border-bottom: 1px solid #E5E7EB;
+    }
+    .quote-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 4rem;
+    }
+    .quote-text-block {
+      opacity: 0;
+      transform: translateX(48px);
+      transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.2s,
+                  transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+      flex: 1;
+    }
+    .quote-text-block.q-visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .quote-body {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 1.5rem;
+      line-height: 1.8;
+      color: #1A1A1A;
+      font-style: italic;
+      font-weight: 400;
+      margin-bottom: 1.75rem;
+    }
+    .quote-attribution {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .quote-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #1E3A8A;
+      letter-spacing: 0.02em;
+    }
+    .quote-role {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.8rem;
+      color: #9CA3AF;
+      font-weight: 500;
+    }
+    @media (max-width: 640px) {
+      .quote-inner { flex-direction: column; gap: 2rem; text-align: center; }
+      .quote-attribution { align-items: center; }
+    }
+
+    /* Labs Section */
+    .labs-section {
+      background: #FFFFFF;
+      padding: 5rem 2rem;
+    }
+    .section-header {
+      max-width: 1200px;
+      margin: 0 auto 2.5rem;
+    }
+    .labs-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    @media (max-width: 900px) { .labs-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) {
+      .hero-title { font-size: 3rem; }
+      .hero-subtitle { font-size: 1.4rem; }
+      .labs-grid { grid-template-columns: 1fr; }
+      .stat-item + .stat-item::before { display: none; }
+    }
+
+    .lab-card {
+      border: 2px solid #1A1A1A;
+      border-left: 4px solid #2563EB;
+      border-radius: 0;
+      background: white;
+      padding: 1.75rem 1.75rem;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      min-height: 220px;
+    }
+    .lab-num-badge {
+      display: block;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: 2.5rem;
+      color: #2563EB;
+      line-height: 1;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.03em;
+      position: static;
+      padding: 0;
+      background: none;
+    }
+    .lab-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #1E3A8A;
+      margin-bottom: 0.1rem;
+    }
+    .lab-subtitle {
+      font-size: 0.8rem;
+      color: #6B7280;
+      font-weight: 500;
+    }
+    .lab-desc {
+      font-size: 0.875rem;
+      color: #374151;
+      line-height: 1.5;
+      flex: 1;
+    }
+    .btn-lab-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: calc(100% + 3.5rem);
+      margin: auto -1.75rem -1.75rem;
+      padding: 1rem 1.75rem;
+      background: none;
+      border-top: 1px solid #E5E7EB;
+      color: #1A1A1A;
+      font-weight: 800;
+      font-size: 1rem;
+      text-decoration: none;
+      font-family: 'Space Grotesk', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s;
+    }
+    .btn-lab-link::after {
+      content: '\2192';
+      font-size: 1.1rem;
+      transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-lab-link:hover {
+      background: #1E3A8A;
+      color: white;
+      border-top-color: #1E3A8A;
+    }
+
+    /* Bonus Card */
+    .bonus-card {
+      grid-column: span 3;
+      border: 1.5px dashed #2563EB;
+      padding: 28px 24px 0;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background: white;
+    }
+    @media (max-width: 640px) {
+      .bonus-card { grid-column: span 1; }
+      .bonus-inner { grid-template-columns: 1fr !important; }
+    }
+    .bonus-badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: white;
+      background: #2563EB;
+      border: none;
+      padding: 3px 10px;
+      margin-bottom: 14px;
+      width: fit-content;
+    }
+    .bonus-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #1A1A1A;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .bonus-subtitle {
+      font-size: 0.8rem;
+      color: #6B7280;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .bonus-highlights {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+    .bonus-chip {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #374151;
+      background: #F3F4F6;
+      padding: 3px 8px;
+      border: 1px solid #E5E7EB;
+    }
+    .bonus-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .bonus-why {
+      font-size: 0.8rem;
+      color: #6B7280;
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+    .bonus-criteria {
+      list-style: none;
+      padding: 0; margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .bonus-criteria li {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .bonus-crit-num {
+      flex-shrink: 0;
+      width: 18px; height: 18px;
+      background: #1E3A8A;
+      color: white;
+      font-size: 0.6rem;
+      font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 1px;
+    }
+    .bonus-crit-text strong {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #1A1A1A;
+      margin-bottom: 1px;
+    }
+    .bonus-crit-text span {
+      font-size: 0.75rem;
+      color: #6B7280;
+      line-height: 1.45;
+    }
+    .btn-bonus-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1.5px dashed #2563EB;
+      padding: 14px 0;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #1A1A1A;
+      text-decoration: none;
+      margin-top: auto;
+      transition: color 0.15s;
+    }
+    .btn-bonus-link:hover { color: #1E3A8A; }
+
+    /* Footer */
+    .footer {
+      background: #1A1A1A;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding: 3rem 2rem;
+    }
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .footer-sep {
+      width: 48px;
+      height: 3px;
+      background: #2563EB;
+      margin-bottom: 1.25rem;
+    }
+    .footer-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      color: white;
+      letter-spacing: -0.01em;
+    }
+    .footer-tagline {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-top: 0.35rem;
+    }
+    .footer-nav-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #9CA3AF;
+      margin-bottom: 0.75rem;
+    }
+    .footer-nav-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .footer-nav-links a {
+      color: rgba(255,255,255,0.55);
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .footer-nav-links a:hover { color: white; }
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 2rem auto 0;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.35);
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    /* ═══════════════════════════════════════════
+       EN TEAL MODE
+       DE = Navy (#1E3A8A) | EN = Teal (#0D9488)
+       ═══════════════════════════════════════════ */
+    [data-lang="en"] h2,
+    [data-lang="en"] h3 { color: #0D9488; }
+    [data-lang="en"] .bauhaus-accent-line { background: #14B8A6; }
+    [data-lang="en"] .bauhaus-badge { background: #0D9488; }
+    [data-lang="en"] .lab-card { border-left-color: #14B8A6; }
+    [data-lang="en"] .lab-num-badge { color: #1A1A1A; }
+    [data-lang="en"] .lab-title { color: #0D9488; }
+    [data-lang="en"] .btn-lab-link { color: #1A1A1A; }
+    [data-lang="en"] .btn-lab-link:hover { background: #14B8A6; color: white; border-top-color: #14B8A6; }
+    [data-lang="en"] .stat-value { color: #1A1A1A; }
+    [data-lang="en"] .stat-label { color: #6B7280; }
+    [data-lang="en"] .stat-item + .stat-item::before { background: rgba(0,0,0,0.12); }
+    [data-lang="en"] .quote-name { color: #0D9488; }
+    [data-lang="en"] .bonus-card { border-color: #14B8A6; }
+    [data-lang="en"] .bonus-badge { background: #0D9488; }
+    [data-lang="en"] .btn-bonus-link { border-top-color: #14B8A6; }
+    [data-lang="en"] .btn-bonus-link:hover { color: #0D9488; }
+    [data-lang="en"] .bonus-crit-num { background: #0D9488; }
+    [data-lang="en"] .lang-btn.active { background: #0D9488; border-color: #0D9488; }
+    [data-lang="en"] .footer { background: #0D9488; }
+    [data-lang="en"] .footer-sep { background: #14B8A6; }
+    [data-lang="en"] .footer-nav-links a { color: rgba(255,255,255,0.75); }
+    [data-lang="en"] .footer-nav-links a:hover { color: white; }
+    [data-lang="en"] .footer-bottom { border-top-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.6); }
+    [data-lang="en"] .footer-tagline { color: rgba(255,255,255,0.75); }
+  </style>
+  <script>
+    function setVH() {
+      document.documentElement.style.setProperty('--vh', window.innerHeight + 'px');
+    }
+    setVH();
+    window.addEventListener('resize', setVH);
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const translations = {
+      de: {
+        navSub: 'Business Intelligence',
+        heroTag: 'BUSINESS INTELLIGENCE \u00B7 THWS BUSINESS SCHOOL',
+        heroTitle: 'BI Lab',
+        heroEyebrow: 'Business Intelligence',
+        heroSubtitle: 'Power BI \u00B7 Python \u00B7 Plotly Dash',
+        heroDesc: 'Die Companion-Site zum Kurs \u201CBusiness Intelligence\u201D',
+        badge1: 'Bachelor Business Analytics',
+        badge2: 'Sommersemester 2026',
+        badge3: 'Prof. Dr. Robert Butscher',
+        ctaLabs: 'Zu den Labs \u2192',
+        ctaGithub: 'GitHub \u2192',
+        statLabs: 'Labs',
+        statFallstudie: 'Fallstudie',
+        statTech: 'Power BI & Python',
+        statTechLabel: 'Tech Stack',
+        statOpenSource: 'Open Source BI',
+        statOpenSourceLabel: 'Digitale Souver\u00E4nit\u00E4t',
+        sectionLabs: 'Die Labs',
+        labLink: 'Zum Lab',
+        footerTagline: 'Business Intelligence \u00B7 THWS',
+        footerNavLabel: 'Labs',
+        footerText: 'THWS Business School \u00B7 BI Lab \u00B7 Prof. Dr. Robert Butscher \u00B7 2026',
+        labs: [
+          {
+            num: '01',
+            title: 'Grundlagen Business Intelligence',
+            subtitle: 'BI Foundations',
+            desc: 'Was ist BI? Architektur, KPIs, Tool-\u00DCberblick.',
+            link: 'lab-01-grundlagen.html',
+          },
+          {
+            num: '02',
+            title: 'Daten: Quellen, Modelle, Qualit\u00E4t',
+            subtitle: 'Data: Sources, Models, Quality',
+            desc: 'Star Schema, Power Query, Pandas Datentransformation.',
+            link: 'lab-02-daten.html',
+          },
+          {
+            num: '03',
+            title: 'KPIs mit DAX & Python',
+            subtitle: 'KPIs with DAX & Python',
+            desc: 'DAX Measures, Calculated Columns, Filter-Kontext.',
+            link: 'lab-03-kpis.html',
+          },
+          {
+            num: '04',
+            title: 'Dashboard-Design & Plotly Dash',
+            subtitle: 'Dashboard Design & Plotly Dash',
+            desc: 'Design-Prinzipien, Plotly Express, Dash Callbacks.',
+            link: 'lab-04-dashboards.html',
+          },
+          {
+            num: '05',
+            title: 'Fallstudie: Retail Analytics',
+            subtitle: 'Case Study: Retail Analytics',
+            desc: 'Superstore Dataset \u2013 Power BI & Dash im Vergleich.',
+            link: 'lab-05-fallstudie.html',
+          },
+          {
+            num: '06',
+            title: 'Digitale Souver\u00E4nit\u00E4t & Open-Source BI',
+            subtitle: 'Digital Sovereignty & Open-Source BI',
+            desc: 'Apache Superset, Metabase, Docker, DSGVO.',
+            link: 'lab-06-souveraenitaet.html',
+          },
+        ],
+        bonusBadge: 'BONUS-PROJEKT',
+        bonusTitle: 'BONUS-PROJEKT: Data Sovereignty Stack',
+        bonusSubtitle: 'Self-Hosted BI f\u00FCr DSGVO-konforme Unternehmen',
+        bonusWhy: 'Open-Source-BI-Tools auf eigener Infrastruktur erm\u00F6glichen volle Datensouver\u00E4nit\u00E4t \u2014 unabh\u00E4ngig von Cloud-Anbietern, vollst\u00E4ndig DSGVO-konform und kostenfrei.',
+        bonusLink: 'Zum Lab \u2192',
+      },
+      en: {
+        navSub: 'Business Intelligence',
+        heroTag: 'BUSINESS INTELLIGENCE \u00B7 THWS BUSINESS SCHOOL',
+        heroTitle: 'BI Lab',
+        heroEyebrow: 'Business Intelligence',
+        heroSubtitle: 'Power BI \u00B7 Python \u00B7 Plotly Dash',
+        heroDesc: 'Companion site for the course \u201CBusiness Intelligence\u201D',
+        badge1: 'Bachelor Business Analytics',
+        badge2: 'Summer Semester 2026',
+        badge3: 'Prof. Dr. Robert Butscher',
+        ctaLabs: 'To the Labs \u2192',
+        ctaGithub: 'GitHub \u2192',
+        statLabs: 'Labs',
+        statFallstudie: 'Case Study',
+        statTech: 'Power BI & Python',
+        statTechLabel: 'Tech Stack',
+        statOpenSource: 'Open Source BI',
+        statOpenSourceLabel: 'Digital Sovereignty',
+        sectionLabs: 'The Labs',
+        labLink: 'Go to Lab',
+        footerTagline: 'Business Intelligence \u00B7 THWS',
+        footerNavLabel: 'Labs',
+        footerText: 'THWS Business School \u00B7 BI Lab \u00B7 Prof. Dr. Robert Butscher \u00B7 2026',
+        labs: [
+          {
+            num: '01',
+            title: 'BI Foundations',
+            subtitle: 'Grundlagen Business Intelligence',
+            desc: 'What is BI? Architecture, KPIs, tool overview.',
+            link: 'lab-01-grundlagen.html',
+          },
+          {
+            num: '02',
+            title: 'Data: Sources, Models, Quality',
+            subtitle: 'Daten: Quellen, Modelle, Qualit\u00E4t',
+            desc: 'Star Schema, Power Query, Pandas data transformation.',
+            link: 'lab-02-daten.html',
+          },
+          {
+            num: '03',
+            title: 'KPIs with DAX & Python',
+            subtitle: 'KPIs mit DAX & Python',
+            desc: 'DAX Measures, Calculated Columns, Filter Context.',
+            link: 'lab-03-kpis.html',
+          },
+          {
+            num: '04',
+            title: 'Dashboard Design & Plotly Dash',
+            subtitle: 'Dashboard-Design & Plotly Dash',
+            desc: 'Design principles, Plotly Express, Dash Callbacks.',
+            link: 'lab-04-dashboards.html',
+          },
+          {
+            num: '05',
+            title: 'Case Study: Retail Analytics',
+            subtitle: 'Fallstudie: Retail Analytics',
+            desc: 'Superstore Dataset \u2013 Power BI & Dash compared.',
+            link: 'lab-05-fallstudie.html',
+          },
+          {
+            num: '06',
+            title: 'Digital Sovereignty & Open-Source BI',
+            subtitle: 'Digitale Souver\u00E4nit\u00E4t & Open-Source BI',
+            desc: 'Apache Superset, Metabase, Docker, GDPR.',
+            link: 'lab-06-souveraenitaet.html',
+          },
+        ],
+        bonusBadge: 'BONUS PROJECT',
+        bonusTitle: 'BONUS PROJECT: Data Sovereignty Stack',
+        bonusSubtitle: 'Self-Hosted BI for GDPR-Compliant Organizations',
+        bonusWhy: 'Open-source BI tools hosted on your own infrastructure give you full data sovereignty \u2014 independent of cloud vendors, fully GDPR-compliant, and cost-free.',
+        bonusLink: 'Go to Lab \u2192',
+      },
+    };
+
+    var bonusCriteria = [
+      { titleDe: 'Datensouver\u00E4nit\u00E4t', titleEn: 'Data Sovereignty', descDe: 'Volle Kontrolle \u00FCber eigene Daten', descEn: 'Full control over your own data' },
+      { titleDe: 'No Vendor Lock-in', titleEn: 'No Vendor Lock-in', descDe: 'Unabh\u00E4ngig von Cloud-Anbietern', descEn: 'Independent of cloud providers' },
+      { titleDe: 'DSGVO-Konformit\u00E4t', titleEn: 'GDPR Compliance', descDe: 'Daten bleiben in der EU', descEn: 'Data stays within the EU' },
+      { titleDe: 'Kostenfreiheit', titleEn: 'Zero Cost', descDe: 'Open Source, keine Lizenzkosten', descEn: 'Open Source, no licence fees' },
+      { titleDe: 'Volle Kontrolle', titleEn: 'Full Control', descDe: 'Eigene Infrastruktur, eigene Regeln', descEn: 'Your own infrastructure, your rules' },
+    ];
+
+    function App() {
+      const [lang, setLang] = useState(() => localStorage.getItem('bi-lang') || 'de');
+      const toggleLang = (l) => { setLang(l); localStorage.setItem('bi-lang', l); };
+
+      useEffect(() => {
+        const textBlock = document.querySelector('.quote-text-block');
+        if (!textBlock) return;
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              textBlock.classList.add('q-visible');
+              observer.disconnect();
+            }
+          });
+        }, { threshold: 0.25 });
+        observer.observe(textBlock);
+        return () => observer.disconnect();
+      }, []);
+
+      const t = translations[lang];
+      const heroColor = lang === 'en' ? '#0D9488' : '#1E3A8A';
+      const geoCircleColor = lang === 'en' ? '#0F766E' : '#1E40AF';
+      const geoSquareColor = lang === 'en' ? '#14B8A6' : '#2563EB';
+
+      return (
+        <div data-lang={lang}>
+
+          {/* Navbar */}
+          <nav className="navbar">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <span style={{
+                fontFamily: "'Space Grotesk', sans-serif",
+                fontWeight: 800,
+                fontSize: '1.15rem',
+                color: lang === 'en' ? '#0D9488' : '#1E3A8A',
+                letterSpacing: '-0.01em'
+              }}>
+                {'BI Lab'}
+              </span>
+              <span style={{
+                color: '#9CA3AF',
+                fontSize: '0.875rem',
+                fontWeight: 500,
+                borderLeft: '2px solid #E5E7EB',
+                paddingLeft: '0.75rem'
+              }}>
+                {t.navSub}
+              </span>
+            </div>
+            <div style={{ display: 'flex', gap: '0.35rem' }}>
+              <button
+                className={`lang-btn${lang === 'de' ? ' active' : ''}`}
+                onClick={() => toggleLang('de')}
+                aria-label="Deutsch"
+              >
+                DE
+              </button>
+              <button
+                className={`lang-btn${lang === 'en' ? ' active' : ''}`}
+                onClick={() => toggleLang('en')}
+                aria-label="English"
+              >
+                EN
+              </button>
+            </div>
+          </nav>
+
+          {/* Hero + Stats wrapper */}
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+
+            {/* Hero */}
+            <section
+              className="hero"
+              style={{ background: heroColor, flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              <div className="geo-circle" style={{ background: geoCircleColor }}></div>
+              <div className="geo-square" style={{ background: geoSquareColor }}></div>
+
+              <div className="hero-content">
+                <span className="hero-tag">
+                  {t.heroTag}
+                </span>
+                <div className="hero-eyebrow">
+                  {t.heroEyebrow}
+                </div>
+                <h1 className="hero-title">
+                  {t.heroTitle}
+                </h1>
+                <div className="hero-subtitle">
+                  {t.heroSubtitle}
+                </div>
+                <p className="hero-desc">
+                  {t.heroDesc}
+                </p>
+                <div className="course-badges">
+                  <span className="course-badge">{t.badge1}</span>
+                  <span className="course-badge">{t.badge2}</span>
+                  <span className="course-badge">{t.badge3}</span>
+                </div>
+                <div className="cta-row">
+                  <a href="#labs" className="btn-primary" style={{ background: 'white', color: heroColor, border: '2px solid white' }}>
+                    {t.ctaLabs}
+                  </a>
+                  <a
+                    href="https://github.com/swrobuts/sp_bi"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-outline-white"
+                  >
+                    {t.ctaGithub}
+                  </a>
+                </div>
+              </div>
+            </section>
+
+            {/* Stats Bar */}
+            <div className="stats-bar">
+              <div className="stats-grid">
+                <div className="stat-item">
+                  <div className="stat-value">{'6'}</div>
+                  <div className="stat-label">{t.statLabs}</div>
+                </div>
+                <div className="stat-item">
+                  <div className="stat-value">{'1'}</div>
+                  <div className="stat-label">{t.statFallstudie}</div>
+                </div>
+                <div className="stat-item">
+                  <div className="stat-value" style={{ fontSize: '1rem', letterSpacing: '0.02em', fontWeight: 900 }}>
+                    {t.statTech}
+                  </div>
+                  <div className="stat-label">{t.statTechLabel}</div>
+                </div>
+                <div className="stat-item">
+                  <div className="stat-value" style={{ fontSize: '0.95rem', letterSpacing: '0.01em', fontWeight: 900 }}>
+                    {t.statOpenSource}
+                  </div>
+                  <div className="stat-label">{t.statOpenSourceLabel}</div>
+                </div>
+              </div>
+            </div>
+
+          </div>{/* end viewport wrapper */}
+
+          {/* Quote Strip */}
+          <section className="quote-section">
+            <div className="quote-inner">
+              <div className="quote-text-block">
+                <p className="quote-body">
+                  {'\u201EIn God we trust. All others must bring data.\u201C'}
+                </p>
+                <div className="quote-attribution">
+                  <span className="quote-name">
+                    {'— W. Edwards Deming'}
+                  </span>
+                  <span className="quote-role">
+                    {lang === 'de'
+                      ? 'Statistiker & Qualit\u00E4tsmanagement-Pionier'
+                      : 'Statistician & Quality Management Pioneer'
+                    }
+                  </span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Labs Grid */}
+          <section className="labs-section" id="labs">
+            <div className="section-header">
+              <h2 style={{ fontSize: '2.25rem', marginBottom: '0.75rem' }}>{t.sectionLabs}</h2>
+              <div className="bauhaus-accent-line"></div>
+            </div>
+            <div className="labs-grid">
+              {t.labs.map((lab) => (
+                <div key={lab.num} className="lab-card">
+                  <span className="lab-num-badge">{lab.num}</span>
+                  <div>
+                    <div className="lab-title">{lab.title}</div>
+                    <div className="lab-subtitle">{lab.subtitle}</div>
+                  </div>
+                  <p className="lab-desc">{lab.desc}</p>
+                  <a
+                    href={`${lab.link}${lang === 'en' ? '?lang=en' : ''}`}
+                    className="btn-lab-link"
+                  >
+                    {t.labLink}
+                  </a>
+                </div>
+              ))}
+
+              {/* Bonus Card */}
+              <div className="bonus-card">
+                <span className="bonus-badge">{t.bonusBadge}</span>
+                <div className="bonus-title">{t.bonusTitle}</div>
+                <div className="bonus-subtitle">{t.bonusSubtitle}</div>
+                <div className="bonus-highlights">
+                  <span className="bonus-chip">Apache Superset</span>
+                  <span className="bonus-chip">Metabase</span>
+                  <span className="bonus-chip">Docker</span>
+                  <span className="bonus-chip">PostgreSQL</span>
+                  <span className="bonus-chip">DSGVO</span>
+                  <span className="bonus-chip">Self-Hosted</span>
+                </div>
+                <div className="bonus-inner">
+                  <div>
+                    <p className="bonus-why">{t.bonusWhy}</p>
+                  </div>
+                  <ul className="bonus-criteria">
+                    {bonusCriteria.map((c, i) => (
+                      <li key={i}>
+                        <div className="bonus-crit-num">{i + 1}</div>
+                        <div className="bonus-crit-text">
+                          <strong>{lang === 'en' ? c.titleEn : c.titleDe}</strong>
+                          <span>{lang === 'en' ? c.descEn : c.descDe}</span>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <a
+                  href={`lab-06-souveraenitaet.html${lang === 'en' ? '?lang=en' : ''}`}
+                  className="btn-bonus-link"
+                >
+                  <span>{t.bonusLink}</span>
+                </a>
+              </div>
+            </div>
+          </section>
+
+          {/* Footer */}
+          <footer className="footer">
+            <div className="footer-inner">
+              <div>
+                <div className="footer-sep"></div>
+                <div className="footer-logo">{'BI Lab'}</div>
+                <div className="footer-tagline">{t.footerTagline}</div>
+              </div>
+              <div>
+                <div className="footer-nav-label">{t.footerNavLabel}</div>
+                <nav className="footer-nav-links">
+                  {t.labs.map((lab) => (
+                    <a
+                      key={lab.num}
+                      href={`${lab.link}${lang === 'en' ? '?lang=en' : ''}`}
+                    >
+                      {`${lab.num} – ${lab.title}`}
+                    </a>
+                  ))}
+                </nav>
+              </div>
+            </div>
+            <div className="footer-bottom">
+              {t.footerText}
+            </div>
+          </footer>
+
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
