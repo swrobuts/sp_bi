@@ -125,7 +125,7 @@
     .hero {
       background: #1E3A8A;
       position: relative;
-      min-height: calc(var(--vh, 100vh) - 156px);
+      min-height: 0;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -973,7 +973,7 @@
           </nav>
 
           {/* Hero + Stats wrapper */}
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 56px)' }}>
 
             {/* Hero */}
             <section
