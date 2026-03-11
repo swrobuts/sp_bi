@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lab 05 – Fallstudie: Retail Analytics · THWS BI Lab</title>
+  <title>Lab 05 &#8211; Fallstudie: Retail Analytics &middot; THWS BI Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -23,73 +23,80 @@
     }
     :root { --primary: #1E3A8A; --accent: #2563EB; --dark: #1A1A1A; --light-bg: #FAFAFA; }
     *, *::before, *::after { box-sizing: border-box; }
-    body { background: #FAFAFA; font-family: 'Space Grotesk', -apple-system, sans-serif; margin: 0; color: #1A1A1A; }
+    body { background: #FAFAFA; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; color: #1A1A1A; }
     h2 { color: #1E3A8A; font-weight: 800; font-family: 'Space Grotesk', sans-serif; margin-top: 0; }
     h3 { color: #1E3A8A; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
     h4 { font-family: 'Space Grotesk', sans-serif; font-weight: 600; margin: 0.5rem 0; }
     p { line-height: 1.7; }
     .bauhaus-accent-line { width: 48px; height: 4px; background: #2563EB; margin: 0.5rem 0 1rem 0; }
     .bauhaus-badge { background: #2563EB; color: white; padding: 0.2rem 0.7rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; display: inline-block; }
-    .code-block { background: #F3F4F6; color: #1A1A1A; border-left: 4px solid #D1D5DB; font-family: 'Courier New', monospace; font-size: 0.82rem; padding: 1rem 1.25rem; border-radius: 0 8px 8px 0; white-space: pre; overflow-x: auto; position: relative; margin: 1rem 0; }
+    .code-block { background: #F3F4F6; color: #1A1A1A; border-left: 4px solid #D1D5DB; font-family: 'Fira Code', 'Courier New', monospace; font-size: 0.82rem; padding: 1rem 1.25rem; border-radius: 0 8px 8px 0; white-space: pre; overflow-x: auto; position: relative; margin: 1rem 0; }
     .tip-box { border-left: 4px solid #2563EB; background: #EFF6FF; padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
     .info-box { border-left: 4px solid #3b82f6; background: #eff6ff; padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
-    .concept-box { border-left: 4px solid #1E3A8A; background: rgba(30,58,138,0.06); padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+    .concept-box { border-left: 4px solid #1E3A8A; background: rgba(30,58,138,0.08); padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
     .challenge-box { border-left: 4px solid #22c55e; background: #f0fdf4; padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
     .youtube-box { background: #FFF7ED; border: 1px solid #FED7AA; border-radius: 10px; padding: 1.5rem; margin: 1rem 0; }
+    .youtube-box h3 { color: #EA580C; margin-top: 0; }
     .youtube-box h4 { color: #EA580C; margin-top: 0; }
     .youtube-link { color: #EA580C; text-decoration: none; font-weight: 600; font-size: 0.95rem; }
     .youtube-link:hover { text-decoration: underline; }
     .step-number { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: #1E3A8A; color: white; font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1rem; flex-shrink: 0; margin-right: 0.75rem; }
     .step-block { display: flex; align-items: flex-start; margin-bottom: 1.5rem; }
     .step-content { flex: 1; }
+
     .header { position: fixed; top: 0; left: 0; right: 0; height: 56px; z-index: 100; background: white; border-bottom: 1px solid #E5E7EB; box-shadow: 0 1px 8px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; }
     .header-left { display: flex; align-items: center; gap: 1.5rem; }
     .header-logo { font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1.1rem; color: #1E3A8A; text-decoration: none; }
     .header-back { font-size: 0.85rem; color: #555; text-decoration: none; font-weight: 500; }
     .header-back:hover { color: #1E3A8A; }
-    .lang-btn { border: 2px solid #1A1A1A; background: white; padding: 0.2rem 0.6rem; font-size: 0.78rem; font-weight: 700; cursor: pointer; letter-spacing: 0.05em; font-family: 'Space Grotesk', sans-serif; }
-    .lang-btn.active { background: #2563EB; color: white; border-color: #2563EB; }
+    .lang-btn { border: 2px solid #1A1A1A; background: white; padding: 0.2rem 0.6rem; font-size: 0.78rem; font-weight: 700; cursor: pointer; border-radius: 4px; letter-spacing: 0.05em; font-family: 'Space Grotesk', sans-serif; }
+    .lang-btn.active { background: #1E3A8A; color: white; border-color: #1E3A8A; }
     .lang-btn:hover:not(.active) { background: #f5f5f5; }
+
     .sidebar { position: fixed; top: 56px; left: 0; width: 260px; height: calc(100vh - 56px); overflow-y: auto; border-right: 1px solid #E5E7EB; background: white; padding: 1.5rem 0; }
     .sidebar-title { font-family: 'Space Grotesk', sans-serif; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #888; padding: 0 1.25rem; margin-bottom: 0.75rem; }
     .sidebar-link { display: block; padding: 0.55rem 1.25rem; font-size: 0.88rem; color: #444; text-decoration: none; border-left: 3px solid transparent; transition: background 0.12s, color 0.12s, border-color 0.12s; font-weight: 500; }
     .sidebar-link:hover { color: #1E3A8A; background: rgba(30,58,138,0.04); }
-    .sidebar-link.active { color: #1E3A8A; border-left-color: #2563EB; background: rgba(30,58,138,0.06); font-weight: 700; }
+    .sidebar-link.active { color: #1E3A8A; border-left-color: #1E3A8A; background: rgba(30,58,138,0.06); font-weight: 700; }
+
     .main-content { margin-left: 260px; padding-top: 72px; padding-bottom: 4rem; padding-left: 3rem; padding-right: 3rem; max-width: 960px; }
     .section-block { margin-bottom: 4rem; }
     table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
     th { background: #1E3A8A; color: white; padding: 0.65rem 1rem; text-align: left; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.82rem; letter-spacing: 0.05em; }
     td { padding: 0.6rem 1rem; border-bottom: 1px solid #e5e7eb; }
     tr:nth-child(even) td { background: #f9fafb; }
-    .nav-bottom { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; margin-top: 2rem; border-top: 1px solid #e5e7eb; }
-    .nav-btn { border: 2px solid #1A1A1A; background: white; padding: 0.65rem 1.25rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; text-decoration: none; color: #1A1A1A; font-family: 'Space Grotesk', sans-serif; display: inline-block; }
-    .nav-btn:hover { background: #2563EB; color: white; border-color: #2563EB; }
+    tr:hover td { background: rgba(30,58,138,0.03); }
+    td code { font-family: 'Fira Code', 'Courier New', monospace; font-size: 0.82rem; background: #F3F4F6; padding: 0.1rem 0.35rem; border-radius: 3px; }
+
+    .nav-bottom { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 2rem; padding: 1.5rem 0; border-top: 1px solid #E5E7EB; }
+    .nav-btn { border: 2px solid #1A1A1A; background: white; padding: 0.65rem 1.25rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; text-decoration: none; color: #1A1A1A; font-family: 'Space Grotesk', sans-serif; display: inline-block; border-radius: 4px; }
+    .nav-btn:hover { background: #1E3A8A; color: white; border-color: #1E3A8A; }
     .nav-btn.primary { background: #1E3A8A; border-color: #1E3A8A; color: white; }
     .nav-btn.primary:hover { background: #1e40af; border-color: #1e40af; }
-    .lernziele-box { background: #EFF6FF; border-left: 4px solid #2563EB; padding: 1.25rem 1.5rem; margin-top: 1.5rem; }
-    .lernziele-heading { color: #1E3A8A; margin: 0 0 0.75rem; font-family: 'Space Grotesk', sans-serif; font-weight: 700; }
-    .footer { background: #1A1A1A; padding: 2rem 3rem 2rem calc(260px + 3rem); }
-    .footer-text { color: #6B7280; font-size: 0.875rem; }
-    @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding-left: 1.25rem; padding-right: 1.25rem; } .footer { padding: 2rem 1.25rem; } }
-    [data-lang="en"] h2, [data-lang="en"] h3 { color: #0D9488; }
+
+    .lab-header { padding: 3rem 3rem 2rem; margin-left: 260px; padding-top: 88px; }
+    .lab-num { font-family: 'Space Grotesk', sans-serif; font-size: 4rem; font-weight: 900; color: #2563EB; line-height: 1; margin-bottom: 0.5rem; }
+    .lab-title-h1 { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 800; color: #1A1A1A; margin-bottom: 0.75rem; }
+    .lab-desc-intro { font-size: 1.1rem; color: #4B5563; line-height: 1.6; max-width: 680px; margin-bottom: 1.5rem; }
+    .lernziele-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+    .lernziel-chip { background: rgba(30,58,138,0.08); color: #1E3A8A; border: 1px solid rgba(30,58,138,0.2); padding: 0.3rem 0.75rem; font-size: 0.8rem; font-weight: 600; border-radius: 20px; font-family: 'Space Grotesk', sans-serif; }
+
+    .footer { background: #1A1A1A; color: rgba(255,255,255,0.6); text-align: center; padding: 1.5rem; margin-left: 260px; font-size: 0.85rem; }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-content { margin-left: 0; padding-left: 1.25rem; padding-right: 1.25rem; }
+      .lab-header { margin-left: 0; padding-left: 1.25rem; padding-right: 1.25rem; }
+      .footer { margin-left: 0; }
+    }
+
+    /* ── EN mode: Teal #0D9488 ── */
+    [data-lang="en"] h2,
+    [data-lang="en"] h3 { color: #0D9488; }
+    [data-lang="en"] h4 { color: #0D9488; }
     [data-lang="en"] .bauhaus-accent-line { background: #14B8A6; }
     [data-lang="en"] .bauhaus-badge { background: #0D9488; }
     [data-lang="en"] .header-logo { color: #0D9488; }
-    [data-lang="en"] .lang-btn.active { background: #0D9488; border-color: #0D9488; color: white; }
-    [data-lang="en"] .sidebar-link.active { color: #0D9488; border-left-color: #14B8A6; background: rgba(13,148,136,0.06); }
-    [data-lang="en"] .sidebar-link:hover { color: #0D9488; }
-    [data-lang="en"] .header-back:hover { color: #0D9488; }
-    [data-lang="en"] th { background: #0D9488; }
-    [data-lang="en"] .tip-box { border-left-color: #14B8A6; background: #F0FDFA; }
-    [data-lang="en"] .concept-box { border-left-color: #0D9488; background: rgba(13,148,136,0.06); }
-    [data-lang="en"] .lernziele-box { border-left-color: #14B8A6; background: #F0FDFA; }
-    [data-lang="en"] .lernziele-heading { color: #0D9488; }
-    [data-lang="en"] .nav-btn:hover { background: #0D9488; border-color: #0D9488; color: white; }
-    [data-lang="en"] .nav-btn.primary { background: #0D9488; border-color: #0D9488; }
-    [data-lang="en"] .step-number { background: #0D9488; }
-  
-    [data-lang="en"] h4 { color: #0D9488; }
-    [data-lang="en"] .bauhaus-card h4 { color: #0D9488 !important; }
+    [data-lang="en"] .lang-btn.active { background: #0D9488; border-color: #0D9488; }
     [data-lang="en"] .sidebar-link:hover { color: #0D9488; background: rgba(13,148,136,0.04); }
     [data-lang="en"] .sidebar-link.active { color: #0D9488; border-left-color: #0D9488; background: rgba(13,148,136,0.06); }
     [data-lang="en"] .lernziel-chip { background: rgba(13,148,136,0.1); color: #0D9488; border-color: rgba(13,148,136,0.25); }
@@ -100,597 +107,612 @@
     [data-lang="en"] .tip-box { border-left-color: #0D9488; background: #F0FDFA; }
     [data-lang="en"] .concept-box { border-left-color: #0D9488; background: rgba(13,148,136,0.08); }
     [data-lang="en"] .info-box { border-left-color: #0D9488; background: #F0FDFA; }
+    [data-lang="en"] .challenge-box { border-left-color: #0D9488; }
+    [data-lang="en"] .step-number { background: #0D9488; }
+    [data-lang="en"] .lernziele-box { border-left-color: #14B8A6; background: #F0FDFA; }
+    [data-lang="en"] .lernziele-heading { color: #0D9488; }
+    .quiz-option:hover:not(:disabled) { border-color: #2563EB; background: rgba(37,99,235,0.04); }
     [data-lang="en"] .quiz-option:hover:not(:disabled) { border-color: #0D9488; background: rgba(13,148,136,0.04); }
     [data-lang="en"] .footer { background: #0D9488; }
+
+    .lernziele-box { background: #EFF6FF; border-left: 4px solid #2563EB; padding: 1.25rem 1.5rem; margin-top: 1.5rem; border-radius: 0 8px 8px 0; }
+    .lernziele-heading { color: #1E3A8A; margin: 0 0 0.75rem; font-family: 'Space Grotesk', sans-serif; font-weight: 700; }
   </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel">
-  function CodeBlock({ code }) {
-    var [copied, setCopied] = React.useState(false);
-    var copy = function() {
-      navigator.clipboard.writeText(code).then(function() {
-        setCopied(true);
-        setTimeout(function() { setCopied(false); }, 1500);
-      }).catch(function() {
-        var el = document.createElement('textarea');
-        el.value = code;
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand('copy');
-        document.body.removeChild(el);
-        setCopied(true);
-        setTimeout(function() { setCopied(false); }, 1500);
-      });
-    };
-    return (
-      <div style={{ position: 'relative', marginBottom: '1rem' }}>
-        <pre className="code-block">{code}</pre>
-        <button onClick={copy} style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', background: copied ? '#059669' : '#E5E7EB', color: copied ? 'white' : '#374151', border: 'none', padding: '0.2rem 0.5rem', fontSize: '0.75rem', cursor: 'pointer', fontFamily: 'Space Grotesk, sans-serif' }}>{copied ? '✓ Kopiert' : 'Kopieren'}</button>
-      </div>
-    );
-  }
+  <div id="root"></div>
 
-  function App() {
-    var urlLang = new URLSearchParams(window.location.search).get('lang');
-    var [lang, setLang] = React.useState(function() { return localStorage.getItem('bi-lang') || urlLang || 'de'; });
-    var toggleLang = function(l) { setLang(l); localStorage.setItem('bi-lang', l); };
+  <script type="text/babel">
+    const { useState, useEffect } = React;
 
-    var [activeSection, setActiveSection] = React.useState('ueberblick');
-
-    React.useEffect(function() {
-      document.documentElement.setAttribute('data-lang', lang);
-    }, [lang]);
-
-    React.useEffect(function() {
-      var sections = ['ueberblick', 'datenerkundung', 'kpi-hierarchie', 'powerbi-steps', 'dash-steps', 'reflexion', 'ressourcen'];
-      var handleScroll = function() {
-        var current = 'ueberblick';
-        for (var i = 0; i < sections.length; i++) {
-          var el = document.getElementById(sections[i]);
-          if (el) {
-            var rect = el.getBoundingClientRect();
-            if (rect.top <= 100) current = sections[i];
-          }
-        }
-        setActiveSection(current);
+    // ─── CodeBlock Component ──────────────────────────────────────────────────
+    function CodeBlock({ code, lang }) {
+      const [copied, setCopied] = React.useState(false);
+      const copy = () => {
+        navigator.clipboard.writeText(code).then(() => {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1500);
+        }).catch(() => {
+          const el = document.createElement('textarea');
+          el.value = code;
+          document.body.appendChild(el);
+          el.select();
+          document.execCommand('copy');
+          document.body.removeChild(el);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1500);
+        });
       };
-      window.addEventListener('scroll', handleScroll, { passive: true });
-      return function() { window.removeEventListener('scroll', handleScroll); };
-    }, []);
+      const labelCopy = lang === 'en' ? 'Copy' : 'Kopieren';
+      const labelDone = lang === 'en' ? '\u2713 Copied' : '\u2713 Kopiert';
+      return (
+        <div style={{ position: 'relative', marginBottom: '1rem' }}>
+          <pre className="code-block">{code}</pre>
+          <button onClick={copy} style={{
+            position: 'absolute', top: '0.5rem', right: '0.5rem',
+            background: copied ? '#059669' : '#E5E7EB',
+            color: copied ? 'white' : '#374151',
+            border: 'none', borderRadius: '4px',
+            padding: '0.2rem 0.5rem', fontSize: '0.75rem',
+            cursor: 'pointer', fontFamily: 'Space Grotesk, sans-serif'
+          }}>
+            {copied ? labelDone : labelCopy}
+          </button>
+        </div>
+      );
+    }
 
-    var t = {
+    // ─── QuizQuestion Component ──────────────────────────────────────────────
+    function QuizQuestion({ question, index, lang }) {
+      const [selected, setSelected] = React.useState(null);
+      const isCorrect = selected === question.correct;
+      return (
+        <div style={{ marginBottom: '1.5rem', padding: '1.25rem', background: 'white', border: '1px solid #E5E7EB', borderRadius: '10px' }}>
+          <p style={{ fontWeight: 700, fontFamily: "'Space Grotesk', sans-serif", margin: '0 0 0.75rem', color: '#1A1A1A' }}>
+            {index + 1}. {question.q}
+          </p>
+          <div style={{ display: 'grid', gap: '0.5rem' }}>
+            {question.options.map((opt, oi) => {
+              let bg = 'white'; let border = '#D1D5DB'; let color = '#374151';
+              if (selected !== null) {
+                if (oi === question.correct) { bg = '#D1FAE5'; border = '#059669'; color = '#065F46'; }
+                else if (oi === selected) { bg = '#FEE2E2'; border = '#DC2626'; color = '#991B1B'; }
+              }
+              return (
+                <button key={oi} disabled={selected !== null} onClick={() => setSelected(oi)}
+                  className="quiz-option"
+                  style={{
+                    textAlign: 'left', padding: '0.6rem 1rem', fontSize: '0.88rem',
+                    background: bg, border: '1.5px solid ' + border, borderRadius: '6px',
+                    color, cursor: selected !== null ? 'default' : 'pointer',
+                    fontFamily: 'inherit', transition: 'border-color 0.15s, background 0.15s'
+                  }}>
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+          {selected !== null && (
+            <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: isCorrect ? '#059669' : '#DC2626' }}>
+              {isCorrect ? (lang === 'en' ? '\u2713 Correct!' : '\u2713 Richtig!') : (lang === 'en' ? '\u2717 Incorrect' : '\u2717 Falsch')}
+            </p>
+          )}
+        </div>
+      );
+    }
+
+    // ─── Translations ─────────────────────────────────────────────────────────
+    const translations = {
       de: {
-        logo: 'THWS BI Lab',
-        back: '← Zur Kursübersicht',
-        backHref: 'index.html',
-        badge: 'Lab 05',
-        pageTitle: 'Fallstudie: Retail Analytics',
-        pageSubtitle: 'Kompletten BI-Workflow von Rohdaten bis Dashboard durchlaufen – parallel in Power BI und Python/Dash.',
-        nav: [
-          { id: 'ueberblick', label: 'Überblick' },
-          { id: 'datenerkundung', label: 'Schritt 1: Datenerkundung' },
-          { id: 'kpi-hierarchie', label: 'Schritt 2: KPI-Hierarchie' },
-          { id: 'powerbi-steps', label: 'Schritt 3: Power BI' },
-          { id: 'dash-steps', label: 'Schritt 4: Plotly Dash' },
-          { id: 'reflexion', label: 'Schritt 5: Reflexion' },
-          { id: 'ressourcen', label: 'Ressourcen' },
-        ],
-        s1Title: 'Überblick',
-        s1Lernziele: 'Lernziele',
-        s1Goals: [
-          'Kompletten BI-Workflow von Daten bis Dashboard durchlaufen',
-          'Dieselbe Fallstudie in Power BI UND Python umsetzen',
-          'Vor- und Nachteile beider Ansätze praktisch erleben',
+        title: 'Fallstudie: Retail Analytics',
+        desc: 'Kompletten BI-Workflow von Rohdaten bis Dashboard durchlaufen \u2013 parallel in Power BI und Python/Dash.',
+        lernziele: [
+          'Kompletten BI-Workflow durchlaufen',
+          'Fallstudie in Power BI UND Python umsetzen',
+          'Vor- und Nachteile beider Ans\u00E4tze erleben',
           'Professionelle KPI-Hierarchien entwerfen',
         ],
+        navContents: 'Inhalt',
+        nav: [
+          { href: '#ueberblick',       label: '\u00DCberblick' },
+          { href: '#datenerkundung',   label: '1: Datenerkundung' },
+          { href: '#kpi-hierarchie',   label: '2: KPI-Hierarchie' },
+          { href: '#powerbi-steps',    label: '3: Power BI' },
+          { href: '#dash-steps',       label: '4: Plotly Dash' },
+          { href: '#reflexion',        label: '5: Reflexion' },
+          { href: '#ressourcen',       label: 'Ressourcen' },
+          { href: '#quiz',             label: 'Quiz' },
+          { href: '#zusammenfassung',  label: 'Zusammenfassung' },
+        ],
+        backLabel: '\u2190 \u00DCbersicht',
+
+        s1Title: '\u00DCberblick',
+        s1LernzieleLabel: 'Lernziele',
         s1InfoTitle: 'Datensatz',
-        s1InfoText: 'Datensatz: Superstore Dataset. Quelle: Kaggle (öffentlich, kostenlos). Inhalt: 9.994 Bestellungen aus den USA mit Feldern: Order ID, Order Date, Ship Mode, Customer, Segment, Region, Category, Sub-Category, Product Name, Sales, Quantity, Discount, Profit.',
-        s2Title: 'Schritt 1 – Datenerkundung',
-        s2Intro: 'Bevor ein Dashboard entsteht, muss der Datensatz verstanden werden. Dieser Schritt klärt Struktur, Datentypen und erste Kennzahlen.',
-        s2Step1Label: 'Datensatz laden und Grundstruktur prüfen',
-        s3Title: 'Schritt 2 – KPI-Hierarchie',
+        s1InfoText: 'Superstore Dataset (Kaggle, \u00F6ffentlich, kostenlos). 9.994 Bestellungen aus den USA mit Feldern: Order ID, Order Date, Ship Mode, Customer, Segment, Region, Category, Sub-Category, Product Name, Sales, Quantity, Discount, Profit.',
+        s1MethodTitle: 'Methodischer Rahmen',
+        s1MethodText: 'Diese Fallstudie folgt dem CRISP-DM-Zyklus (Cross-Industry Standard Process for Data Mining, Shearer, 2000): Business Understanding \u2192 Data Understanding \u2192 Data Preparation \u2192 Modeling \u2192 Evaluation \u2192 Deployment. Die Schritte 1\u20135 dieses Labs bilden diesen Zyklus ab.',
+
+        s2Title: 'Schritt 1 \u2013 Datenerkundung',
+        s2Intro: 'Bevor ein Dashboard entsteht, muss der Datensatz verstanden werden. Dieser Schritt kl\u00E4rt Struktur, Datentypen und erste Kennzahlen.',
+        s2Step1Label: 'Datensatz laden und Grundstruktur pr\u00FCfen',
+
+        s3Title: 'Schritt 2 \u2013 KPI-Hierarchie',
         s3Intro: 'Gute Dashboards folgen einer KPI-Hierarchie: Strategische Kennzahlen oben, operative Details darunter, Warnsignale separat.',
-        s3ThLevel: 'Ebene',
-        s3ThKPIs: 'KPIs',
-        s3ThDesc: 'Beschreibung',
+        s3Headers: ['Ebene', 'KPIs', 'Beschreibung'],
         s3Rows: [
-          { level: 'Strategisch', kpis: 'Gesamtumsatz, Gesamtgewinn, Marge %', desc: 'Auf einen Blick: Wie performt das Unternehmen insgesamt?' },
-          { level: 'Operativ', kpis: 'Umsatz nach Region, Umsatz nach Kategorie, Top-10-Produkte, Wachstum YoY', desc: 'Wo liegt der Fokus? Welche Segmente und Produkte treiben das Ergebnis?' },
-          { level: 'Warnsignale', kpis: 'Negative Marge nach Sub-Kategorie, Discount-Analyse', desc: 'Was l\u00e4uft schief? Wo werden M\u00f6glichkeiten verschenkt?' },
+          ['Strategisch', 'Gesamtumsatz, Gesamtgewinn, Marge %', 'Wie performt das Unternehmen insgesamt?'],
+          ['Operativ', 'Umsatz nach Region/Kategorie, Top-10-Produkte, YoY', 'Welche Segmente treiben das Ergebnis?'],
+          ['Warnsignale', 'Negative Marge nach Sub-Kategorie, Discount-Analyse', 'Wo werden M\u00F6glichkeiten verschenkt?'],
         ],
         s3ConceptTitle: 'Prinzip: KPIs von oben nach unten',
-        s3ConceptText: 'Stakeholder wollen zuerst den Gesamtstatus sehen, dann in Problembereiche einzoomen. Deshalb: Strategische KPIs prominent, operative Details auf Anfrage, Warnsignale visuell hervorheben.',
-        s4Title: 'Schritt 3 – Power BI Step by Step',
+        s3ConceptText: 'Stakeholder wollen zuerst den Gesamtstatus sehen, dann in Problembereiche einzoomen. Strategische KPIs prominent, operative Details auf Anfrage, Warnsignale visuell hervorheben (Shneiderman, 1996: \u201EOverview first, zoom and filter, then details-on-demand\u201C).',
+
+        s4Title: 'Schritt 3 \u2013 Power BI Step by Step',
         s4Steps: [
-          {
-            label: 'CSV importieren',
-            text: 'Home \u2192 Get Data \u2192 Text/CSV \u2192 superstore.csv ausw\u00e4hlen \u2192 Load',
-          },
-          {
-            label: 'Power Query \u2013 Datentransformation',
-            text: 'Sicherstellen: Order Date als Datum/Uhrzeit, Spalten pr\u00fcfen auf Nullwerte',
-          },
-          {
-            label: 'Measures erstellen',
-            text: 'Im Datenmodell unter "New Measure" die folgenden DAX-Ausdr\u00fccke anlegen:',
-            hasCode: true,
-          },
-          {
-            label: 'Dashboard aufbauen',
-            text: '4 KPI-Cards oben (Umsatz, Gewinn, Marge, Bestellungen), Umsatz-Trend-Linie (nach Monat), Kategorie-Balkendiagramm, Region-Karte, Gewinn-Scatter (Sales vs. Profit)',
-          },
-          {
-            label: 'Slicer & Formatierung',
-            text: 'Slicer f\u00fcr: Jahr, Region, Kategorie. Einheitliche Farben (#2563EB f\u00fcr prim\u00e4re Visualisierungen), Datenbeschriftungen aktivieren',
-          },
+          { label: 'CSV importieren', text: 'Home \u2192 Get Data \u2192 Text/CSV \u2192 superstore.csv ausw\u00E4hlen \u2192 Load' },
+          { label: 'Power Query \u2013 Datentransformation', text: 'Sicherstellen: Order Date als Datum/Uhrzeit, Spalten pr\u00FCfen auf Nullwerte, Datentypen kontrollieren.' },
+          { label: 'Measures erstellen', text: 'Im Datenmodell unter \u201ENew Measure\u201C die folgenden DAX-Ausdr\u00FCcke anlegen:', hasCode: true },
+          { label: 'Dashboard aufbauen', text: '4 KPI-Cards oben (Umsatz, Gewinn, Marge, Bestellungen), Umsatz-Trend-Linie (monatlich), Kategorie-Balkendiagramm, Region-Karte, Gewinn-Scatter (Sales vs. Profit).' },
+          { label: 'Slicer & Formatierung', text: 'Slicer f\u00FCr: Jahr, Region, Kategorie. Einheitliche Farben, Datenbeschriftungen aktivieren.' },
         ],
-        s5Title: 'Schritt 4 – Plotly Dash Step by Step',
-        s5Intro: 'Die folgende vollst\u00e4ndige Dash-App repliziert das Power-BI-Dashboard in Python. In app.py speichern und mit python app.py starten.',
-        s6Title: 'Schritt 5 – Reflexion & Vergleich',
+
+        s5Title: 'Schritt 4 \u2013 Plotly Dash Step by Step',
+        s5Intro: 'Die folgende Dash-App repliziert das Power-BI-Dashboard in Python. In app.py speichern und mit python app.py starten.',
+
+        s6Title: 'Schritt 5 \u2013 Reflexion & Vergleich',
         s6BoxTitle: 'Reflexionsfragen',
         s6Questions: [
-          'Was hat l\u00e4nger gedauert: Power BI oder Dash? Warum?',
-          'Welches Dashboard l\u00e4sst sich leichter an neue Anforderungen anpassen?',
-          'Welches w\u00fcrdest du bei einem Kunden ohne Python-Kenntnisse einsetzen?',
-          'Wie w\u00fcrdest du die Dash-App produktiv deployen (Render, Railway, Docker)?',
-          'Welches Tool eignet sich besser f\u00fcr nicht-technische Stakeholder \u2013 und warum?',
+          'Was hat l\u00E4nger gedauert: Power BI oder Dash? Warum?',
+          'Welches Dashboard l\u00E4sst sich leichter an neue Anforderungen anpassen?',
+          'Welches w\u00FCrdest du bei einem Kunden ohne Python-Kenntnisse einsetzen?',
+          'Wie w\u00FCrdest du die Dash-App produktiv deployen?',
+          'Welches Tool eignet sich besser f\u00FCr nicht-technische Stakeholder \u2013 und warum?',
         ],
-        s7Title: 'YouTube-Ressourcen',
-        s7Intro: 'Empfohlene Video-Ressourcen f\u00fcr diese Fallstudie:',
+        s6CompareTitle: 'Vergleich: Power BI vs. Plotly Dash',
+        s6CompareHeaders: ['Kriterium', 'Power BI', 'Plotly Dash'],
+        s6CompareRows: [
+          ['Setup', 'GUI, Drag & Drop', 'Python-Code'],
+          ['Lernkurve', 'Flach (keine Programmierung)', 'Steil (Python + Dash)'],
+          ['Flexibilit\u00E4t', 'Begrenzt auf built-in Visuals', 'Unbegrenzt (jede Python-Lib)'],
+          ['Deployment', 'Power BI Service (Cloud)', 'Docker / Render / Railway'],
+          ['Kosten', 'Pro-Lizenz ca. 10 \u20AC/Monat', 'Open Source (Hosting-Kosten)'],
+          ['Zielgruppe', 'Business-Analysten', 'Data Engineers / Scientists'],
+        ],
+        s6DeployTitle: 'Deployment-Optionen f\u00FCr Dash',
+        s6DeployText: 'Gunicorn als WSGI-Server \u2192 Docker-Container \u2192 Hosting auf Render, Railway oder eigenem Server mit Traefik als Reverse Proxy. F\u00FCr Prototypen: Streamlit Cloud (kostenlos, keine Docker-Kenntnisse n\u00F6tig).',
+
+        s7Title: 'Lernressourcen',
+        s7Desc: 'Erg\u00E4nzende YouTube-Kanalempfehlungen f\u00FCr diese Fallstudie:',
         s7Resources: [
-          {
-            title: 'Build a BI Dashboard in Power BI \u2013 Guy in a Cube',
-            desc: 'Praxisnahe Power-BI-Tutorials vom bekanntesten deutschen und englischsprachigen Power-BI-Kanal.',
-            url: 'https://www.youtube.com/@GuyInACube',
-            label: 'Guy in a Cube auf YouTube',
-          },
-          {
-            title: 'Plotly Dash Full App Tutorial \u2013 Charming Data',
-            desc: 'Vollst\u00e4ndige Dash-App-Tutorials von Adam Schroeder mit klaren Erkl\u00e4rungen und echten Datens\u00e4tzen.',
-            url: 'https://www.youtube.com/@CharmingData',
-            label: 'Charming Data auf YouTube',
-          },
+          { title: 'Guy in a Cube', url: 'https://www.youtube.com/@GuyInACube', desc: 'Power-BI-Tutorials von Adam Saxton & Patrick LeBlanc (Microsoft-nah).' },
+          { title: 'Charming Data', url: 'https://www.youtube.com/@CharmingData', desc: 'Plotly Dash Tutorials von Adam Schroeder mit echten Datens\u00E4tzen.' },
+          { title: 'SQLBI', url: 'https://www.youtube.com/@SQLBI', desc: 'Marco Russo & Alberto Ferrari \u2013 die weltweit f\u00FChrenden DAX-Experten.' },
+          { title: 'Curbal', url: 'https://www.youtube.com/@Curbal', desc: 'W\u00F6chentliche DAX-Tipps und Power-BI-Tutorials (DAX Fridays).' },
         ],
-        navBack: '\u2190 Lab 04: Dashboards',
-        navBackHref: 'lab-04-dashboards.html',
-        navNext: 'Weiter: Lab 06 \u2013 Souver\u00e4nit\u00e4t \u2192',
-        navNextHref: 'lab-06-souveraenitaet.html',
-        footer: '\u00a9 2026 THWS Business School \u00b7 BI Lab \u00b7 Alle Rechte vorbehalten',
+        s7BookRef: 'Buchempfehlung: \u201EStorytelling with Data\u201C von Cole Nussbaumer Knaflic (Wiley, 2015) \u2013 das Standardwerk f\u00FCr datengetriebenes Storytelling.',
+
+        quizTitle: 'Quiz',
+        quizQuestions: [
+          { q: 'Welche Ebene der KPI-Hierarchie zeigt Gesamtumsatz und Marge?', options: ['Operativ', 'Strategisch', 'Warnsignale', 'Taktisch'], correct: 1 },
+          { q: 'Was ist der erste Schritt im CRISP-DM-Zyklus?', options: ['Data Preparation', 'Business Understanding', 'Modeling', 'Evaluation'], correct: 1 },
+          { q: 'Wie viele Bestellungen enth\u00E4lt der Superstore-Datensatz?', options: ['5.000', '9.994', '15.000', '20.000'], correct: 1 },
+          { q: 'Welches Tool eignet sich besser f\u00FCr nicht-technische Nutzer?', options: ['Plotly Dash', 'Power BI', 'Jupyter Notebook', 'Streamlit'], correct: 1 },
+          { q: 'Was liefert df.describe() in pandas?', options: ['Nur Datentypen', 'Statistische \u00DCbersicht (count, mean, std, min, max)', 'Nur Nullwerte', 'Spaltenanzahl'], correct: 1 },
+          { q: 'Wie deployt man eine Dash-App produktiv?', options: ['Power BI Service', 'Gunicorn + Docker', 'Excel Online', 'Google Sheets'], correct: 1 },
+        ],
+
+        summaryTitle: 'Zusammenfassung',
+        summaryItems: [
+          'Ein vollst\u00E4ndiger BI-Workflow umfasst Datenerkundung, KPI-Design, Visualisierung und Reflexion.',
+          'KPI-Hierarchien strukturieren Dashboards: strategisch \u2192 operativ \u2192 Warnsignale.',
+          'Power BI eignet sich f\u00FCr Business-Analysten (GUI, kein Code, schneller Einstieg).',
+          'Plotly Dash bietet maximale Flexibilit\u00E4t f\u00FCr Data Scientists (Python, Open Source).',
+          'Plotly rendert zu SVG/Canvas \u2013 CSS-Variablen funktionieren dort nicht (Hex-Werte verwenden).',
+          'CRISP-DM (Shearer, 2000) liefert den methodischen Rahmen f\u00FCr BI-Projekte.',
+          'Produktives Deployment: Gunicorn \u2192 Docker \u2192 Cloud-Hosting (Render, Railway).',
+        ],
+
+        navPrev: '\u2190 Lab 04: Dashboards',
+        navNext: 'Lab 06: Souver\u00E4nit\u00E4t \u2192',
       },
+
       en: {
-        logo: 'THWS BI Lab',
-        back: '\u2190 Back to Course Overview',
-        backHref: 'index.html',
-        badge: 'Lab 05',
-        pageTitle: 'Case Study: Retail Analytics',
-        pageSubtitle: 'Run the complete BI workflow from raw data to dashboard \u2013 in parallel using Power BI and Python/Dash.',
-        nav: [
-          { id: 'ueberblick', label: 'Overview' },
-          { id: 'datenerkundung', label: 'Step 1: Data Exploration' },
-          { id: 'kpi-hierarchie', label: 'Step 2: KPI Hierarchy' },
-          { id: 'powerbi-steps', label: 'Step 3: Power BI' },
-          { id: 'dash-steps', label: 'Step 4: Plotly Dash' },
-          { id: 'reflexion', label: 'Step 5: Reflection' },
-          { id: 'ressourcen', label: 'Resources' },
-        ],
-        s1Title: 'Overview',
-        s1Lernziele: 'Learning Objectives',
-        s1Goals: [
-          'Run the complete BI workflow from data to dashboard',
-          'Implement the same case study in Power BI AND Python',
-          'Experience the advantages and disadvantages of both approaches hands-on',
+        title: 'Case Study: Retail Analytics',
+        desc: 'Run the complete BI workflow from raw data to dashboard \u2013 in parallel using Power BI and Python/Dash.',
+        lernziele: [
+          'Run the complete BI workflow',
+          'Implement the case study in Power BI AND Python',
+          'Experience pros and cons of both approaches',
           'Design professional KPI hierarchies',
         ],
+        navContents: 'Contents',
+        nav: [
+          { href: '#ueberblick',       label: 'Overview' },
+          { href: '#datenerkundung',   label: '1: Data Exploration' },
+          { href: '#kpi-hierarchie',   label: '2: KPI Hierarchy' },
+          { href: '#powerbi-steps',    label: '3: Power BI' },
+          { href: '#dash-steps',       label: '4: Plotly Dash' },
+          { href: '#reflexion',        label: '5: Reflection' },
+          { href: '#ressourcen',       label: 'Resources' },
+          { href: '#quiz',             label: 'Quiz' },
+          { href: '#zusammenfassung',  label: 'Summary' },
+        ],
+        backLabel: '\u2190 Overview',
+
+        s1Title: 'Overview',
+        s1LernzieleLabel: 'Learning Objectives',
         s1InfoTitle: 'Dataset',
-        s1InfoText: 'Dataset: Superstore Dataset. Source: Kaggle (public, free). Contents: 9,994 orders from the USA with fields: Order ID, Order Date, Ship Mode, Customer, Segment, Region, Category, Sub-Category, Product Name, Sales, Quantity, Discount, Profit.',
+        s1InfoText: 'Superstore Dataset (Kaggle, public, free). 9,994 orders from the USA with fields: Order ID, Order Date, Ship Mode, Customer, Segment, Region, Category, Sub-Category, Product Name, Sales, Quantity, Discount, Profit.',
+        s1MethodTitle: 'Methodological Framework',
+        s1MethodText: 'This case study follows the CRISP-DM cycle (Cross-Industry Standard Process for Data Mining, Shearer, 2000): Business Understanding \u2192 Data Understanding \u2192 Data Preparation \u2192 Modeling \u2192 Evaluation \u2192 Deployment. Steps 1\u20135 of this lab map to this cycle.',
+
         s2Title: 'Step 1 \u2013 Data Exploration',
         s2Intro: 'Before building a dashboard, the dataset must be understood. This step clarifies structure, data types, and initial key figures.',
         s2Step1Label: 'Load dataset and check basic structure',
+
         s3Title: 'Step 2 \u2013 KPI Hierarchy',
         s3Intro: 'Good dashboards follow a KPI hierarchy: strategic metrics at the top, operational details below, warning signals separately.',
-        s3ThLevel: 'Level',
-        s3ThKPIs: 'KPIs',
-        s3ThDesc: 'Description',
+        s3Headers: ['Level', 'KPIs', 'Description'],
         s3Rows: [
-          { level: 'Strategic', kpis: 'Total Revenue, Total Profit, Margin %', desc: 'At a glance: How is the business performing overall?' },
-          { level: 'Operational', kpis: 'Revenue by Region, Revenue by Category, Top-10 Products, YoY Growth', desc: 'Where is the focus? Which segments and products drive the result?' },
-          { level: 'Warning Signals', kpis: 'Negative Margin by Sub-Category, Discount Analysis', desc: 'What is going wrong? Where are opportunities being wasted?' },
+          ['Strategic', 'Total Revenue, Total Profit, Margin %', 'How is the business performing overall?'],
+          ['Operational', 'Revenue by Region/Category, Top-10 Products, YoY', 'Which segments drive the result?'],
+          ['Warning Signals', 'Negative Margin by Sub-Category, Discount Analysis', 'Where are opportunities being wasted?'],
         ],
         s3ConceptTitle: 'Principle: KPIs top-down',
-        s3ConceptText: 'Stakeholders want to see the overall status first, then drill into problem areas. Therefore: strategic KPIs prominently placed, operational details on demand, warning signals visually highlighted.',
+        s3ConceptText: 'Stakeholders want to see the overall status first, then drill into problem areas. Strategic KPIs prominently placed, operational details on demand, warning signals visually highlighted (Shneiderman, 1996: \u201COverview first, zoom and filter, then details-on-demand\u201D).',
+
         s4Title: 'Step 3 \u2013 Power BI Step by Step',
         s4Steps: [
-          {
-            label: 'Import CSV',
-            text: 'Home \u2192 Get Data \u2192 Text/CSV \u2192 Select superstore.csv \u2192 Load',
-          },
-          {
-            label: 'Power Query \u2013 Data Transformation',
-            text: 'Ensure: Order Date is Date/Time, check columns for null values',
-          },
-          {
-            label: 'Create Measures',
-            text: 'In the data model under "New Measure", create the following DAX expressions:',
-            hasCode: true,
-          },
-          {
-            label: 'Build Dashboard',
-            text: '4 KPI cards at the top (Revenue, Profit, Margin, Orders), Revenue trend line (by month), Category bar chart, Region map, Profit scatter (Sales vs. Profit)',
-          },
-          {
-            label: 'Slicers & Formatting',
-            text: 'Slicers for: Year, Region, Category. Consistent colors (#2563EB for primary visualizations), enable data labels',
-          },
+          { label: 'Import CSV', text: 'Home \u2192 Get Data \u2192 Text/CSV \u2192 Select superstore.csv \u2192 Load' },
+          { label: 'Power Query \u2013 Data Transformation', text: 'Ensure: Order Date is Date/Time type, check columns for null values, verify data types.' },
+          { label: 'Create Measures', text: 'In the data model under \u201CNew Measure\u201D, create the following DAX expressions:', hasCode: true },
+          { label: 'Build Dashboard', text: '4 KPI cards at the top (Revenue, Profit, Margin, Orders), Revenue trend line (monthly), Category bar chart, Region map, Profit scatter (Sales vs. Profit).' },
+          { label: 'Slicers & Formatting', text: 'Slicers for: Year, Region, Category. Consistent colours, enable data labels.' },
         ],
+
         s5Title: 'Step 4 \u2013 Plotly Dash Step by Step',
-        s5Intro: 'The following complete Dash app replicates the Power BI dashboard in Python. Save as app.py and start with python app.py.',
+        s5Intro: 'The following Dash app replicates the Power BI dashboard in Python. Save as app.py and start with python app.py.',
+
         s6Title: 'Step 5 \u2013 Reflection & Comparison',
         s6BoxTitle: 'Reflection Questions',
         s6Questions: [
           'Which took longer: Power BI or Dash? Why?',
           'Which dashboard is easier to adapt to new requirements?',
           'Which would you use for a client without Python knowledge?',
-          'How would you deploy the Dash app to production (Heroku, Render, Docker)?',
+          'How would you deploy the Dash app to production?',
           'Which tool is better suited for non-technical stakeholders \u2013 and why?',
         ],
-        s7Title: 'YouTube Resources',
-        s7Intro: 'Recommended video resources for this case study:',
-        s7Resources: [
-          {
-            title: 'Build a BI Dashboard in Power BI \u2013 Guy in a Cube',
-            desc: 'Practical Power BI tutorials from the most well-known Power BI channel.',
-            url: 'https://www.youtube.com/@GuyInACube',
-            label: 'Guy in a Cube on YouTube',
-          },
-          {
-            title: 'Plotly Dash Full App Tutorial \u2013 Charming Data',
-            desc: 'Complete Dash app tutorials by Adam Schroeder with clear explanations and real datasets.',
-            url: 'https://www.youtube.com/@CharmingData',
-            label: 'Charming Data on YouTube',
-          },
+        s6CompareTitle: 'Comparison: Power BI vs. Plotly Dash',
+        s6CompareHeaders: ['Criterion', 'Power BI', 'Plotly Dash'],
+        s6CompareRows: [
+          ['Setup', 'GUI, Drag & Drop', 'Python code'],
+          ['Learning Curve', 'Flat (no programming)', 'Steep (Python + Dash)'],
+          ['Flexibility', 'Limited to built-in visuals', 'Unlimited (any Python lib)'],
+          ['Deployment', 'Power BI Service (Cloud)', 'Docker / Render / Railway'],
+          ['Cost', 'Pro licence ~$10/month', 'Open Source (hosting costs)'],
+          ['Target Audience', 'Business analysts', 'Data engineers / scientists'],
         ],
-        navBack: '\u2190 Lab 04: Dashboards',
-        navBackHref: 'lab-04-dashboards.html',
-        navNext: 'Next: Lab 06 \u2013 Sovereignty \u2192',
-        navNextHref: 'lab-06-souveraenitaet.html',
-        footer: '\u00a9 2026 THWS Business School \u00b7 BI Lab \u00b7 All rights reserved',
+        s6DeployTitle: 'Deployment Options for Dash',
+        s6DeployText: 'Gunicorn as WSGI server \u2192 Docker container \u2192 hosting on Render, Railway or own server with Traefik as reverse proxy. For prototypes: Streamlit Cloud (free, no Docker knowledge required).',
+
+        s7Title: 'Learning Resources',
+        s7Desc: 'Recommended YouTube channels for this case study:',
+        s7Resources: [
+          { title: 'Guy in a Cube', url: 'https://www.youtube.com/@GuyInACube', desc: 'Power BI tutorials by Adam Saxton & Patrick LeBlanc (Microsoft-adjacent).' },
+          { title: 'Charming Data', url: 'https://www.youtube.com/@CharmingData', desc: 'Plotly Dash tutorials by Adam Schroeder with real datasets.' },
+          { title: 'SQLBI', url: 'https://www.youtube.com/@SQLBI', desc: 'Marco Russo & Alberto Ferrari \u2013 the world\u2019s leading DAX experts.' },
+          { title: 'Curbal', url: 'https://www.youtube.com/@Curbal', desc: 'Weekly DAX tips and Power BI tutorials (DAX Fridays).' },
+        ],
+        s7BookRef: 'Book recommendation: \u201CStorytelling with Data\u201D by Cole Nussbaumer Knaflic (Wiley, 2015) \u2013 the standard reference for data-driven storytelling.',
+
+        quizTitle: 'Quiz',
+        quizQuestions: [
+          { q: 'Which KPI hierarchy level shows total revenue and margin?', options: ['Operational', 'Strategic', 'Warning Signals', 'Tactical'], correct: 1 },
+          { q: 'What is the first step in the CRISP-DM cycle?', options: ['Data Preparation', 'Business Understanding', 'Modeling', 'Evaluation'], correct: 1 },
+          { q: 'How many orders does the Superstore dataset contain?', options: ['5,000', '9,994', '15,000', '20,000'], correct: 1 },
+          { q: 'Which tool is better suited for non-technical users?', options: ['Plotly Dash', 'Power BI', 'Jupyter Notebook', 'Streamlit'], correct: 1 },
+          { q: 'What does df.describe() return in pandas?', options: ['Only data types', 'Statistical summary (count, mean, std, min, max)', 'Only null values', 'Column count'], correct: 1 },
+          { q: 'How do you deploy a Dash app to production?', options: ['Power BI Service', 'Gunicorn + Docker', 'Excel Online', 'Google Sheets'], correct: 1 },
+        ],
+
+        summaryTitle: 'Summary',
+        summaryItems: [
+          'A complete BI workflow covers data exploration, KPI design, visualisation and reflection.',
+          'KPI hierarchies structure dashboards: strategic \u2192 operational \u2192 warning signals.',
+          'Power BI suits business analysts (GUI, no code, quick start).',
+          'Plotly Dash offers maximum flexibility for data scientists (Python, open source).',
+          'Plotly renders to SVG/Canvas \u2013 CSS variables do not work there (use hex values).',
+          'CRISP-DM (Shearer, 2000) provides the methodological framework for BI projects.',
+          'Production deployment: Gunicorn \u2192 Docker \u2192 cloud hosting (Render, Railway).',
+        ],
+
+        navPrev: '\u2190 Lab 04: Dashboards',
+        navNext: 'Lab 06: Sovereignty \u2192',
       },
     };
 
-    var c = t[lang];
+    // ─── Code constants (language-independent) ──────────────────────────────
+    const CODE_EXPLORE = "import pandas as pd\nimport numpy as np\n\n# Datensatz laden (UTF-8 oder latin-1)\ndf = pd.read_csv('superstore.csv', encoding='latin-1')\n\n# Grundlegende Infos\nprint(df.shape)          # (9994, 21)\nprint(df.dtypes)         # Datentypen pr\u00FCfen\nprint(df.isnull().sum()) # Nullwerte pr\u00FCfen\nprint(df.describe())     # Statistische \u00DCbersicht\n\n# Key Stats\nprint(f\"Gesamtumsatz:  ${df['Sales'].sum():,.0f}\")\nprint(f\"Gesamtgewinn:  ${df['Profit'].sum():,.0f}\")\nprint(f\"Marge:          {df['Profit'].sum()/df['Sales'].sum()*100:.1f}%\")\nprint(f\"Bestellungen:   {df['Order ID'].nunique()}\")\nprint(f\"Zeitraum:       {df['Order Date'].min()} bis {df['Order Date'].max()}\")";
 
-    var codeDataExploration = `import pandas as pd
-import numpy as np
+    const CODE_MEASURES = "-- Grundlegende Measures\n\nUmsatz =\nSUM(Orders[Sales])\n\nGewinn =\nSUM(Orders[Profit])\n\nMarge_Pct =\nDIVIDE([Gewinn], [Umsatz], 0) * 100\n\nBestellungen =\nCOUNTROWS(Orders)\n\nAvg_Bestellwert =\nDIVIDE([Umsatz], DISTINCTCOUNT(Orders[Order ID]), 0)\n\nUmsatz_VJ =\nCALCULATE([Umsatz], SAMEPERIODLASTYEAR(Orders[Order Date]))\n\nYoY_Wachstum =\nDIVIDE([Umsatz] - [Umsatz_VJ], [Umsatz_VJ], 0) * 100";
 
-# Datensatz laden (UTF-8 oder latin-1)
-df = pd.read_csv('superstore.csv', encoding='latin-1')
+    const CODE_DASH = "# app.py \u2013 Superstore Retail Analytics Dashboard\nimport dash\nfrom dash import dcc, html, Input, Output\nimport plotly.express as px\nimport pandas as pd\n\napp = dash.Dash(__name__)\n\n# Daten laden und vorbereiten\ndf = pd.read_csv('superstore.csv', encoding='latin-1')\ndf['Order Date'] = pd.to_datetime(df['Order Date'])\ndf['Month'] = df['Order Date'].dt.to_period('M').dt.to_timestamp()\n\n# Farben als Python-Konstanten (NICHT CSS-Variablen!)\n# Plotly rendert zu SVG/Canvas, nicht ins DOM \u2013\n# var(--col-primary) funktioniert dort nicht.\nCOL_PRIMARY = '#1E3A8A'\nCOL_ACCENT  = '#2563EB'\n\napp.layout = html.Div([\n    # Header\n    html.Div([\n        html.H1('Superstore Analytics Dashboard',\n                style={'margin': '0', 'fontSize': '1.5rem'}),\n    ], style={'background': COL_PRIMARY, 'color': 'white',\n              'padding': '1rem 2rem'}),\n\n    # Filter\n    html.Div([\n        html.Div([\n            html.Label('Segment:'),\n            dcc.Dropdown(\n                id='segment-filter',\n                options=[{'label': s, 'value': s}\n                         for s in df['Segment'].unique()],\n                value=df['Segment'].unique().tolist(),\n                multi=True, clearable=False\n            ),\n        ], style={'flex': 1}),\n        html.Div([\n            html.Label('Region:'),\n            dcc.Dropdown(\n                id='region-filter',\n                options=[{'label': r, 'value': r}\n                         for r in df['Region'].unique()],\n                value=df['Region'].unique().tolist(),\n                multi=True, clearable=False\n            ),\n        ], style={'flex': 1}),\n    ], style={'display': 'flex', 'gap': '1rem',\n              'padding': '1rem 2rem', 'background': '#f8fafc'}),\n\n    # KPI Cards\n    html.Div(id='kpi-cards',\n             style={'display': 'grid',\n                    'gridTemplateColumns': 'repeat(4, 1fr)',\n                    'gap': '1rem', 'padding': '1rem 2rem'}),\n\n    # Charts\n    html.Div([\n        dcc.Graph(id='trend-chart'),\n        dcc.Graph(id='category-chart'),\n    ], style={'display': 'grid', 'gridTemplateColumns': '1fr 1fr',\n              'gap': '1rem', 'padding': '0 2rem 1rem'}),\n\n    dcc.Graph(id='scatter-chart',\n              style={'padding': '0 2rem 2rem'}),\n])\n\ndef kpi_card(title, value, color=COL_PRIMARY):\n    return html.Div([\n        html.Div(value, style={'fontSize': '1.75rem', 'fontWeight': '800',\n                               'color': color}),\n        html.Div(title, style={'fontSize': '0.75rem', 'color': '#6B7280',\n                               'textTransform': 'uppercase',\n                               'letterSpacing': '0.08em'}),\n    ], style={'background': 'white', 'padding': '1.25rem',\n              'border': '1px solid #e5e7eb',\n              'borderLeft': f'4px solid {color}'})\n\n@app.callback(\n    Output('kpi-cards', 'children'),\n    Output('trend-chart', 'figure'),\n    Output('category-chart', 'figure'),\n    Output('scatter-chart', 'figure'),\n    Input('segment-filter', 'value'),\n    Input('region-filter', 'value')\n)\ndef update_dashboard(segments, regions):\n    fdf = df[df['Segment'].isin(segments) &\n             df['Region'].isin(regions)]\n\n    # KPI Cards\n    total_sales = fdf['Sales'].sum()\n    total_profit = fdf['Profit'].sum()\n    margin = total_profit / total_sales * 100 if total_sales else 0\n    orders = fdf['Order ID'].nunique()\n\n    cards = [\n        kpi_card('Umsatz', f'${total_sales:,.0f}'),\n        kpi_card('Gewinn', f'${total_profit:,.0f}'),\n        kpi_card('Marge', f'{margin:.1f}%', COL_ACCENT),\n        kpi_card('Bestellungen', f'{orders:,}'),\n    ]\n\n    # Trend\n    trend = fdf.groupby('Month')['Sales'].sum().reset_index()\n    fig1 = px.line(trend, x='Month', y='Sales',\n                   title='Umsatz-Trend (monatlich)',\n                   color_discrete_sequence=[COL_ACCENT])\n    fig1.update_layout(plot_bgcolor='white', paper_bgcolor='white')\n\n    # Kategorie\n    by_cat = fdf.groupby('Category')['Sales'].sum().reset_index()\n    fig2 = px.bar(by_cat, x='Category', y='Sales',\n                  title='Umsatz nach Kategorie',\n                  color_discrete_sequence=[COL_PRIMARY])\n    fig2.update_layout(plot_bgcolor='white', paper_bgcolor='white')\n\n    # Scatter\n    by_sub = fdf.groupby('Sub-Category').agg(\n        Sales=('Sales','sum'), Profit=('Profit','sum')\n    ).reset_index()\n    fig3 = px.scatter(by_sub, x='Sales', y='Profit',\n                      text='Sub-Category', size='Sales',\n                      title='Umsatz vs. Gewinn nach Sub-Kategorie',\n                      color_discrete_sequence=[COL_ACCENT])\n    fig3.update_layout(plot_bgcolor='white', paper_bgcolor='white')\n\n    return cards, fig1, fig2, fig3\n\nif __name__ == '__main__':\n    app.run(debug=True)";
 
-# Grundlegende Infos
-print(df.shape)          # (9994, 21)
-print(df.dtypes)         # Datentypen prüfen
-print(df.isnull().sum()) # Nullwerte prüfen
-print(df.describe())     # Statistische Übersicht
+    // ─── App Component ────────────────────────────────────────────────────────
+    function App() {
+      const urlLang = new URLSearchParams(window.location.search).get('lang');
+      const [lang, setLang] = useState(() => localStorage.getItem('bi-lang') || urlLang || 'de');
+      const [activeSection, setActiveSection] = useState('ueberblick');
 
-# Key Stats
-print(f"Gesamtumsatz:  ${'{'}df['Sales'].sum():,.0f{'}'}")
-print(f"Gesamtgewinn:  ${'{'}df['Profit'].sum():,.0f{'}'}")
-print(f"Marge:          {'{'}df['Profit'].sum()/df['Sales'].sum()*100:.1f{'}'}%")
-print(f"Bestellungen:   {'{'}df['Order ID'].nunique(){'}'}")
-print(f"Zeitraum:       {'{'}df['Order Date'].min(){'}'} bis {'{'}df['Order Date'].max(){'}'}")`;
+      const setLangAndStore = (l) => {
+        setLang(l);
+        localStorage.setItem('bi-lang', l);
+      };
 
-    var codeMeasures = `-- Grundlegende Measures
+      useEffect(() => {
+        const sections = ['ueberblick', 'datenerkundung', 'kpi-hierarchie', 'powerbi-steps', 'dash-steps', 'reflexion', 'ressourcen', 'quiz', 'zusammenfassung'];
+        const handler = () => {
+          for (let i = sections.length - 1; i >= 0; i--) {
+            const el = document.getElementById(sections[i]);
+            if (el && el.getBoundingClientRect().top <= 100) {
+              setActiveSection(sections[i]);
+              return;
+            }
+          }
+          setActiveSection('ueberblick');
+        };
+        window.addEventListener('scroll', handler, { passive: true });
+        return () => window.removeEventListener('scroll', handler);
+      }, []);
 
-Umsatz =
-SUM(Orders[Sales])
+      const tx = translations[lang];
 
-Gewinn =
-SUM(Orders[Profit])
+      return (
+        <div data-lang={lang}>
 
-Marge_Pct =
-DIVIDE([Gewinn], [Umsatz], 0) * 100
+          {/* Fixed Header */}
+          <header className="header">
+            <div className="header-left">
+              <a href="index.html" className="header-logo">{'BI Lab'}</a>
+              <a href={'index.html' + (lang === 'en' ? '?lang=en' : '')} className="header-back">{tx.backLabel}</a>
+            </div>
+            <div style={{ display: 'flex', gap: '0.35rem' }}>
+              <button className={'lang-btn' + (lang === 'de' ? ' active' : '')} onClick={() => setLangAndStore('de')}>{'DE'}</button>
+              <button className={'lang-btn' + (lang === 'en' ? ' active' : '')} onClick={() => setLangAndStore('en')}>{'EN'}</button>
+            </div>
+          </header>
 
-Bestellungen =
-COUNTROWS(Orders)
-
-Avg_Bestellwert =
-DIVIDE([Umsatz], DISTINCTCOUNT(Orders[Order ID]), 0)
-
-Umsatz_VJ =
-CALCULATE([Umsatz], SAMEPERIODLASTYEAR(Orders[Order Date]))
-
-YoY_Wachstum =
-DIVIDE([Umsatz] - [Umsatz_VJ], [Umsatz_VJ], 0) * 100`;
-
-    var codeDashApp = `# app.py – Superstore Retail Analytics Dashboard
-import dash
-from dash import dcc, html, Input, Output
-import plotly.express as px
-import pandas as pd
-
-app = dash.Dash(__name__)
-
-# Daten laden und vorbereiten
-df = pd.read_csv('superstore.csv', encoding='latin-1')
-df['Order Date'] = pd.to_datetime(df['Order Date'])
-df['Month'] = df['Order Date'].dt.to_period('M').dt.to_timestamp()
-
-app.layout = html.Div([
-    # Header
-    html.Div([
-        html.H1('Superstore Analytics Dashboard',
-                style={'margin': '0', 'fontSize': '1.5rem'}),
-    ], style={'background': 'var(--col-primary)', 'color': 'white',
-              'padding': '1rem 2rem'}),
-
-    # Filter
-    html.Div([
-        html.Div([
-            html.Label('Segment:'),
-            dcc.Dropdown(
-                id='segment-filter',
-                options=[{'label': s, 'value': s}
-                         for s in df['Segment'].unique()],
-                value=df['Segment'].unique().tolist(),
-                multi=True, clearable=False
-            ),
-        ], style={'flex': 1}),
-        html.Div([
-            html.Label('Region:'),
-            dcc.Dropdown(
-                id='region-filter',
-                options=[{'label': r, 'value': r}
-                         for r in df['Region'].unique()],
-                value=df['Region'].unique().tolist(),
-                multi=True, clearable=False
-            ),
-        ], style={'flex': 1}),
-    ], style={'display': 'flex', 'gap': '1rem',
-              'padding': '1rem 2rem', 'background': '#f8fafc'}),
-
-    # KPI Cards
-    html.Div(id='kpi-cards',
-             style={'display': 'grid',
-                    'gridTemplateColumns': 'repeat(4, 1fr)',
-                    'gap': '1rem', 'padding': '1rem 2rem'}),
-
-    # Charts
-    html.Div([
-        dcc.Graph(id='trend-chart'),
-        dcc.Graph(id='category-chart'),
-    ], style={'display': 'grid', 'gridTemplateColumns': '1fr 1fr',
-              'gap': '1rem', 'padding': '0 2rem 1rem'}),
-
-    dcc.Graph(id='scatter-chart',
-              style={'padding': '0 2rem 2rem'}),
-])
-
-def kpi_card(title, value, color='var(--col-primary)'):
-    return html.Div([
-        html.Div(value, style={'fontSize': '1.75rem', 'fontWeight': '800',
-                               'color': color}),
-        html.Div(title, style={'fontSize': '0.75rem', 'color': '#6B7280',
-                               'textTransform': 'uppercase',
-                               'letterSpacing': '0.08em'}),
-    ], style={'background': 'white', 'padding': '1.25rem',
-              'border': '1px solid #e5e7eb',
-              'borderLeft': f'4px solid {color}'})
-
-@app.callback(
-    Output('kpi-cards', 'children'),
-    Output('trend-chart', 'figure'),
-    Output('category-chart', 'figure'),
-    Output('scatter-chart', 'figure'),
-    Input('segment-filter', 'value'),
-    Input('region-filter', 'value')
-)
-def update_dashboard(segments, regions):
-    fdf = df[df['Segment'].isin(segments) &
-             df['Region'].isin(regions)]
-
-    # KPI Cards
-    total_sales = fdf['Sales'].sum()
-    total_profit = fdf['Profit'].sum()
-    margin = total_profit / total_sales * 100 if total_sales else 0
-    orders = fdf['Order ID'].nunique()
-
-    cards = [
-        kpi_card('Umsatz', f'${total_sales:,.0f}'),
-        kpi_card('Gewinn', f'${total_profit:,.0f}'),
-        kpi_card('Marge', f'{margin:.1f}%', 'var(--col-accent)'),
-        kpi_card('Bestellungen', f'{orders:,}'),
-    ]
-
-    # Trend
-    trend = fdf.groupby('Month')['Sales'].sum().reset_index()
-    fig1 = px.line(trend, x='Month', y='Sales',
-                   title='Umsatz-Trend (monatlich)',
-                   color_discrete_sequence=['var(--col-accent)'])
-    fig1.update_layout(plot_bgcolor='white', paper_bgcolor='white')
-
-    # Kategorie
-    by_cat = fdf.groupby('Category')['Sales'].sum().reset_index()
-    fig2 = px.bar(by_cat, x='Category', y='Sales',
-                  title='Umsatz nach Kategorie',
-                  color_discrete_sequence=['var(--col-primary)'])
-    fig2.update_layout(plot_bgcolor='white', paper_bgcolor='white')
-
-    # Scatter
-    by_sub = fdf.groupby('Sub-Category').agg(
-        Sales=('Sales','sum'), Profit=('Profit','sum')
-    ).reset_index()
-    fig3 = px.scatter(by_sub, x='Sales', y='Profit',
-                      text='Sub-Category', size='Sales',
-                      title='Umsatz vs. Gewinn nach Sub-Kategorie',
-                      color_discrete_sequence=['var(--col-accent)'])
-    fig3.update_layout(plot_bgcolor='white', paper_bgcolor='white')
-
-    return cards, fig1, fig2, fig3
-
-if __name__ == '__main__':
-    app.run(debug=True)`;
-
-    return (
-      <div data-lang={lang}>
-        <header className="header">
-          <div className="header-left">
-            <a href="index.html" className="header-logo">{c.logo}</a>
-            <a href={c.backHref} className="header-back">{c.back}</a>
-          </div>
-          <div style={{ display: 'flex', gap: '0.35rem' }}>
-            <button className={'lang-btn' + (lang === 'de' ? ' active' : '')} onClick={() => toggleLang('de')}>DE</button>
-            <button className={'lang-btn' + (lang === 'en' ? ' active' : '')} onClick={() => toggleLang('en')}>EN</button>
-          </div>
-        </header>
-
-        <nav className="sidebar">
-          <div className="sidebar-title">Lab 05</div>
-          {c.nav.map(function(item) {
-            return (
+          {/* Sidebar */}
+          <nav className="sidebar">
+            <div className="sidebar-title">{tx.navContents}</div>
+            {tx.nav.map((item) => (
               <a
-                key={item.id}
-                href={'#' + item.id}
-                className={'sidebar-link' + (activeSection === item.id ? ' active' : '')}
-              >{item.label}</a>
-            );
-          })}
-        </nav>
+                key={item.href}
+                href={item.href}
+                className={'sidebar-link' + (activeSection === item.href.slice(1) ? ' active' : '')}
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
 
-        <main className="main-content">
-          <div style={{ marginBottom: '2.5rem' }}>
-            <span className="bauhaus-badge">{c.badge}</span>
-            <h2 style={{ fontSize: '2rem', marginTop: '0.75rem', marginBottom: '0.25rem' }}>{c.pageTitle}</h2>
-            <div className="bauhaus-accent-line"></div>
-            <p style={{ color: '#555', fontSize: '1.05rem', maxWidth: '640px' }}>{c.pageSubtitle}</p>
-          </div>
-
-          <div id="ueberblick" className="section-block">
-            <h2>{c.s1Title}</h2>
-            <div className="bauhaus-accent-line"></div>
-            <div className="lernziele-box">
-              <h4 className="lernziele-heading">{c.s1Lernziele}</h4>
-              <ol style={{ margin: 0, paddingLeft: '1.25rem', lineHeight: '2' }}>
-                {c.s1Goals.map(function(g, i) {
-                  return <li key={i}>{g}</li>;
-                })}
-              </ol>
-            </div>
-            <div className="info-box" style={{ marginTop: '1.5rem' }}>
-              <strong>{c.s1InfoTitle}:</strong> {c.s1InfoText}
+          {/* Lab Header */}
+          <div className="lab-header">
+            <div className="lab-num">{'05'}</div>
+            <h1 className="lab-title-h1">{tx.title}</h1>
+            <p className="lab-desc-intro">{tx.desc}</p>
+            <div className="lernziele-chips">
+              {tx.lernziele.map((lz, i) => (
+                <span key={i} className="lernziel-chip">{lz}</span>
+              ))}
             </div>
           </div>
 
-          <div id="datenerkundung" className="section-block">
-            <h2>{c.s2Title}</h2>
-            <div className="bauhaus-accent-line"></div>
-            <p>{c.s2Intro}</p>
-            <div className="step-block">
-              <span className="step-number">1</span>
-              <div className="step-content">
-                <h4 style={{ marginTop: 0 }}>{c.s2Step1Label}</h4>
-                <CodeBlock code={codeDataExploration} />
+          {/* Main Content */}
+          <main className="main-content">
+
+            {/* ── Section 1: Überblick ── */}
+            <section id="ueberblick" className="section-block">
+              <h2>{tx.s1Title}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <div className="lernziele-box">
+                <h4 className="lernziele-heading">{tx.s1LernzieleLabel}</h4>
+                <ol style={{ margin: 0, paddingLeft: '1.25rem', lineHeight: '2' }}>
+                  {tx.lernziele.map((g, i) => (
+                    <li key={i}>{g}</li>
+                  ))}
+                </ol>
               </div>
-            </div>
-          </div>
+              <div className="info-box" style={{ marginTop: '1.5rem' }}>
+                <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.s1InfoTitle}</h4>
+                <p style={{ margin: 0 }}>{tx.s1InfoText}</p>
+              </div>
+              {/* CRISP-DM Reference */}
+              <div className="concept-box" style={{ marginTop: '1rem' }}>
+                <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.s1MethodTitle}</h4>
+                <p style={{ margin: 0 }}>{tx.s1MethodText}</p>
+              </div>
+            </section>
 
-          <div id="kpi-hierarchie" className="section-block">
-            <h2>{c.s3Title}</h2>
-            <div className="bauhaus-accent-line"></div>
-            <p>{c.s3Intro}</p>
-            <table>
-              <thead>
-                <tr>
-                  <th>{c.s3ThLevel}</th>
-                  <th>{c.s3ThKPIs}</th>
-                  <th>{c.s3ThDesc}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {c.s3Rows.map(function(row, i) {
-                  return (
+            {/* ── Section 2: Datenerkundung ── */}
+            <section id="datenerkundung" className="section-block">
+              <h2>{tx.s2Title}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <p>{tx.s2Intro}</p>
+              <div className="step-block">
+                <span className="step-number">{'1'}</span>
+                <div className="step-content">
+                  <h4 style={{ marginTop: 0 }}>{tx.s2Step1Label}</h4>
+                  <CodeBlock code={CODE_EXPLORE} lang={lang} />
+                </div>
+              </div>
+            </section>
+
+            {/* ── Section 3: KPI-Hierarchie ── */}
+            <section id="kpi-hierarchie" className="section-block">
+              <h2>{tx.s3Title}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <p>{tx.s3Intro}</p>
+              <table>
+                <thead>
+                  <tr>{tx.s3Headers.map((h, i) => <th key={i}>{h}</th>)}</tr>
+                </thead>
+                <tbody>
+                  {tx.s3Rows.map((row, i) => (
                     <tr key={i}>
-                      <td><strong>{row.level}</strong></td>
-                      <td>{row.kpis}</td>
-                      <td>{row.desc}</td>
+                      <td style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, color: 'var(--col-primary)' }}>{row[0]}</td>
+                      <td>{row[1]}</td>
+                      <td>{row[2]}</td>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-            <div className="concept-box" style={{ marginTop: '1.5rem' }}>
-              <h4 style={{ marginTop: 0 }}>{c.s3ConceptTitle}</h4>
-              <p style={{ margin: 0 }}>{c.s3ConceptText}</p>
-            </div>
-          </div>
+                  ))}
+                </tbody>
+              </table>
+              <div className="concept-box" style={{ marginTop: '1.5rem' }}>
+                <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.s3ConceptTitle}</h4>
+                <p style={{ margin: 0 }}>{tx.s3ConceptText}</p>
+              </div>
+            </section>
 
-          <div id="powerbi-steps" className="section-block">
-            <h2>{c.s4Title}</h2>
-            <div className="bauhaus-accent-line"></div>
-            {c.s4Steps.map(function(step, i) {
-              return (
+            {/* ── Section 4: Power BI Steps ── */}
+            <section id="powerbi-steps" className="section-block">
+              <h2>{tx.s4Title}</h2>
+              <div className="bauhaus-accent-line"></div>
+              {tx.s4Steps.map((step, i) => (
                 <div key={i} className="step-block">
                   <span className="step-number">{i + 1}</span>
                   <div className="step-content">
                     <h4 style={{ marginTop: 0 }}>{step.label}</h4>
                     <p style={{ margin: '0.25rem 0' }}>{step.text}</p>
-                    {step.hasCode && <CodeBlock code={codeMeasures} />}
+                    {step.hasCode && <CodeBlock code={CODE_MEASURES} lang={lang} />}
                   </div>
                 </div>
-              );
-            })}
-          </div>
+              ))}
+            </section>
 
-          <div id="dash-steps" className="section-block">
-            <h2>{c.s5Title}</h2>
-            <div className="bauhaus-accent-line"></div>
-            <p>{c.s5Intro}</p>
-            <CodeBlock code={codeDashApp} />
-          </div>
+            {/* ── Section 5: Plotly Dash ── */}
+            <section id="dash-steps" className="section-block">
+              <h2>{tx.s5Title}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <p>{tx.s5Intro}</p>
+              <div className="tip-box" style={{ marginBottom: '1rem' }}>
+                <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{'Plotly & CSS-Variablen'}</h4>
+                <p style={{ margin: 0, fontSize: '0.875rem' }}>
+                  {lang === 'en'
+                    ? 'Important: Plotly renders to SVG/Canvas, not the DOM. CSS variables like var(--col-primary) do NOT work in color_discrete_sequence. Always use hex values (#1E3A8A) for Plotly colours.'
+                    : 'Wichtig: Plotly rendert zu SVG/Canvas, nicht ins DOM. CSS-Variablen wie var(--col-primary) funktionieren NICHT in color_discrete_sequence. Immer Hex-Werte (#1E3A8A) f\u00FCr Plotly-Farben verwenden.'}
+                </p>
+              </div>
+              <CodeBlock code={CODE_DASH} lang={lang} />
+            </section>
 
-          <div id="reflexion" className="section-block">
-            <h2>{c.s6Title}</h2>
-            <div className="bauhaus-accent-line"></div>
-            <div className="challenge-box">
-              <h4 style={{ marginTop: 0, color: '#15803d' }}>{c.s6BoxTitle}</h4>
-              <ol style={{ margin: 0, paddingLeft: '1.25rem', lineHeight: '2.2' }}>
-                {c.s6Questions.map(function(q, i) {
-                  return <li key={i}>{q}</li>;
-                })}
-              </ol>
+            {/* ── Section 6: Reflexion ── */}
+            <section id="reflexion" className="section-block">
+              <h2>{tx.s6Title}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <div className="challenge-box">
+                <h4 style={{ marginTop: 0, color: '#15803d' }}>{tx.s6BoxTitle}</h4>
+                <ol style={{ margin: 0, paddingLeft: '1.25rem', lineHeight: '2.2' }}>
+                  {tx.s6Questions.map((q, i) => (
+                    <li key={i}>{q}</li>
+                  ))}
+                </ol>
+              </div>
+
+              {/* Comparison Table */}
+              <h3 style={{ marginTop: '2rem' }}>{tx.s6CompareTitle}</h3>
+              <table>
+                <thead>
+                  <tr>{tx.s6CompareHeaders.map((h, i) => <th key={i}>{h}</th>)}</tr>
+                </thead>
+                <tbody>
+                  {tx.s6CompareRows.map((row, i) => (
+                    <tr key={i}>
+                      <td style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600 }}>{row[0]}</td>
+                      <td>{row[1]}</td>
+                      <td>{row[2]}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {/* Deployment tip */}
+              <div className="info-box" style={{ marginTop: '1.5rem' }}>
+                <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.s6DeployTitle}</h4>
+                <p style={{ margin: 0 }}>{tx.s6DeployText}</p>
+              </div>
+            </section>
+
+            {/* ── Section 7: Ressourcen ── */}
+            <section id="ressourcen" className="section-block">
+              <h2>{tx.s7Title}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <p>{tx.s7Desc}</p>
+
+              <div className="youtube-box">
+                <h3>{'YouTube'}</h3>
+                {tx.s7Resources.map((res, i) => (
+                  <div key={i} style={{
+                    marginBottom: i < tx.s7Resources.length - 1 ? '1.25rem' : 0,
+                    paddingBottom: i < tx.s7Resources.length - 1 ? '1.25rem' : 0,
+                    borderBottom: i < tx.s7Resources.length - 1 ? '1px solid #FED7AA' : 'none'
+                  }}>
+                    <a href={res.url} target="_blank" rel="noopener noreferrer" className="youtube-link">{res.title}</a>
+                    <p style={{ margin: '0.25rem 0 0', fontSize: '0.875rem', color: '#78350F' }}>{res.desc}</p>
+                  </div>
+                ))}
+              </div>
+              {/* Book reference */}
+              <div className="info-box" style={{ marginTop: '1.25rem' }}>
+                <p style={{ margin: 0, fontSize: '0.875rem' }}>{tx.s7BookRef}</p>
+              </div>
+            </section>
+
+            {/* ── Section 8: Quiz ── */}
+            <section id="quiz" className="section-block">
+              <h2>{tx.quizTitle}</h2>
+              <div className="bauhaus-accent-line"></div>
+              {tx.quizQuestions.map((qq, qi) => (
+                <QuizQuestion key={qi} question={qq} index={qi} lang={lang} />
+              ))}
+            </section>
+
+            {/* ── Section 9: Zusammenfassung ── */}
+            <section id="zusammenfassung" className="section-block">
+              <h2>{tx.summaryTitle}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <div className="concept-box">
+                <ol style={{ margin: 0, paddingLeft: '1.25rem' }}>
+                  {tx.summaryItems.map((item, i) => (
+                    <li key={i} style={{ fontSize: '0.9rem', lineHeight: 1.7, color: '#1A1A1A', marginBottom: '0.35rem' }}>{item}</li>
+                  ))}
+                </ol>
+              </div>
+            </section>
+
+            {/* ── Nav Bottom ── */}
+            <div className="nav-bottom">
+              <a href={'lab-04-dashboards.html' + (lang === 'en' ? '?lang=en' : '')} className="nav-btn">
+                {tx.navPrev}
+              </a>
+              <a href={'lab-06-souveraenitaet.html' + (lang === 'en' ? '?lang=en' : '')} className="nav-btn primary">
+                {tx.navNext}
+              </a>
             </div>
-          </div>
 
-          <div id="ressourcen" className="section-block">
-            <h2>{c.s7Title}</h2>
-            <div className="bauhaus-accent-line"></div>
-            <p>{c.s7Intro}</p>
-            {c.s7Resources.map(function(res, i) {
-              return (
-                <div key={i} className="youtube-box" style={{ marginBottom: '1rem' }}>
-                  <h4 style={{ marginTop: 0 }}>{res.title}</h4>
-                  <p style={{ margin: '0.25rem 0 0.75rem', color: '#78350F', fontSize: '0.875rem' }}>{res.desc}</p>
-                  <a href={res.url} target="_blank" rel="noopener noreferrer" className="youtube-link">{res.label} {'→'}</a>
-                </div>
-              );
-            })}
-          </div>
+          </main>
 
-          <div className="nav-bottom">
-            <a href={c.navBackHref} className="nav-btn">{c.navBack}</a>
-            <a href={c.navNextHref} className="nav-btn primary">{c.navNext}</a>
-          </div>
-        </main>
+          {/* Footer */}
+          <footer className="footer">
+            {'THWS Business School \u00B7 BI Lab \u00B7 Prof. Dr. Robert Butscher \u00B7 2026'}
+          </footer>
 
-        <footer className="footer">
-          <p className="footer-text">{c.footer}</p>
-        </footer>
-      </div>
-    );
-  }
+        </div>
+      );
+    }
 
-  var root = ReactDOM.createRoot(document.getElementById('root'));
-  root.render(React.createElement(App));
-</script>
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
 </body>
 </html>
