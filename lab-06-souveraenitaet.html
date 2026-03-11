@@ -10,7 +10,6 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
-
     :root {
       --col-primary: #1E3A8A;
       --col-accent: #2563EB;
@@ -21,13 +20,13 @@
       --col-accent: #0D9488;
       --col-primary-light: rgba(13,148,136,0.08);
     }
-    :root { --primary: #1E3A8A; --accent: #2563EB; --dark: #1A1A1A; --light-bg: #FAFAFA; }
     *, *::before, *::after { box-sizing: border-box; }
     body { background: #FAFAFA; font-family: 'Space Grotesk', -apple-system, sans-serif; margin: 0; color: #1A1A1A; }
     h2 { color: #1E3A8A; font-weight: 800; font-family: 'Space Grotesk', sans-serif; margin-top: 0; }
     h3 { color: #1E3A8A; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
     h4 { font-family: 'Space Grotesk', sans-serif; font-weight: 600; margin: 0.5rem 0; }
     p { line-height: 1.7; }
+    .lab-num { font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 3.5rem; color: #1E3A8A; opacity: 0.12; position: absolute; right: 0; top: -0.75rem; }
     .bauhaus-accent-line { width: 48px; height: 4px; background: #2563EB; margin: 0.5rem 0 1rem 0; }
     .bauhaus-badge { background: #2563EB; color: white; padding: 0.2rem 0.7rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; display: inline-block; }
     .code-block { background: #F3F4F6; color: #1A1A1A; border-left: 4px solid #D1D5DB; font-family: 'Courier New', monospace; font-size: 0.82rem; padding: 1rem 1.25rem; border-radius: 0 8px 8px 0; white-space: pre; overflow-x: auto; position: relative; margin: 1rem 0; }
@@ -48,7 +47,7 @@
     .header-back { font-size: 0.85rem; color: #555; text-decoration: none; font-weight: 500; }
     .header-back:hover { color: #1E3A8A; }
     .lang-btn { border: 2px solid #1A1A1A; background: white; padding: 0.2rem 0.6rem; font-size: 0.78rem; font-weight: 700; cursor: pointer; letter-spacing: 0.05em; font-family: 'Space Grotesk', sans-serif; }
-    .lang-btn.active { background: #2563EB; color: white; border-color: #2563EB; }
+    .lang-btn.active { background: #1E3A8A; color: white; border-color: #1E3A8A; }
     .lang-btn:hover:not(.active) { background: #f5f5f5; }
     .sidebar { position: fixed; top: 56px; left: 0; width: 260px; height: calc(100vh - 56px); overflow-y: auto; border-right: 1px solid #E5E7EB; background: white; padding: 1.5rem 0; }
     .sidebar-title { font-family: 'Space Grotesk', sans-serif; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #888; padding: 0 1.25rem; margin-bottom: 0.75rem; }
@@ -57,6 +56,9 @@
     .sidebar-link.active { color: #1E3A8A; border-left-color: #2563EB; background: rgba(30,58,138,0.06); font-weight: 700; }
     .main-content { margin-left: 260px; padding-top: 72px; padding-bottom: 4rem; padding-left: 3rem; padding-right: 3rem; max-width: 960px; }
     .section-block { margin-bottom: 4rem; }
+    .lernziele-box { background: #EFF6FF; border-left: 4px solid #2563EB; padding: 1.25rem 1.5rem; margin-top: 1.5rem; }
+    .lernziele-heading { color: #1E3A8A; margin: 0 0 0.75rem; font-family: 'Space Grotesk', sans-serif; font-weight: 700; }
+    .lernziel-chip { display: inline-block; background: rgba(30,58,138,0.08); color: #1E3A8A; border: 1px solid rgba(30,58,138,0.2); padding: 0.3rem 0.7rem; border-radius: 999px; font-size: 0.82rem; font-weight: 500; margin: 0.2rem; }
     table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
     th { background: #1E3A8A; color: white; padding: 0.65rem 1rem; text-align: left; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.82rem; letter-spacing: 0.05em; }
     td { padding: 0.6rem 1rem; border-bottom: 1px solid #e5e7eb; }
@@ -66,8 +68,6 @@
     .nav-btn:hover { background: #2563EB; color: white; border-color: #2563EB; }
     .nav-btn.primary { background: #1E3A8A; border-color: #1E3A8A; color: white; }
     .nav-btn.primary:hover { background: #1e40af; border-color: #1e40af; }
-    .lernziele-box { background: #EFF6FF; border-left: 4px solid #2563EB; padding: 1.25rem 1.5rem; margin-top: 1.5rem; }
-    .lernziele-heading { color: #1E3A8A; margin: 0 0 0.75rem; font-family: 'Space Grotesk', sans-serif; font-weight: 700; }
     .footer { background: #1A1A1A; padding: 2rem 3rem 2rem calc(260px + 3rem); }
     .footer-text { color: #6B7280; font-size: 0.875rem; }
     .checklist-item { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid #F3F4F6; }
@@ -75,65 +75,60 @@
     .checklist-check.checked { background: #2563EB; border-color: #2563EB; }
     .checklist-text { font-size: 0.95rem; color: #374151; padding-top: 1px; }
     .checklist-text.done { text-decoration: line-through; color: #9CA3AF; }
+    .quiz-option { display: block; width: 100%; text-align: left; padding: 0.75rem 1rem; margin: 0.4rem 0; border: 2px solid #E5E7EB; border-radius: 8px; background: white; font-size: 0.92rem; cursor: pointer; font-family: 'Space Grotesk', sans-serif; transition: border-color 0.15s, background 0.15s; }
+    .quiz-option:hover:not(:disabled) { border-color: #2563EB; background: rgba(37,99,235,0.04); }
     @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding-left: 1.25rem; padding-right: 1.25rem; } .footer { padding: 2rem 1.25rem; } }
     [data-lang="en"] h2, [data-lang="en"] h3 { color: #0D9488; }
+    [data-lang="en"] h4 { color: #0D9488; }
     [data-lang="en"] .bauhaus-accent-line { background: #14B8A6; }
     [data-lang="en"] .bauhaus-badge { background: #0D9488; }
     [data-lang="en"] .header-logo { color: #0D9488; }
-    [data-lang="en"] .lang-btn.active { background: #0D9488; border-color: #0D9488; color: white; }
-    [data-lang="en"] .sidebar-link.active { color: #0D9488; border-left-color: #14B8A6; background: rgba(13,148,136,0.06); }
-    [data-lang="en"] .sidebar-link:hover { color: #0D9488; }
     [data-lang="en"] .header-back:hover { color: #0D9488; }
-    [data-lang="en"] th { background: #0D9488; }
-    [data-lang="en"] .tip-box { border-left-color: #14B8A6; background: #F0FDFA; }
-    [data-lang="en"] .concept-box { border-left-color: #0D9488; background: rgba(13,148,136,0.06); }
+    [data-lang="en"] .lang-btn.active { background: #0D9488; border-color: #0D9488; color: white; }
+    [data-lang="en"] .sidebar-link:hover { color: #0D9488; background: rgba(13,148,136,0.04); }
+    [data-lang="en"] .sidebar-link.active { color: #0D9488; border-left-color: #0D9488; background: rgba(13,148,136,0.06); font-weight: 700; }
     [data-lang="en"] .lernziele-box { border-left-color: #14B8A6; background: #F0FDFA; }
     [data-lang="en"] .lernziele-heading { color: #0D9488; }
-    [data-lang="en"] .nav-btn:hover { background: #0D9488; border-color: #0D9488; color: white; }
-    [data-lang="en"] .nav-btn.primary { background: #0D9488; border-color: #0D9488; }
-    [data-lang="en"] .step-number { background: #0D9488; }
-    [data-lang="en"] .checklist-check.checked { background: #0D9488; border-color: #0D9488; }
-  
-    [data-lang="en"] h4 { color: #0D9488; }
-    [data-lang="en"] .bauhaus-card h4 { color: #0D9488 !important; }
-    [data-lang="en"] .sidebar-link:hover { color: #0D9488; background: rgba(13,148,136,0.04); }
-    [data-lang="en"] .sidebar-link.active { color: #0D9488; border-left-color: #0D9488; background: rgba(13,148,136,0.06); }
     [data-lang="en"] .lernziel-chip { background: rgba(13,148,136,0.1); color: #0D9488; border-color: rgba(13,148,136,0.25); }
-    [data-lang="en"] th { background: #0D9488; }
     [data-lang="en"] .lab-num { color: #0D9488; }
-    [data-lang="en"] .nav-btn.primary { background: #0D9488; border-color: #0D9488; }
-    [data-lang="en"] .nav-btn.primary:hover { background: #0f766e; border-color: #0f766e; }
+    [data-lang="en"] th { background: #0D9488; }
     [data-lang="en"] .tip-box { border-left-color: #0D9488; background: #F0FDFA; }
     [data-lang="en"] .concept-box { border-left-color: #0D9488; background: rgba(13,148,136,0.08); }
     [data-lang="en"] .info-box { border-left-color: #0D9488; background: #F0FDFA; }
+    [data-lang="en"] .step-number { background: #0D9488; }
+    [data-lang="en"] .checklist-check.checked { background: #0D9488; border-color: #0D9488; }
+    [data-lang="en"] .nav-btn:hover { background: #0D9488; border-color: #0D9488; color: white; }
+    [data-lang="en"] .nav-btn.primary { background: #0D9488; border-color: #0D9488; }
+    [data-lang="en"] .nav-btn.primary:hover { background: #0f766e; border-color: #0f766e; }
     [data-lang="en"] .quiz-option:hover:not(:disabled) { border-color: #0D9488; background: rgba(13,148,136,0.04); }
-    [data-lang="en"] .footer { background: #0D9488; }
   </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
-  function CodeBlock({ code }) {
-    var [copied, setCopied] = React.useState(false);
-    var copy = function() {
-      navigator.clipboard.writeText(code).then(function() {
+  function CodeBlock({ code, lang }) {
+    const [copied, setCopied] = React.useState(false);
+    const copyLabel = lang === 'en' ? 'Copy' : 'Kopieren';
+    const copiedLabel = lang === 'en' ? '\u2713 Copied' : '\u2713 Kopiert';
+    const copy = () => {
+      navigator.clipboard.writeText(code).then(() => {
         setCopied(true);
-        setTimeout(function() { setCopied(false); }, 1500);
-      }).catch(function() {
-        var el = document.createElement('textarea');
+        setTimeout(() => setCopied(false), 1500);
+      }).catch(() => {
+        const el = document.createElement('textarea');
         el.value = code;
         document.body.appendChild(el);
         el.select();
         document.execCommand('copy');
         document.body.removeChild(el);
         setCopied(true);
-        setTimeout(function() { setCopied(false); }, 1500);
+        setTimeout(() => setCopied(false), 1500);
       });
     };
     return (
       <div style={{ position: 'relative', marginBottom: '1rem' }}>
         <pre className="code-block">{code}</pre>
-        <button onClick={copy} style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', background: copied ? '#059669' : '#E5E7EB', color: copied ? 'white' : '#374151', border: 'none', padding: '0.2rem 0.5rem', fontSize: '0.75rem', cursor: 'pointer', fontFamily: 'Space Grotesk, sans-serif' }}>{copied ? '\u2713 Kopiert' : 'Kopieren'}</button>
+        <button onClick={copy} style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', background: copied ? '#059669' : '#E5E7EB', color: copied ? 'white' : '#374151', border: 'none', padding: '0.2rem 0.5rem', fontSize: '0.75rem', cursor: 'pointer', fontFamily: 'Space Grotesk, sans-serif' }}>{copied ? copiedLabel : copyLabel}</button>
       </div>
     );
   }
@@ -147,7 +142,7 @@
           role="checkbox"
           aria-checked={checked}
           tabIndex={0}
-          onKeyDown={function(e) { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); onToggle(); } }}
+          onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); onToggle(); } }}
         >
           {checked && (
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -160,167 +155,260 @@
     );
   }
 
+  function QuizQuestion({ question, index, lang }) {
+    const [selected, setSelected] = React.useState(null);
+    const handleClick = (i) => { if (selected === null) setSelected(i); };
+    return (
+      <div style={{ marginBottom: '1.75rem' }}>
+        <p style={{ fontWeight: 600, marginBottom: '0.5rem' }}>{index}. {question.q}</p>
+        {question.options.map((opt, i) => {
+          let style = {};
+          if (selected !== null) {
+            if (i === question.correct) style = { borderColor: '#059669', background: '#F0FDF4', color: '#065F46' };
+            else if (i === selected) style = { borderColor: '#DC2626', background: '#FEF2F2', color: '#991B1B' };
+          }
+          return (
+            <button key={i} className="quiz-option" disabled={selected !== null} onClick={() => handleClick(i)} style={style}>
+              {String.fromCharCode(65 + i)}) {opt}
+            </button>
+          );
+        })}
+        {selected !== null && (
+          <div style={{ marginTop: '0.5rem', padding: '0.75rem 1rem', background: selected === question.correct ? '#F0FDF4' : '#FEF2F2', borderRadius: '8px', fontSize: '0.88rem', color: selected === question.correct ? '#065F46' : '#991B1B' }}>
+            {question.explanation}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   function App() {
-    var urlLang = new URLSearchParams(window.location.search).get('lang');
-    var [lang, setLang] = React.useState(function() { return localStorage.getItem('bi-lang') || urlLang || 'de'; });
-    var toggleLang = function(l) { setLang(l); localStorage.setItem('bi-lang', l); };
+    const urlLang = new URLSearchParams(window.location.search).get('lang');
+    const [lang, setLang] = React.useState(() => localStorage.getItem('bi-lang') || urlLang || 'de');
+    const toggleLang = (l) => { setLang(l); localStorage.setItem('bi-lang', l); };
 
-    var [activeSection, setActiveSection] = React.useState('ueberblick');
+    const [activeSection, setActiveSection] = React.useState('ueberblick');
 
-    var checklistCount = 6;
-    var [checkedItems, setCheckedItems] = React.useState(function() {
-      return new Array(checklistCount).fill(false);
-    });
-    var toggleCheck = function(i) {
-      setCheckedItems(function(prev) {
-        var next = prev.slice();
+    const checklistCount = 8;
+    const [checkedItems, setCheckedItems] = React.useState(() => new Array(checklistCount).fill(false));
+    const toggleCheck = (i) => {
+      setCheckedItems((prev) => {
+        const next = prev.slice();
         next[i] = !next[i];
         return next;
       });
     };
 
-    React.useEffect(function() {
+    React.useEffect(() => {
       document.documentElement.setAttribute('data-lang', lang);
     }, [lang]);
 
-    React.useEffect(function() {
-      var sections = ['ueberblick', 'souveraenitaet', 'lock-in', 'docker', 'dsgvo', 'entscheidung', 'abschlussprojekt', 'youtube'];
-      var handleScroll = function() {
-        var current = 'ueberblick';
-        for (var i = 0; i < sections.length; i++) {
-          var el = document.getElementById(sections[i]);
+    React.useEffect(() => {
+      const sections = ['ueberblick', 'souveraenitaet', 'lock-in', 'opensource', 'docker', 'dsgvo', 'entscheidung', 'abschlussprojekt', 'youtube', 'quiz', 'zusammenfassung'];
+      const handleScroll = () => {
+        let current = 'ueberblick';
+        for (let i = 0; i < sections.length; i++) {
+          const el = document.getElementById(sections[i]);
           if (el) {
-            var rect = el.getBoundingClientRect();
+            const rect = el.getBoundingClientRect();
             if (rect.top <= 100) current = sections[i];
           }
         }
         setActiveSection(current);
       };
       window.addEventListener('scroll', handleScroll, { passive: true });
-      return function() { window.removeEventListener('scroll', handleScroll); };
+      return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    var t = {
+    const t = {
       de: {
         logo: 'THWS BI Lab',
         back: '\u2190 Zur Kurs\u00fcbersicht',
         backHref: 'index.html',
         badge: 'Lab 06',
         pageTitle: 'Digitale Souver\u00e4nit\u00e4t & Open-Source BI',
-        pageSubtitle: 'Cloud Lock-in verstehen, Open-Source-Alternativen bewerten und einen Self-Hosted BI-Stack mit Docker aufbauen.',
+        pageSubtitle: 'Cloud Lock-in verstehen, Open-Source-Alternativen bewerten, Total Cost of Ownership analysieren und einen Self-Hosted BI-Stack mit Docker aufbauen.',
         nav: [
           { id: 'ueberblick', label: '\u00dcberblick' },
           { id: 'souveraenitaet', label: 'Digitale Souver\u00e4nit\u00e4t' },
           { id: 'lock-in', label: 'Cloud Lock-in' },
+          { id: 'opensource', label: 'Open-Source BI' },
           { id: 'docker', label: 'Docker Setup' },
           { id: 'dsgvo', label: 'DSGVO Checkliste' },
           { id: 'entscheidung', label: 'Entscheidungsmatrix' },
           { id: 'abschlussprojekt', label: 'Abschlussprojekt' },
           { id: 'youtube', label: 'YouTube-Ressourcen' },
+          { id: 'quiz', label: 'Quiz' },
+          { id: 'zusammenfassung', label: 'Zusammenfassung' },
         ],
         s1Title: '\u00dcberblick',
         s1Lernziele: 'Lernziele',
         s1Goals: [
-          'Begriff "Digitale Souver\u00e4nit\u00e4t" definieren',
-          'Open-Source BI-Tools kennen und einordnen',
-          'Kritische Abh\u00e4ngigkeiten von Cloud-Anbietern erkennen',
-          'Self-Hosted BI-Stack mit Docker beschreiben',
+          'Begriff \u201eDigitale Souver\u00e4nit\u00e4t\u201c definieren und im EU-Kontext einordnen',
+          'Cloud Lock-in-Risiken und TCO-Faktoren erkennen',
+          'Open-Source BI-Tools kennen, einordnen und Lizenzmodelle unterscheiden',
+          'Self-Hosted BI-Stack mit Docker Compose aufsetzen k\u00f6nnen',
+          'DSGVO-Anforderungen f\u00fcr BI-Systeme pr\u00fcfen und dokumentieren',
+          'Begr\u00fcndete Tool-Empfehlungen f\u00fcr verschiedene Szenarien geben',
         ],
         s2Title: 'Was ist Digitale Souver\u00e4nit\u00e4t?',
-        s2P1: 'Digitale Souver\u00e4nit\u00e4t bezeichnet die F\u00e4higkeit von Organisationen, die eigene digitale Infrastruktur selbst zu kontrollieren \u2013 von der Hardware \u00fcber Software bis hin zu Daten und Algorithmen.',
-        s2P2: 'Auf EU-Ebene werden Initiativen wie GAIA-X und die European Cloud Initiative vorangetrieben, um europ\u00e4ische Datensouver\u00e4nit\u00e4t gegen\u00fcber US-amerikanischen Hyperscalern (AWS, Azure, GCP) zu st\u00e4rken.',
+        s2P1: 'Digitale Souver\u00e4nit\u00e4t bezeichnet die F\u00e4higkeit von Organisationen und Staaten, ihre digitale Infrastruktur selbst zu kontrollieren \u2013 von Hardware und Software bis hin zu Daten, Algorithmen und Plattformen (Floridi, 2020).',
+        s2P2: 'Auf EU-Ebene werden Initiativen wie GAIA-X, die European Cloud Initiative und der European Data Act (2024) vorangetrieben, um europ\u00e4ische Datensouver\u00e4nit\u00e4t gegen\u00fcber US-amerikanischen Hyperscalern (AWS, Azure, GCP) zu st\u00e4rken. Auch der EU AI Act (2024) ber\u00fchrt die Souver\u00e4nitätsfrage, indem er Transparenzpflichten f\u00fcr KI-Systeme fordert.',
         s2P3: 'F\u00fcr Business Intelligence stellen sich folgende Kernfragen:',
         s2Bullets: [
           'Wo liegen meine Daten \u2013 auf welchem Server, in welchem Land?',
           'Wer kann theoretisch darauf zugreifen (Anbieter, Beh\u00f6rden, Dritte)?',
           'Bin ich bei einem Anbieter gesperrt (Lock-in)?',
           'Was passiert, wenn der Anbieter den Dienst einstellt oder die Preise erh\u00f6ht?',
+          'Kann ich meine Daten und Dashboards vollst\u00e4ndig exportieren?',
         ],
-        s2InfoText: 'Nach Schrems II (2020) ist der Transfer personenbezogener Daten in die USA ohne spezielle Schutzma\u00dfnahmen rechtswidrig. Das EU-US Data Privacy Framework (2023) schafft eine neue Rechtsgrundlage \u2013 bleibt aber politisch umstritten.',
+        s2ConceptTitle: 'Die drei S\u00e4ulen digitaler Souver\u00e4nit\u00e4t',
+        s2ConceptItems: [
+          'Datensouver\u00e4nit\u00e4t: Kontrolle \u00fcber Speicherort, Zugriff und Verarbeitung eigener Daten',
+          'Technologische Souver\u00e4nit\u00e4t: Unabh\u00e4ngigkeit von einzelnen Anbietern f\u00fcr kritische Infrastruktur',
+          'Regulatorische Souver\u00e4nit\u00e4t: F\u00e4higkeit, eigene rechtliche Standards (DSGVO, Data Act) durchzusetzen',
+        ],
+        s2InfoTitle: 'Schrems II & EU-US Data Privacy Framework',
+        s2InfoText: 'Nach Schrems II (EuGH, 2020) ist der Transfer personenbezogener Daten in die USA ohne spezielle Schutzma\u00dfnahmen rechtswidrig. Das EU-US Data Privacy Framework (2023) schafft eine neue Rechtsgrundlage, bleibt aber politisch umstritten. Unternehmen sollten zus\u00e4tzlich Standard Contractual Clauses (SCCs) und Transfer Impact Assessments (TIAs) einsetzen.',
         s3Title: 'SaaS BI-Tools: Cloud Lock-in',
-        s3ConceptTitle: 'Lock-in-Risiken bei SaaS BI-Tools (allgemein)',
+        s3P1: 'Cloud Lock-in entsteht, wenn der Wechsel zu einem alternativen Anbieter technisch oder wirtschaftlich prohibitiv wird. Im BI-Kontext sind propriet\u00e4re Datenmodelle, DAX/M-Formeln, Berechtigungsstrukturen und API-Abh\u00e4ngigkeiten die Haupttreiber.',
+        s3ConceptTitle: 'Total Cost of Ownership (TCO) bei BI-Tools',
         s3ConceptItems: [
+          'Direkte Kosten: Lizenzgeb\u00fchren pro User/Monat (Power BI: ~9\u201310 \u20ac, Tableau: ~15 \u20ac, Looker: Enterprise-Pricing auf Anfrage)',
+          'Migrationskosten: Aufwand f\u00fcr Datenexport, Dashboard-Neubau, Schulung bei Anbieterwechsel',
+          'Opportunit\u00e4tskosten: Funktionen, die nur im \u00d6kosystem des Anbieters verf\u00fcgbar sind (z.B. Copilot in Power BI)',
+          'Risikokosten: Preiserh\u00f6hungen, Service-Einstellungen, regulatorische Konflikte (CLOUD Act)',
+          'Betriebskosten Self-Hosted: Server, Wartung, Updates, Monitoring \u2013 personelle Kapazit\u00e4t erforderlich',
+        ],
+        s3LockInItems: [
           'Daten liegen beim Anbieter \u2013 US-Server bei Microsoft (Power BI), Google (Looker), Salesforce (Tableau)',
-          'Lizenzen: Power BI, Tableau, Looker, Qlik haben \u00e4hnliche Preisstrukturen ab ~9\u201315 \u20ac/User/Monat; Looker: auf Anfrage (Enterprise-Pricing)',
-          'Lock-in entsteht durch propriet\u00e4re Formate und API-Abh\u00e4ngigkeiten \u2013 bei allen Anbietern',
+          'Propriet\u00e4re Formate: DAX (Power BI), VizQL (Tableau), LookML (Looker) \u2013 nicht portabel',
           'DSGVO-Komplikationen betreffen ALLE US-Cloud-Anbieter gleicherma\u00dfen (Patriot Act, CLOUD Act)',
-          'On-Premises-Optionen: Power BI Report Server, Tableau Server, Qlik Sense Enterprise \u2013 Self-Hosted ist auch im Enterprise-Markt m\u00f6glich',
+          'On-Premises-Optionen existieren: Power BI Report Server, Tableau Server, Qlik Sense Enterprise',
         ],
-        s3TableTitle: 'Open-Source Alternativen im Vergleich',
-        s3ThTool: 'Tool',
-        s3ThType: 'Typ',
-        s3ThDocker: 'Docker',
-        s3ThStrengths: 'St\u00e4rken',
-        s3Rows: [
-          { tool: 'Apache Superset', type: 'Self-Hosted', docker: 'Ja', strengths: 'M\u00e4chtig, SQL-first, gro\u00dfe Community, Enterprise-ready' },
-          { tool: 'Metabase', type: 'Self-Hosted + Cloud', docker: 'Ja', strengths: 'Einfach, intuitiv, ideal f\u00fcr Non-Techniker' },
-          { tool: 'Redash', type: 'Self-Hosted', docker: 'Ja', strengths: 'SQL-fokussiert, API-Zugriff, leichtgewichtig' },
-          { tool: 'Plotly Dash', type: 'Self-Hosted', docker: 'Ja', strengths: 'Maximale Flexibilit\u00e4t, Python, volle Kontrolle' },
-          { tool: 'Grafana', type: 'Self-Hosted + Cloud', docker: 'Ja', strengths: 'Ideal f\u00fcr Metriken & Monitoring, gro\u00dfe Plugin-Bibliothek' },
+        s4Title: 'Open-Source BI im \u00dcberblick',
+        s4P1: 'Open-Source BI-Tools bieten volle Kontrolle \u00fcber Daten und Infrastruktur. Entscheidend ist dabei das Lizenzmodell: Apache 2.0 erlaubt kommerzielle Nutzung ohne Einschr\u00e4nkungen, AGPL erfordert die Ver\u00f6ffentlichung von Modifikationen bei Server-Deployment, und MIT ist \u00e4hnlich permissiv wie Apache.',
+        s4TableTitle: 'Open-Source Alternativen im Vergleich',
+        s4ThTool: 'Tool',
+        s4ThLicense: 'Lizenz',
+        s4ThDocker: 'Docker',
+        s4ThStrengths: 'St\u00e4rken',
+        s4ThStatus: 'Status',
+        s4Rows: [
+          { tool: 'Apache Superset', license: 'Apache 2.0', docker: '\u2713', strengths: 'SQL-first, gro\u00dfe Community, Enterprise-ready', status: '\u2705 Aktiv' },
+          { tool: 'Metabase', license: 'AGPL 3.0', docker: '\u2713', strengths: 'Intuitiv, ideal f\u00fcr Non-Techniker, eingebettete Analytik', status: '\u2705 Aktiv' },
+          { tool: 'Grafana', license: 'AGPL 3.0', docker: '\u2713', strengths: 'Metriken & Monitoring, gro\u00dfe Plugin-Bibliothek', status: '\u2705 Aktiv' },
+          { tool: 'Plotly Dash', license: 'MIT', docker: '\u2713', strengths: 'Maximale Flexibilit\u00e4t, Python-native, volle Kontrolle', status: '\u2705 Aktiv' },
+          { tool: 'Lightdash', license: 'MIT', docker: '\u2713', strengths: 'dbt-nativ, Metrics Layer, modernes Data Stack', status: '\u2705 Aktiv' },
+          { tool: 'Evidence', license: 'MIT', docker: '\u2713', strengths: 'Code-as-BI: Markdown + SQL, Git-versioniert', status: '\u2705 Aktiv' },
+          { tool: 'Redash', license: 'BSD', docker: '\u2713', strengths: 'SQL-fokussiert, API-Zugriff, leichtgewichtig', status: '\u26a0\ufe0f Wartung' },
         ],
-        s4Title: 'Docker Setup: Self-Hosted Metabase',
-        s4Intro: 'Mit Docker Compose l\u00e4sst sich ein vollst\u00e4ndiger Self-Hosted BI-Stack in wenigen Minuten aufsetzen. Das folgende Beispiel zeigt Metabase mit PostgreSQL als Metadatenbank.',
-        s4TipText: 'Voraussetzungen: Docker Desktop installiert. Download: https://www.docker.com/products/docker-desktop',
-        s4BashIntro: 'Nach dem Erstellen der docker-compose.yml den Stack starten:',
-        s5Title: 'DSGVO Checkliste',
-        s5Intro: 'Vor dem Einsatz von BI-Tools mit personenbezogenen Daten m\u00fcssen folgende Punkte gepr\u00fcft und dokumentiert werden:',
-        s5ChecklistItems: [
+        s4RedashNote: 'Hinweis: Redash wurde 2020 von Databricks \u00fcbernommen. Die gehostete Version wurde eingestellt; das Open-Source-Projekt wird von der Community weiter gepflegt, aber die Entwicklung hat sich deutlich verlangsamt.',
+        s4LicenseTip: 'Lizenz-Tipp: AGPL-3.0 (Metabase, Grafana) erfordert, dass Modifikationen am Quellcode bei Server-Deployment ver\u00f6ffentlicht werden m\u00fcssen. F\u00fcr Unternehmen, die Anpassungen intern halten wollen, sind Apache-2.0- oder MIT-lizenzierte Tools oft vorzuziehen.',
+        s5Title: 'Docker Setup: Self-Hosted Metabase',
+        s5Intro: 'Mit Docker Compose l\u00e4sst sich ein vollst\u00e4ndiger Self-Hosted BI-Stack in wenigen Minuten aufsetzen. Das folgende Beispiel zeigt Metabase mit PostgreSQL als Metadatenbank.',
+        s5TipText: 'Voraussetzungen: Docker Desktop installiert. Download: https://www.docker.com/products/docker-desktop',
+        s5BashIntro: 'Stack starten und pr\u00fcfen:',
+        s5SecurityTitle: 'Sicherheit im Self-Hosted Setup',
+        s5SecurityItems: [
+          'HTTPS via Reverse Proxy (Traefik, Caddy oder nginx) \u2013 niemals Metabase direkt ohne TLS exponieren',
+          'Starke Passw\u00f6rter und .env-Dateien statt Klartext in docker-compose.yml',
+          'Regelm\u00e4\u00dfige Updates: Metabase-Image pinnen (z.B. v0.50.x), aber Security-Patches zeitnah einspielen',
+          'Backup-Strategie: PostgreSQL-Daten regelm\u00e4\u00dfig sichern (pg_dump)',
+          'Netzwerk-Isolation: Docker-Netzwerke nutzen, nur Port 443 (HTTPS) nach au\u00dfen \u00f6ffnen',
+        ],
+        s6Title: 'DSGVO Checkliste',
+        s6Intro: 'Vor dem Einsatz von BI-Tools mit personenbezogenen Daten m\u00fcssen folgende Punkte gepr\u00fcft und dokumentiert werden (gem\u00e4\u00df DSGVO und EU Data Act):',
+        s6ChecklistItems: [
           'Verarbeitungsverzeichnis angelegt (Art. 30 DSGVO)',
           'Auftragsverarbeitungsvertrag (AVV) mit Cloud-Anbieter geschlossen',
-          'Datentransfer in Drittl\u00e4nder dokumentiert und gerechtfertigt',
+          'Datentransfer in Drittl\u00e4nder dokumentiert und gerechtfertigt (SCCs + TIA)',
           'Datenschutzfolgenabsch\u00e4tzung (DSFA) bei sensiblen Daten durchgef\u00fchrt',
-          'L\u00f6schkonzept f\u00fcr alle gespeicherten Daten vorhanden',
-          'Datenschutzbeauftragter informiert (falls erforderlich)',
+          'L\u00f6schkonzept und Aufbewahrungsfristen f\u00fcr alle gespeicherten Daten dokumentiert',
+          'Datenschutzbeauftragter informiert (falls erforderlich, Art. 37 DSGVO)',
+          'Technische und organisatorische Ma\u00dfnahmen (TOMs) dokumentiert (Art. 32 DSGVO)',
+          'Betroffenenrechte sichergestellt: Auskunft, Berichtigung, L\u00f6schung, Datenportabilit\u00e4t',
         ],
-        s5ProgressLabel: 'Erledigt',
-        s5Of: 'von',
-        s6Title: 'Entscheidungsmatrix: Welches Tool wann?',
-        s6ThScenario: 'Szenario',
-        s6ThRec: 'Empfehlung',
-        s6ThReason: 'Begr\u00fcndung',
-        s6Rows: [
-          { scenario: 'Kleines Team, keine IT-Abteilung', rec: 'SaaS BI-Tool (Power BI, Tableau, Looker)', reason: 'Einfach einzurichten, schnell produktiv' },
-          { scenario: 'Personenbezogene Daten (HR, Kunden)', rec: 'Metabase / Superset self-hosted', reason: 'DSGVO-Pflicht: Daten d\u00fcrfen EU nicht verlassen' },
-          { scenario: 'Komplexe Custom-Dashboards', rec: 'Plotly Dash', reason: 'Volle Kontrolle \u00fcber Design und Logik' },
-          { scenario: 'Public Sector / Beh\u00f6rden', rec: 'Open Source (Pflicht)', reason: 'EU-Richtlinien fordern Open-Source-Bevorzugung' },
-          { scenario: 'Startup, schnell deployen', rec: 'Metabase + Docker', reason: 'Setup in unter 5 Minuten' },
-          { scenario: 'Konzern mit Microsoft-Stack', rec: 'Power BI', reason: 'Beste Integration, Enterprise-Support' },
+        s6ProgressLabel: 'Erledigt',
+        s6Of: 'von',
+        s7Title: 'Entscheidungsmatrix: Welches Tool wann?',
+        s7ThScenario: 'Szenario',
+        s7ThRec: 'Empfehlung',
+        s7ThReason: 'Begr\u00fcndung',
+        s7Rows: [
+          { scenario: 'Kleines Team, keine IT-Abteilung', rec: 'SaaS (Power BI, Tableau Cloud)', reason: 'Geringster Betriebsaufwand, schnell produktiv' },
+          { scenario: 'Personenbezogene Daten (HR, Kunden)', rec: 'Metabase / Superset self-hosted', reason: 'DSGVO: Daten m\u00fcssen in EU bleiben, volle Kontrolle' },
+          { scenario: 'Komplexe Custom-Dashboards', rec: 'Plotly Dash', reason: 'Python-native, volle Kontrolle \u00fcber Design und Logik' },
+          { scenario: '\u00d6ffentlicher Sektor / Beh\u00f6rden', rec: 'Open Source (bevorzugt)', reason: 'EU-Richtlinien fordern Open-Source-Bevorzugung' },
+          { scenario: 'Moderner dbt-basierter Data Stack', rec: 'Lightdash / Evidence', reason: 'Nahtlose dbt-Integration, Metrics Layer, Git-Workflows' },
+          { scenario: 'Startup, schnelles Deployment', rec: 'Metabase + Docker', reason: 'Setup in unter 5 Minuten, gro\u00dfe Community' },
+          { scenario: 'Konzern mit Microsoft-\u00d6kosystem', rec: 'Power BI (+ Report Server)', reason: 'Beste Integration, Copilot, Enterprise-Support' },
+          { scenario: 'Monitoring & DevOps-Metriken', rec: 'Grafana', reason: 'Standard f\u00fcr Infrastruktur-Monitoring, Alerting' },
         ],
-        s7Title: 'Abschlussprojekt',
-        s7ChallengeTitle: 'Bonus-Projekt: Self-Hosted BI-Stack',
-        s7ChallengeDesc: 'Baue einen vollst\u00e4ndigen Self-Hosted BI-Stack auf deinem lokalen Rechner:',
-        s7Steps: [
-          'PostgreSQL als Datenbank lokal aufsetzen (via Docker)',
-          'Metabase via Docker Compose starten',
-          'Superstore-Daten als CSV in PostgreSQL importieren',
-          '3 aussagekr\u00e4ftige Dashboards in Metabase erstellen',
-          'Screenshot + URL des Dashboards teilen (z.B. per ngrok)',
+        s8Title: 'Abschlussprojekt',
+        s8ChallengeTitle: 'Bonus-Projekt: Self-Hosted BI-Stack',
+        s8ChallengeDesc: 'Baue einen vollst\u00e4ndigen Self-Hosted BI-Stack auf deinem lokalen Rechner:',
+        s8Steps: [
+          'Docker Desktop installieren und grundlegende Docker-Befehle testen',
+          'docker-compose.yml f\u00fcr Metabase + PostgreSQL erstellen',
+          'Stack starten und Metabase-Einrichtungsassistenten durchlaufen',
+          'Superstore-Daten als CSV in PostgreSQL importieren (z.B. via pgAdmin oder psql)',
+          '3 aussagekr\u00e4ftige Dashboards in Metabase erstellen (Umsatz, Gewinn, Kategorien)',
+          'DSGVO-Checkliste f\u00fcr das Setup ausf\u00fcllen und dokumentieren',
+          'Ergebnis: Screenshot + kurze Reflexion zu Vor-/Nachteilen vs. Power BI',
         ],
-        s8Title: 'YouTube-Ressourcen',
-        s8Intro: 'Empfohlene Video-Ressourcen zu Open-Source BI und Docker:',
-        s8Resources: [
+        s9Title: 'YouTube-Ressourcen',
+        s9Intro: 'Empfohlene Video-Ressourcen zu Open-Source BI, Docker und Datensouver\u00e4nit\u00e4t:',
+        s9Resources: [
           {
-            title: 'Apache Superset Getting Started',
-            desc: 'Suche "Apache Superset Tutorial 2024" auf YouTube f\u00fcr aktuelle Einf\u00fchrungsvideos zur Installation und ersten Dashboards.',
-            url: 'https://www.youtube.com/results?search_query=Apache+Superset+Tutorial+2024',
-            label: 'Apache Superset Tutorial auf YouTube suchen',
+            title: 'Metabase \u2013 Official Getting Started',
+            desc: 'Offizieller Metabase-Kanal mit Tutorials zu Installation, Fragen-Editor, Dashboards und Einbettung f\u00fcr Entwickler.',
+            url: 'https://www.youtube.com/@Metabase',
+            label: 'Metabase auf YouTube \u2192',
           },
           {
-            title: 'Metabase Tutorial for Beginners',
-            desc: 'Suche "Metabase tutorial 2024" auf YouTube f\u00fcr Schritt-f\u00fcr-Schritt-Anleitungen zur Self-Hosted-Installation und Dashboard-Erstellung.',
-            url: 'https://www.youtube.com/results?search_query=Metabase+tutorial+2024',
-            label: 'Metabase Tutorial auf YouTube suchen',
+            title: 'Apache Superset \u2013 Preset Channel',
+            desc: 'Preset (das Unternehmen hinter Superset) bietet Demos, Feature-Walkthroughs und Best Practices f\u00fcr SQL-basierte Analytik.',
+            url: 'https://www.youtube.com/@preset-io',
+            label: 'Preset (Superset) auf YouTube \u2192',
           },
           {
-            title: 'Docker for Beginners \u2013 TechWorld with Nana',
+            title: 'TechWorld with Nana \u2013 Docker',
             desc: 'Nana erkl\u00e4rt Docker von Grund auf: Container, Images, Docker Compose und praktische Anwendungsf\u00e4lle \u2013 ideal als Vorbereitung f\u00fcr das Bonus-Projekt.',
             url: 'https://www.youtube.com/@TechWorldwithNana',
-            label: 'TechWorld with Nana auf YouTube',
+            label: 'TechWorld with Nana auf YouTube \u2192',
           },
+          {
+            title: 'NetworkChuck \u2013 Docker & Self-Hosting',
+            desc: 'Eing\u00e4ngige Erkl\u00e4rungen zu Docker, Portainer, Self-Hosting und Netzwerk-Grundlagen \u2013 unterhaltsam und praxisnah.',
+            url: 'https://www.youtube.com/@NetworkChuck',
+            label: 'NetworkChuck auf YouTube \u2192',
+          },
+        ],
+        s9BookRef: 'Literatur: Floridi, L. (2020). \u201eThe Fight for Digital Sovereignty: What It Is, and Why It Matters, Especially for the EU.\u201c Philosophy & Technology, 33(3). | Bitkom (2023). \u201eLeitfaden Cloud-Souver\u00e4nit\u00e4t.\u201c',
+        quizTitle: 'Quiz',
+        quizIntro: 'Teste dein Wissen zu Digitaler Souver\u00e4nit\u00e4t und Open-Source BI:',
+        quizQuestions: [
+          { q: 'Was ist der Haupttreiber f\u00fcr Cloud Lock-in bei BI-Tools?', options: ['Zu hohe Lizenzkosten', 'Propriet\u00e4re Datenformate und API-Abh\u00e4ngigkeiten', 'Fehlende Internet-Anbindung', 'Zu viele Nutzer im Team'], correct: 1, explanation: 'Lock-in entsteht prim\u00e4r durch propriet\u00e4re Formate (DAX, VizQL, LookML) und API-Abh\u00e4ngigkeiten, die einen Wechsel technisch aufwendig machen.' },
+          { q: 'Welches EU-Gesetz regelt seit 2024 den Zugang zu und die Nutzung von Daten?', options: ['DSGVO', 'EU AI Act', 'EU Data Act', 'ePrivacy-Verordnung'], correct: 2, explanation: 'Der EU Data Act (2024) regelt den fairen Zugang zu und die Nutzung von Daten, insbesondere IoT-Daten und Cloud-Wechsel-Rechte.' },
+          { q: 'Welche Lizenz erfordert die Ver\u00f6ffentlichung von Modifikationen bei Server-Deployment?', options: ['MIT', 'Apache 2.0', 'AGPL 3.0', 'BSD'], correct: 2, explanation: 'Die AGPL 3.0 (z.B. Metabase, Grafana) verlangt, dass \u00c4nderungen am Quellcode auch bei reinem Server-Betrieb ver\u00f6ffentlicht werden m\u00fcssen.' },
+          { q: 'Welches Tool eignet sich am besten f\u00fcr einen dbt-basierten Modern Data Stack?', options: ['Power BI', 'Metabase', 'Lightdash', 'Grafana'], correct: 2, explanation: 'Lightdash ist speziell f\u00fcr dbt-Workflows konzipiert und bietet native Metrics-Layer-Integration.' },
+          { q: 'Was fordert Art. 32 DSGVO von Verantwortlichen?', options: ['Einwilligung der Nutzer', 'Technische und organisatorische Ma\u00dfnahmen (TOMs)', 'Datenschutzfolgenabsch\u00e4tzung', 'Verbot von Cloud-Nutzung'], correct: 1, explanation: 'Art. 32 DSGVO verpflichtet zur Umsetzung geeigneter technischer und organisatorischer Ma\u00dfnahmen (TOMs) zur Sicherheit der Datenverarbeitung.' },
+          { q: 'Warum ist HTTPS via Reverse Proxy f\u00fcr Self-Hosted BI essentiell?', options: ['Schnellere Datenbank-Abfragen', 'Sch\u00f6nere Dashboard-URLs', 'Verschl\u00fcsselter Datenverkehr und Schutz vor Man-in-the-Middle-Angriffen', 'Bessere Kompatibilit\u00e4t mit Docker'], correct: 2, explanation: 'HTTPS verschl\u00fcsselt den gesamten Datenverkehr zwischen Browser und Server und sch\u00fctzt vor Abh\u00f6ren und Manipulation (Man-in-the-Middle).' },
+        ],
+        sumTitle: 'Zusammenfassung',
+        sumItems: [
+          'Digitale Souver\u00e4nit\u00e4t umfasst Daten-, Technologie- und regulatorische Souver\u00e4nit\u00e4t (Floridi, 2020).',
+          'Cloud Lock-in entsteht durch propriet\u00e4re Formate, APIs und \u00d6kosystem-Abh\u00e4ngigkeiten \u2013 TCO-Analyse hilft bei der Bewertung.',
+          'EU Data Act (2024) und AI Act (2024) st\u00e4rken europ\u00e4ische Datensouver\u00e4nit\u00e4t und Cloud-Wechselrechte.',
+          'Open-Source BI (Superset, Metabase, Grafana, Dash, Lightdash, Evidence) bietet volle Kontrolle \u2013 Lizenzmodelle beachten.',
+          'Docker Compose erm\u00f6glicht schnelles Self-Hosted-Deployment \u2013 HTTPS und Backup-Strategie nicht vergessen.',
+          'DSGVO-Compliance erfordert systematische Pr\u00fcfung: AVV, SCCs, TIA, TOMs, L\u00f6schkonzept.',
+          'Tool-Wahl h\u00e4ngt vom Szenario ab: Team-Gr\u00f6\u00dfe, Datentyp, regulatorische Anforderungen, vorhandener Tech-Stack.',
         ],
         navBack: '\u2190 Lab 05: Fallstudie',
         navBackHref: 'lab-05-fallstudie.html',
-        footer: '\u00a9 2025 THWS Business School \u00b7 BI Lab \u00b7 Alle Rechte vorbehalten',
+        footer: '\u00a9 2025\u20132026 THWS Business School \u00b7 BI Lab \u00b7 Alle Rechte vorbehalten',
       },
       en: {
         logo: 'THWS BI Lab',
@@ -328,163 +416,201 @@
         backHref: 'index.html',
         badge: 'Lab 06',
         pageTitle: 'Digital Sovereignty & Open-Source BI',
-        pageSubtitle: 'Understand cloud lock-in, evaluate open-source alternatives, and build a self-hosted BI stack with Docker.',
+        pageSubtitle: 'Understand cloud lock-in, evaluate open-source alternatives, analyze total cost of ownership, and build a self-hosted BI stack with Docker.',
         nav: [
           { id: 'ueberblick', label: 'Overview' },
           { id: 'souveraenitaet', label: 'Digital Sovereignty' },
           { id: 'lock-in', label: 'Cloud Lock-in' },
+          { id: 'opensource', label: 'Open-Source BI' },
           { id: 'docker', label: 'Docker Setup' },
           { id: 'dsgvo', label: 'GDPR Checklist' },
           { id: 'entscheidung', label: 'Decision Matrix' },
           { id: 'abschlussprojekt', label: 'Final Project' },
           { id: 'youtube', label: 'YouTube Resources' },
+          { id: 'quiz', label: 'Quiz' },
+          { id: 'zusammenfassung', label: 'Summary' },
         ],
         s1Title: 'Overview',
         s1Lernziele: 'Learning Objectives',
         s1Goals: [
-          'Define the concept of "Digital Sovereignty"',
-          'Know and categorize open-source BI tools',
-          'Recognize critical dependencies on cloud providers',
-          'Describe a self-hosted BI stack with Docker',
+          'Define "Digital Sovereignty" and contextualize it within the EU framework',
+          'Recognize cloud lock-in risks and TCO factors',
+          'Know and categorize open-source BI tools, distinguishing license models',
+          'Set up a self-hosted BI stack with Docker Compose',
+          'Verify and document GDPR requirements for BI systems',
+          'Provide justified tool recommendations for various scenarios',
         ],
         s2Title: 'What is Digital Sovereignty?',
-        s2P1: 'Digital sovereignty refers to the ability of organizations to control their own digital infrastructure \u2013 from hardware and software to data and algorithms.',
-        s2P2: 'At the EU level, initiatives such as GAIA-X and the European Cloud Initiative are being promoted to strengthen European data sovereignty against US hyperscalers (AWS, Azure, GCP).',
+        s2P1: 'Digital sovereignty refers to the ability of organizations and states to control their own digital infrastructure \u2013 from hardware and software to data, algorithms, and platforms (Floridi, 2020).',
+        s2P2: 'At the EU level, initiatives such as GAIA-X, the European Cloud Initiative, and the European Data Act (2024) aim to strengthen European data sovereignty against US hyperscalers (AWS, Azure, GCP). The EU AI Act (2024) also touches on sovereignty by requiring transparency obligations for AI systems.',
         s2P3: 'For Business Intelligence, the core questions are:',
         s2Bullets: [
           'Where is my data stored \u2013 on which server, in which country?',
           'Who can theoretically access it (provider, authorities, third parties)?',
           'Am I locked into a single vendor?',
           'What happens if the provider discontinues the service or raises prices?',
+          'Can I fully export my data and dashboards?',
         ],
-        s2InfoText: 'After Schrems II (2020), the transfer of personal data to the USA without special safeguards is unlawful. The EU-US Data Privacy Framework (2023) creates a new legal basis \u2013 but remains politically controversial.',
+        s2ConceptTitle: 'Three Pillars of Digital Sovereignty',
+        s2ConceptItems: [
+          'Data sovereignty: Control over storage location, access, and processing of own data',
+          'Technological sovereignty: Independence from single vendors for critical infrastructure',
+          'Regulatory sovereignty: Ability to enforce own legal standards (GDPR, Data Act)',
+        ],
+        s2InfoTitle: 'Schrems II & EU-US Data Privacy Framework',
+        s2InfoText: 'After Schrems II (CJEU, 2020), the transfer of personal data to the USA without special safeguards is unlawful. The EU-US Data Privacy Framework (2023) creates a new legal basis but remains politically controversial. Companies should additionally use Standard Contractual Clauses (SCCs) and Transfer Impact Assessments (TIAs).',
         s3Title: 'SaaS BI Tools: Cloud Lock-in',
-        s3ConceptTitle: 'Lock-in Risks with SaaS BI Tools (general)',
+        s3P1: 'Cloud lock-in occurs when switching to an alternative provider becomes technically or economically prohibitive. In the BI context, proprietary data models, DAX/M formulas, permission structures, and API dependencies are the main drivers.',
+        s3ConceptTitle: 'Total Cost of Ownership (TCO) for BI Tools',
         s3ConceptItems: [
-          'Data is stored with the provider \u2013 US servers at Microsoft (Power BI), Google (Looker), Salesforce (Tableau)',
-          'Licenses: Power BI, Tableau, Looker, Qlik have similar pricing structures: Power BI from ~\u20ac9/user/month, Tableau from ~\u20ac15/user/month; Looker: on request (enterprise pricing)',
-          'Lock-in arises from proprietary formats and API dependencies \u2013 across all vendors',
+          'Direct costs: License fees per user/month (Power BI: ~\u20ac9\u201310, Tableau: ~\u20ac15, Looker: enterprise pricing on request)',
+          'Migration costs: Effort for data export, dashboard rebuilding, training when switching providers',
+          'Opportunity costs: Features only available within the vendor ecosystem (e.g., Copilot in Power BI)',
+          'Risk costs: Price increases, service discontinuation, regulatory conflicts (CLOUD Act)',
+          'Self-hosted operations costs: Servers, maintenance, updates, monitoring \u2013 requires personnel capacity',
+        ],
+        s3LockInItems: [
+          'Data stored with the provider \u2013 US servers at Microsoft (Power BI), Google (Looker), Salesforce (Tableau)',
+          'Proprietary formats: DAX (Power BI), VizQL (Tableau), LookML (Looker) \u2013 not portable',
           'GDPR complications affect ALL US cloud providers equally (Patriot Act, CLOUD Act)',
-          'On-premises options: Power BI Report Server, Tableau Server, Qlik Sense Enterprise \u2013 self-hosted is possible even in the enterprise market',
+          'On-premises options exist: Power BI Report Server, Tableau Server, Qlik Sense Enterprise',
         ],
-        s3TableTitle: 'Open-Source Alternatives Compared',
-        s3ThTool: 'Tool',
-        s3ThType: 'Type',
-        s3ThDocker: 'Docker',
-        s3ThStrengths: 'Strengths',
-        s3Rows: [
-          { tool: 'Apache Superset', type: 'Self-Hosted', docker: 'Yes', strengths: 'Powerful, SQL-first, large community, enterprise-ready' },
-          { tool: 'Metabase', type: 'Self-Hosted + Cloud', docker: 'Yes', strengths: 'Simple, intuitive, great for non-technical users' },
-          { tool: 'Redash', type: 'Self-Hosted', docker: 'Yes', strengths: 'SQL-focused, API access, lightweight' },
-          { tool: 'Plotly Dash', type: 'Self-Hosted', docker: 'Yes', strengths: 'Maximum flexibility, Python, full control' },
-          { tool: 'Grafana', type: 'Self-Hosted + Cloud', docker: 'Yes', strengths: 'Ideal for metrics & monitoring, large plugin library' },
+        s4Title: 'Open-Source BI Overview',
+        s4P1: 'Open-source BI tools offer full control over data and infrastructure. The license model is decisive: Apache 2.0 allows commercial use without restrictions, AGPL requires publication of modifications for server deployment, and MIT is similarly permissive to Apache.',
+        s4TableTitle: 'Open-Source Alternatives Compared',
+        s4ThTool: 'Tool',
+        s4ThLicense: 'License',
+        s4ThDocker: 'Docker',
+        s4ThStrengths: 'Strengths',
+        s4ThStatus: 'Status',
+        s4Rows: [
+          { tool: 'Apache Superset', license: 'Apache 2.0', docker: '\u2713', strengths: 'SQL-first, large community, enterprise-ready', status: '\u2705 Active' },
+          { tool: 'Metabase', license: 'AGPL 3.0', docker: '\u2713', strengths: 'Intuitive, great for non-technical users, embedded analytics', status: '\u2705 Active' },
+          { tool: 'Grafana', license: 'AGPL 3.0', docker: '\u2713', strengths: 'Metrics & monitoring, large plugin library', status: '\u2705 Active' },
+          { tool: 'Plotly Dash', license: 'MIT', docker: '\u2713', strengths: 'Maximum flexibility, Python-native, full control', status: '\u2705 Active' },
+          { tool: 'Lightdash', license: 'MIT', docker: '\u2713', strengths: 'dbt-native, metrics layer, modern data stack', status: '\u2705 Active' },
+          { tool: 'Evidence', license: 'MIT', docker: '\u2713', strengths: 'Code-as-BI: Markdown + SQL, Git-versioned', status: '\u2705 Active' },
+          { tool: 'Redash', license: 'BSD', docker: '\u2713', strengths: 'SQL-focused, API access, lightweight', status: '\u26a0\ufe0f Maintenance' },
         ],
-        s4Title: 'Docker Setup: Self-Hosted Metabase',
-        s4Intro: 'With Docker Compose, a complete self-hosted BI stack can be set up in minutes. The following example shows Metabase with PostgreSQL as the metadata database.',
-        s4TipText: 'Prerequisites: Docker Desktop installed. Download: https://www.docker.com/products/docker-desktop',
-        s4BashIntro: 'After creating docker-compose.yml, start the stack:',
-        s5Title: 'GDPR Checklist',
-        s5Intro: 'Before using BI tools with personal data, the following points must be checked and documented:',
-        s5ChecklistItems: [
+        s4RedashNote: 'Note: Redash was acquired by Databricks in 2020. The hosted version was discontinued; the open-source project is community-maintained, but development has slowed significantly.',
+        s4LicenseTip: 'License tip: AGPL-3.0 (Metabase, Grafana) requires that modifications to source code must be published when deployed as a server. For companies wanting to keep customizations internal, Apache-2.0 or MIT-licensed tools are often preferable.',
+        s5Title: 'Docker Setup: Self-Hosted Metabase',
+        s5Intro: 'With Docker Compose, a complete self-hosted BI stack can be set up in minutes. The following example shows Metabase with PostgreSQL as the metadata database.',
+        s5TipText: 'Prerequisites: Docker Desktop installed. Download: https://www.docker.com/products/docker-desktop',
+        s5BashIntro: 'Start and verify the stack:',
+        s5SecurityTitle: 'Security for Self-Hosted Setups',
+        s5SecurityItems: [
+          'HTTPS via reverse proxy (Traefik, Caddy, or nginx) \u2013 never expose Metabase directly without TLS',
+          'Strong passwords and .env files instead of plaintext in docker-compose.yml',
+          'Regular updates: Pin Metabase image (e.g., v0.50.x) but apply security patches promptly',
+          'Backup strategy: Regularly back up PostgreSQL data (pg_dump)',
+          'Network isolation: Use Docker networks, only expose port 443 (HTTPS) externally',
+        ],
+        s6Title: 'GDPR Checklist',
+        s6Intro: 'Before using BI tools with personal data, the following points must be checked and documented (per GDPR and EU Data Act):',
+        s6ChecklistItems: [
           'Record of processing activities created (Art. 30 GDPR)',
           'Data processing agreement (DPA) signed with cloud provider',
-          'Data transfers to third countries documented and justified',
+          'Data transfers to third countries documented and justified (SCCs + TIA)',
           'Data protection impact assessment (DPIA) for sensitive data completed',
-          'Deletion concept for all stored data in place',
-          'Data protection officer informed (if required)',
+          'Deletion concept and retention periods for all stored data documented',
+          'Data protection officer informed (if required, Art. 37 GDPR)',
+          'Technical and organizational measures (TOMs) documented (Art. 32 GDPR)',
+          'Data subject rights ensured: Access, rectification, erasure, portability',
         ],
-        s5ProgressLabel: 'Completed',
-        s5Of: 'of',
-        s6Title: 'Decision Matrix: Which Tool When?',
-        s6ThScenario: 'Scenario',
-        s6ThRec: 'Recommendation',
-        s6ThReason: 'Rationale',
-        s6Rows: [
-          { scenario: 'Small team, no IT department', rec: 'SaaS BI Tool (Power BI, Tableau, Looker)', reason: 'Easy to set up, quickly productive' },
-          { scenario: 'Personal data (HR, customers)', rec: 'Metabase / Superset self-hosted', reason: 'GDPR obligation: data must not leave the EU' },
-          { scenario: 'Complex custom dashboards', rec: 'Plotly Dash', reason: 'Full control over design and logic' },
-          { scenario: 'Public sector / government', rec: 'Open Source (required)', reason: 'EU guidelines mandate open-source preference' },
-          { scenario: 'Startup, fast deployment', rec: 'Metabase + Docker', reason: 'Setup in under 5 minutes' },
-          { scenario: 'Enterprise with Microsoft stack', rec: 'Power BI', reason: 'Best integration, enterprise support' },
+        s6ProgressLabel: 'Completed',
+        s6Of: 'of',
+        s7Title: 'Decision Matrix: Which Tool When?',
+        s7ThScenario: 'Scenario',
+        s7ThRec: 'Recommendation',
+        s7ThReason: 'Rationale',
+        s7Rows: [
+          { scenario: 'Small team, no IT department', rec: 'SaaS (Power BI, Tableau Cloud)', reason: 'Lowest operational overhead, quickly productive' },
+          { scenario: 'Personal data (HR, customers)', rec: 'Metabase / Superset self-hosted', reason: 'GDPR: Data must stay in EU, full control' },
+          { scenario: 'Complex custom dashboards', rec: 'Plotly Dash', reason: 'Python-native, full control over design and logic' },
+          { scenario: 'Public sector / government', rec: 'Open Source (preferred)', reason: 'EU guidelines mandate open-source preference' },
+          { scenario: 'Modern dbt-based data stack', rec: 'Lightdash / Evidence', reason: 'Seamless dbt integration, metrics layer, Git workflows' },
+          { scenario: 'Startup, fast deployment', rec: 'Metabase + Docker', reason: 'Setup in under 5 minutes, large community' },
+          { scenario: 'Enterprise with Microsoft ecosystem', rec: 'Power BI (+ Report Server)', reason: 'Best integration, Copilot, enterprise support' },
+          { scenario: 'Monitoring & DevOps metrics', rec: 'Grafana', reason: 'Standard for infrastructure monitoring, alerting' },
         ],
-        s7Title: 'Final Project',
-        s7ChallengeTitle: 'Bonus Project: Self-Hosted BI Stack',
-        s7ChallengeDesc: 'Build a complete self-hosted BI stack on your local machine:',
-        s7Steps: [
-          'Set up PostgreSQL locally as a database (via Docker)',
-          'Start Metabase via Docker Compose',
-          'Import Superstore data as CSV into PostgreSQL',
-          'Create 3 meaningful dashboards in Metabase',
-          'Share a screenshot + URL of the dashboard (e.g. via ngrok)',
+        s8Title: 'Final Project',
+        s8ChallengeTitle: 'Bonus Project: Self-Hosted BI Stack',
+        s8ChallengeDesc: 'Build a complete self-hosted BI stack on your local machine:',
+        s8Steps: [
+          'Install Docker Desktop and test basic Docker commands',
+          'Create docker-compose.yml for Metabase + PostgreSQL',
+          'Start the stack and complete the Metabase setup wizard',
+          'Import Superstore data as CSV into PostgreSQL (e.g., via pgAdmin or psql)',
+          'Create 3 meaningful dashboards in Metabase (Revenue, Profit, Categories)',
+          'Complete the GDPR checklist for your setup and document it',
+          'Deliverable: Screenshot + brief reflection on pros/cons vs. Power BI',
         ],
-        s8Title: 'YouTube Resources',
-        s8Intro: 'Recommended video resources on open-source BI and Docker:',
-        s8Resources: [
+        s9Title: 'YouTube Resources',
+        s9Intro: 'Recommended video resources on open-source BI, Docker, and data sovereignty:',
+        s9Resources: [
           {
-            title: 'Apache Superset Getting Started',
-            desc: 'Search "Apache Superset Tutorial 2024" on YouTube for up-to-date introduction videos on installation and first dashboards.',
-            url: 'https://www.youtube.com/results?search_query=Apache+Superset+Tutorial+2024',
-            label: 'Search Apache Superset Tutorial on YouTube',
+            title: 'Metabase \u2013 Official Getting Started',
+            desc: 'Official Metabase channel with tutorials on installation, the question editor, dashboards, and embedding for developers.',
+            url: 'https://www.youtube.com/@Metabase',
+            label: 'Metabase on YouTube \u2192',
           },
           {
-            title: 'Metabase Tutorial for Beginners',
-            desc: 'Search "Metabase tutorial 2024" on YouTube for step-by-step guides on self-hosted installation and dashboard creation.',
-            url: 'https://www.youtube.com/results?search_query=Metabase+tutorial+2024',
-            label: 'Search Metabase Tutorial on YouTube',
+            title: 'Apache Superset \u2013 Preset Channel',
+            desc: 'Preset (the company behind Superset) offers demos, feature walkthroughs, and best practices for SQL-based analytics.',
+            url: 'https://www.youtube.com/@preset-io',
+            label: 'Preset (Superset) on YouTube \u2192',
           },
           {
-            title: 'Docker for Beginners \u2013 TechWorld with Nana',
-            desc: 'Nana explains Docker from scratch: containers, images, Docker Compose and practical use cases \u2013 ideal preparation for the bonus project.',
+            title: 'TechWorld with Nana \u2013 Docker',
+            desc: 'Nana explains Docker from scratch: containers, images, Docker Compose, and practical use cases \u2013 ideal preparation for the bonus project.',
             url: 'https://www.youtube.com/@TechWorldwithNana',
-            label: 'TechWorld with Nana on YouTube',
+            label: 'TechWorld with Nana on YouTube \u2192',
           },
+          {
+            title: 'NetworkChuck \u2013 Docker & Self-Hosting',
+            desc: 'Engaging explanations of Docker, Portainer, self-hosting, and networking basics \u2013 entertaining and hands-on.',
+            url: 'https://www.youtube.com/@NetworkChuck',
+            label: 'NetworkChuck on YouTube \u2192',
+          },
+        ],
+        s9BookRef: 'References: Floridi, L. (2020). "The Fight for Digital Sovereignty: What It Is, and Why It Matters, Especially for the EU." Philosophy & Technology, 33(3). | Bitkom (2023). "Cloud Sovereignty Guide."',
+        quizTitle: 'Quiz',
+        quizIntro: 'Test your knowledge on Digital Sovereignty and Open-Source BI:',
+        quizQuestions: [
+          { q: 'What is the main driver of cloud lock-in for BI tools?', options: ['License costs too high', 'Proprietary data formats and API dependencies', 'Lack of internet connectivity', 'Too many users on the team'], correct: 1, explanation: 'Lock-in primarily arises from proprietary formats (DAX, VizQL, LookML) and API dependencies that make switching technically complex.' },
+          { q: 'Which EU law has regulated access to and use of data since 2024?', options: ['GDPR', 'EU AI Act', 'EU Data Act', 'ePrivacy Regulation'], correct: 2, explanation: 'The EU Data Act (2024) regulates fair access to and use of data, particularly IoT data and cloud switching rights.' },
+          { q: 'Which license requires publication of modifications for server deployment?', options: ['MIT', 'Apache 2.0', 'AGPL 3.0', 'BSD'], correct: 2, explanation: 'AGPL 3.0 (e.g., Metabase, Grafana) requires that source code changes must be published even for server-only deployment.' },
+          { q: 'Which tool is best suited for a dbt-based modern data stack?', options: ['Power BI', 'Metabase', 'Lightdash', 'Grafana'], correct: 2, explanation: 'Lightdash is specifically designed for dbt workflows and offers native metrics layer integration.' },
+          { q: 'What does Art. 32 GDPR require from data controllers?', options: ['User consent', 'Technical and organizational measures (TOMs)', 'Data protection impact assessment', 'Prohibition of cloud use'], correct: 1, explanation: 'Art. 32 GDPR requires the implementation of appropriate technical and organizational measures (TOMs) for data processing security.' },
+          { q: 'Why is HTTPS via reverse proxy essential for self-hosted BI?', options: ['Faster database queries', 'Better-looking dashboard URLs', 'Encrypted traffic and protection against man-in-the-middle attacks', 'Better Docker compatibility'], correct: 2, explanation: 'HTTPS encrypts all traffic between browser and server, protecting against eavesdropping and manipulation (man-in-the-middle).' },
+        ],
+        sumTitle: 'Summary',
+        sumItems: [
+          'Digital sovereignty encompasses data, technology, and regulatory sovereignty (Floridi, 2020).',
+          'Cloud lock-in arises from proprietary formats, APIs, and ecosystem dependencies \u2013 TCO analysis helps assess the situation.',
+          'EU Data Act (2024) and AI Act (2024) strengthen European data sovereignty and cloud switching rights.',
+          'Open-source BI (Superset, Metabase, Grafana, Dash, Lightdash, Evidence) offers full control \u2013 mind the license models.',
+          'Docker Compose enables fast self-hosted deployment \u2013 don\u2019t forget HTTPS and backup strategy.',
+          'GDPR compliance requires systematic checks: DPA, SCCs, TIA, TOMs, deletion concept.',
+          'Tool choice depends on scenario: Team size, data type, regulatory requirements, existing tech stack.',
         ],
         navBack: '\u2190 Lab 05: Case Study',
         navBackHref: 'lab-05-fallstudie.html',
-        footer: '\u00a9 2025 THWS Business School \u00b7 BI Lab \u00b7 All rights reserved',
+        footer: '\u00a9 2025\u20132026 THWS Business School \u00b7 BI Lab \u00b7 All rights reserved',
       },
     };
 
-    var c = t[lang];
+    const c = t[lang];
 
-    var codeDockerCompose = `# docker-compose.yml f\u00fcr Self-Hosted Metabase
-# version: '3' entfernt – in Compose Spec (v2) deprecated
-services:
-  metabase:
-    image: metabase/metabase:v0.50.x  # Version pinnen statt :latest verwenden (verhindert unkontrollierte Updates)
-    ports:
-      - "3000:3000"
-    environment:
-      MB_DB_TYPE: postgres
-      MB_DB_DBNAME: metabase
-      MB_DB_HOST: postgres
-      MB_DB_USER: metabase
-      MB_DB_PASS: metabasepassword  # Nur für lokale Entwicklung – in Produktion .env-Datei und sichere Passwörter verwenden
-    depends_on:
-      - postgres
+    // Code strings as regular strings (safe, no ${} collision risk)
+    const codeDockerCompose = "# docker-compose.yml \u2013 Self-Hosted Metabase + PostgreSQL\n# Compose Spec (v2) \u2013 'version' key is deprecated\nservices:\n  metabase:\n    image: metabase/metabase:v0.50.29   # Version pinnen!\n    ports:\n      - \"3000:3000\"\n    environment:\n      MB_DB_TYPE: postgres\n      MB_DB_DBNAME: metabase\n      MB_DB_HOST: postgres\n      MB_DB_USER: metabase\n      MB_DB_PASS: ${MB_DB_PASS}          # .env-Datei nutzen!\n    depends_on:\n      postgres:\n        condition: service_healthy\n    restart: unless-stopped\n\n  postgres:\n    image: postgres:16-alpine\n    environment:\n      POSTGRES_USER: metabase\n      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # .env-Datei!\n      POSTGRES_DB: metabase\n    volumes:\n      - metabase_data:/var/lib/postgresql/data\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U metabase\"]\n      interval: 10s\n      timeout: 5s\n      retries: 5\n    restart: unless-stopped\n\nvolumes:\n  metabase_data:";
 
-  postgres:
-    image: postgres:15
-    environment:
-      POSTGRES_USER: metabase
-      POSTGRES_PASSWORD: metabasepassword  # Nur für lokale Entwicklung – in Produktion .env-Datei und sichere Passwörter verwenden
-      POSTGRES_DB: metabase
-    volumes:
-      - metabase_data:/var/lib/postgresql/data
+    const codeEnvFile = "# .env (im selben Verzeichnis wie docker-compose.yml)\nMB_DB_PASS=EinSicheresPasswort123!\nPOSTGRES_PASSWORD=EinSicheresPasswort123!";
 
-volumes:
-  metabase_data:`;
+    const codeBashDocker = "# .env-Datei erstellen (Passw\u00f6rter anpassen!):\ncp .env.example .env\n\n# Stack starten:\ndocker compose up -d\n\n# Status pr\u00fcfen:\ndocker compose ps\n\n# Logs anzeigen:\ndocker compose logs -f metabase\n\n# Zugriff: http://localhost:3000\n# Erster Start: Einrichtungsassistent \u00f6ffnet sich";
 
-    var codeBashDocker = `# Starten:
-docker compose up -d
-
-# Status pr\u00fcfen:
-docker compose ps
-
-# Zugriff: http://localhost:3000
-# Erster Start: Einrichtungsassistent \u00f6ffnet sich`;
-
-    var doneCount = checkedItems.filter(Boolean).length;
+    const doneCount = checkedItems.filter(Boolean).length;
 
     return (
       <div data-lang={lang}>
@@ -501,189 +627,224 @@ docker compose ps
 
         <nav className="sidebar">
           <div className="sidebar-title">Lab 06</div>
-          {c.nav.map(function(item) {
-            return (
-              <a
-                key={item.id}
-                href={'#' + item.id}
-                className={'sidebar-link' + (activeSection === item.id ? ' active' : '')}
-              >{item.label}</a>
-            );
-          })}
+          {c.nav.map((item) => (
+            <a key={item.id} href={'#' + item.id} className={'sidebar-link' + (activeSection === item.id ? ' active' : '')}>{item.label}</a>
+          ))}
         </nav>
 
         <main className="main-content">
-          <div style={{ marginBottom: '2.5rem' }}>
+          {/* Lab Header */}
+          <div style={{ marginBottom: '2.5rem', position: 'relative' }}>
+            <span className="lab-num">06</span>
             <span className="bauhaus-badge">{c.badge}</span>
             <h2 style={{ fontSize: '2rem', marginTop: '0.75rem', marginBottom: '0.25rem' }}>{c.pageTitle}</h2>
             <div className="bauhaus-accent-line"></div>
             <p style={{ color: '#555', fontSize: '1.05rem', maxWidth: '640px' }}>{c.pageSubtitle}</p>
           </div>
 
-          {/* Ueberblick */}
-          <div id="ueberblick" className="section-block">
+          {/* 1 – Überblick */}
+          <section id="ueberblick" className="section-block">
             <h2>{c.s1Title}</h2>
             <div className="bauhaus-accent-line"></div>
             <div className="lernziele-box">
               <h4 className="lernziele-heading">{c.s1Lernziele}</h4>
-              <ol style={{ margin: 0, paddingLeft: '1.25rem', lineHeight: '2' }}>
-                {c.s1Goals.map(function(g, i) {
-                  return <li key={i}>{g}</li>;
-                })}
-              </ol>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
+                {c.s1Goals.map((g, i) => <span key={i} className="lernziel-chip">{g}</span>)}
+              </div>
             </div>
-          </div>
+          </section>
 
-          {/* Digitale Souveraenitaet */}
-          <div id="souveraenitaet" className="section-block">
+          {/* 2 – Digitale Souveränität */}
+          <section id="souveraenitaet" className="section-block">
             <h2>{c.s2Title}</h2>
             <div className="bauhaus-accent-line"></div>
             <p>{c.s2P1}</p>
+            <div className="concept-box" style={{ marginBottom: '1.25rem' }}>
+              <h4 style={{ marginTop: 0 }}>{c.s2ConceptTitle}</h4>
+              <ul style={{ margin: 0, paddingLeft: '1.25rem', lineHeight: '2' }}>
+                {c.s2ConceptItems.map((item, i) => <li key={i}>{item}</li>)}
+              </ul>
+            </div>
             <p>{c.s2P2}</p>
             <p>{c.s2P3}</p>
             <ul style={{ paddingLeft: '1.5rem', lineHeight: '2' }}>
-              {c.s2Bullets.map(function(b, i) {
-                return <li key={i}>{b}</li>;
-              })}
+              {c.s2Bullets.map((b, i) => <li key={i}>{b}</li>)}
             </ul>
             <div className="info-box" style={{ marginTop: '1.25rem' }}>
-              <strong>Schrems II:</strong> {c.s2InfoText}
+              <strong>{c.s2InfoTitle}:</strong> {c.s2InfoText}
             </div>
-          </div>
+          </section>
 
-          {/* Cloud Lock-in */}
-          <div id="lock-in" className="section-block">
+          {/* 3 – Cloud Lock-in */}
+          <section id="lock-in" className="section-block">
             <h2>{c.s3Title}</h2>
             <div className="bauhaus-accent-line"></div>
+            <p>{c.s3P1}</p>
             <div className="concept-box">
               <h4 style={{ marginTop: 0 }}>{c.s3ConceptTitle}</h4>
               <ul style={{ margin: 0, paddingLeft: '1.25rem', lineHeight: '2' }}>
-                {c.s3ConceptItems.map(function(item, i) {
-                  return <li key={i}>{item}</li>;
-                })}
+                {c.s3ConceptItems.map((item, i) => <li key={i}>{item}</li>)}
               </ul>
             </div>
-            <h3 style={{ marginTop: '2rem', marginBottom: '0.5rem' }}>{c.s3TableTitle}</h3>
+            <div className="tip-box" style={{ marginTop: '1.25rem' }}>
+              <strong>Lock-in-Risiken:</strong>
+              <ul style={{ margin: '0.5rem 0 0', paddingLeft: '1.25rem', lineHeight: '2' }}>
+                {c.s3LockInItems.map((item, i) => <li key={i}>{item}</li>)}
+              </ul>
+            </div>
+          </section>
+
+          {/* 4 – Open-Source BI */}
+          <section id="opensource" className="section-block">
+            <h2>{c.s4Title}</h2>
+            <div className="bauhaus-accent-line"></div>
+            <p>{c.s4P1}</p>
+            <h3 style={{ marginTop: '2rem', marginBottom: '0.5rem' }}>{c.s4TableTitle}</h3>
             <table>
               <thead>
                 <tr>
-                  <th>{c.s3ThTool}</th>
-                  <th>{c.s3ThType}</th>
-                  <th>{c.s3ThDocker}</th>
-                  <th>{c.s3ThStrengths}</th>
+                  <th>{c.s4ThTool}</th>
+                  <th>{c.s4ThLicense}</th>
+                  <th>{c.s4ThDocker}</th>
+                  <th>{c.s4ThStrengths}</th>
+                  <th>{c.s4ThStatus}</th>
                 </tr>
               </thead>
               <tbody>
-                {c.s3Rows.map(function(row, i) {
-                  return (
-                    <tr key={i}>
-                      <td><strong>{row.tool}</strong></td>
-                      <td>{row.type}</td>
-                      <td style={{ textAlign: 'center' }}>{row.docker}</td>
-                      <td>{row.strengths}</td>
-                    </tr>
-                  );
-                })}
+                {c.s4Rows.map((row, i) => (
+                  <tr key={i}>
+                    <td><strong>{row.tool}</strong></td>
+                    <td>{row.license}</td>
+                    <td style={{ textAlign: 'center' }}>{row.docker}</td>
+                    <td>{row.strengths}</td>
+                    <td>{row.status}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
-          </div>
-
-          {/* Docker */}
-          <div id="docker" className="section-block">
-            <h2>{c.s4Title}</h2>
-            <div className="bauhaus-accent-line"></div>
-            <p>{c.s4Intro}</p>
-            <CodeBlock code={codeDockerCompose} />
-            <div className="tip-box">
-              <strong>Tipp:</strong> {c.s4TipText}
+            <div className="info-box" style={{ marginTop: '1rem' }}>
+              <p style={{ margin: 0, fontSize: '0.875rem' }}>{c.s4RedashNote}</p>
             </div>
-            <p style={{ marginTop: '1.5rem' }}>{c.s4BashIntro}</p>
-            <CodeBlock code={codeBashDocker} />
-          </div>
+            <div className="tip-box" style={{ marginTop: '1rem' }}>
+              <p style={{ margin: 0, fontSize: '0.875rem' }}><strong>{c.s4LicenseTip}</strong></p>
+            </div>
+          </section>
 
-          {/* DSGVO Checkliste */}
-          <div id="dsgvo" className="section-block">
+          {/* 5 – Docker Setup */}
+          <section id="docker" className="section-block">
             <h2>{c.s5Title}</h2>
             <div className="bauhaus-accent-line"></div>
             <p>{c.s5Intro}</p>
+            <CodeBlock code={codeDockerCompose} lang={lang} />
+            <h4 style={{ marginTop: '1.5rem' }}>.env</h4>
+            <CodeBlock code={codeEnvFile} lang={lang} />
+            <div className="tip-box">
+              <strong>Tipp:</strong> {c.s5TipText}
+            </div>
+            <p style={{ marginTop: '1.5rem' }}>{c.s5BashIntro}</p>
+            <CodeBlock code={codeBashDocker} lang={lang} />
+            <div className="concept-box" style={{ marginTop: '1.5rem' }}>
+              <h4 style={{ marginTop: 0 }}>{c.s5SecurityTitle}</h4>
+              <ul style={{ margin: 0, paddingLeft: '1.25rem', lineHeight: '2' }}>
+                {c.s5SecurityItems.map((item, i) => <li key={i}>{item}</li>)}
+              </ul>
+            </div>
+          </section>
+
+          {/* 6 – DSGVO Checkliste */}
+          <section id="dsgvo" className="section-block">
+            <h2>{c.s6Title}</h2>
+            <div className="bauhaus-accent-line"></div>
+            <p>{c.s6Intro}</p>
             <div style={{ background: 'white', border: '1px solid #E5E7EB', borderRadius: '8px', padding: '1.25rem 1.5rem', marginTop: '1rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                 <span style={{ fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6B7280' }}>
-                  {c.s5ProgressLabel}: {doneCount} {c.s5Of} {checklistCount}
+                  {c.s6ProgressLabel}: {doneCount} {c.s6Of} {checklistCount}
                 </span>
                 <div style={{ height: '6px', width: '140px', background: '#E5E7EB', borderRadius: '3px', overflow: 'hidden' }}>
                   <div style={{ height: '100%', width: (doneCount / checklistCount * 100) + '%', background: 'var(--col-accent)', borderRadius: '3px', transition: 'width 0.3s ease' }}></div>
                 </div>
               </div>
-              {c.s5ChecklistItems.map(function(item, i) {
-                return (
-                  <ChecklistItem
-                    key={i}
-                    text={item}
-                    checked={checkedItems[i]}
-                    onToggle={function() { toggleCheck(i); }}
-                  />
-                );
-              })}
+              {c.s6ChecklistItems.map((item, i) => (
+                <ChecklistItem key={i} text={item} checked={checkedItems[i]} onToggle={() => toggleCheck(i)} />
+              ))}
             </div>
-          </div>
+          </section>
 
-          {/* Entscheidungsmatrix */}
-          <div id="entscheidung" className="section-block">
-            <h2>{c.s6Title}</h2>
+          {/* 7 – Entscheidungsmatrix */}
+          <section id="entscheidung" className="section-block">
+            <h2>{c.s7Title}</h2>
             <div className="bauhaus-accent-line"></div>
             <table>
               <thead>
                 <tr>
-                  <th>{c.s6ThScenario}</th>
-                  <th>{c.s6ThRec}</th>
-                  <th>{c.s6ThReason}</th>
+                  <th>{c.s7ThScenario}</th>
+                  <th>{c.s7ThRec}</th>
+                  <th>{c.s7ThReason}</th>
                 </tr>
               </thead>
               <tbody>
-                {c.s6Rows.map(function(row, i) {
-                  return (
-                    <tr key={i}>
-                      <td>{row.scenario}</td>
-                      <td><strong>{row.rec}</strong></td>
-                      <td>{row.reason}</td>
-                    </tr>
-                  );
-                })}
+                {c.s7Rows.map((row, i) => (
+                  <tr key={i}>
+                    <td>{row.scenario}</td>
+                    <td><strong>{row.rec}</strong></td>
+                    <td>{row.reason}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
-          </div>
+          </section>
 
-          {/* Abschlussprojekt */}
-          <div id="abschlussprojekt" className="section-block">
-            <h2>{c.s7Title}</h2>
-            <div className="bauhaus-accent-line"></div>
-            <div className="challenge-box">
-              <h4 style={{ marginTop: 0, color: '#15803d' }}>{c.s7ChallengeTitle}</h4>
-              <p style={{ margin: '0 0 0.75rem', color: '#166534' }}>{c.s7ChallengeDesc}</p>
-              <ol style={{ margin: 0, paddingLeft: '1.25rem', lineHeight: '2.2', color: '#166534' }}>
-                {c.s7Steps.map(function(step, i) {
-                  return <li key={i}>{step}</li>;
-                })}
-              </ol>
-            </div>
-          </div>
-
-          {/* YouTube */}
-          <div id="youtube" className="section-block">
+          {/* 8 – Abschlussprojekt */}
+          <section id="abschlussprojekt" className="section-block">
             <h2>{c.s8Title}</h2>
             <div className="bauhaus-accent-line"></div>
-            <p>{c.s8Intro}</p>
-            {c.s8Resources.map(function(res, i) {
-              return (
-                <div key={i} className="youtube-box" style={{ marginBottom: '1rem' }}>
+            <div className="challenge-box">
+              <h4 style={{ marginTop: 0, color: '#15803d' }}>{c.s8ChallengeTitle}</h4>
+              <p style={{ margin: '0 0 0.75rem', color: '#166534' }}>{c.s8ChallengeDesc}</p>
+              <ol style={{ margin: 0, paddingLeft: '1.25rem', lineHeight: '2.2', color: '#166534' }}>
+                {c.s8Steps.map((step, i) => <li key={i}>{step}</li>)}
+              </ol>
+            </div>
+          </section>
+
+          {/* 9 – YouTube */}
+          <section id="youtube" className="section-block">
+            <h2>{c.s9Title}</h2>
+            <div className="bauhaus-accent-line"></div>
+            <p>{c.s9Intro}</p>
+            <div className="youtube-box">
+              {c.s9Resources.map((res, i) => (
+                <div key={i} style={{ marginBottom: i < c.s9Resources.length - 1 ? '1.25rem' : 0 }}>
                   <h4 style={{ marginTop: 0 }}>{res.title}</h4>
-                  <p style={{ margin: '0.25rem 0 0.75rem', color: '#78350F', fontSize: '0.875rem' }}>{res.desc}</p>
-                  <a href={res.url} target="_blank" rel="noopener noreferrer" className="youtube-link">{res.label} {'\u2192'}</a>
+                  <p style={{ margin: '0.25rem 0 0.5rem', color: '#78350F', fontSize: '0.875rem' }}>{res.desc}</p>
+                  <a href={res.url} target="_blank" rel="noopener noreferrer" className="youtube-link">{res.label}</a>
                 </div>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+            <div className="info-box" style={{ marginTop: '1.25rem' }}>
+              <p style={{ margin: 0, fontSize: '0.875rem' }}>{c.s9BookRef}</p>
+            </div>
+          </section>
+
+          {/* 10 – Quiz */}
+          <section id="quiz" className="section-block">
+            <h2>{c.quizTitle}</h2>
+            <div className="bauhaus-accent-line"></div>
+            <p>{c.quizIntro}</p>
+            {c.quizQuestions.map((q, i) => (
+              <QuizQuestion key={i} question={q} index={i + 1} lang={lang} />
+            ))}
+          </section>
+
+          {/* 11 – Zusammenfassung */}
+          <section id="zusammenfassung" className="section-block">
+            <h2>{c.sumTitle}</h2>
+            <div className="bauhaus-accent-line"></div>
+            <ol style={{ paddingLeft: '1.25rem', lineHeight: '2.2' }}>
+              {c.sumItems.map((item, i) => <li key={i}>{item}</li>)}
+            </ol>
+          </section>
 
           <div className="nav-bottom">
             <a href={c.navBackHref} className="nav-btn">{c.navBack}</a>
@@ -697,8 +858,8 @@ docker compose ps
     );
   }
 
-  var root = ReactDOM.createRoot(document.getElementById('root'));
-  root.render(React.createElement(App));
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+  root.render(<App />);
 </script>
 </body>
 </html>
