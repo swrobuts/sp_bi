@@ -169,7 +169,7 @@
     const { useState, useEffect } = React;
 
     // ─── CodeBlock Component ──────────────────────────────────────────────────
-    function CodeBlock({ code }) {
+    function CodeBlock({ code, lang }) {
       const [copied, setCopied] = React.useState(false);
       const copy = () => {
         navigator.clipboard.writeText(code).then(() => {
@@ -197,7 +197,7 @@
             padding: '0.2rem 0.5rem', fontSize: '0.75rem',
             cursor: 'pointer', fontFamily: 'Space Grotesk, sans-serif'
           }}>
-            {copied ? '\u2713 Kopiert' : 'Kopieren'}
+            {copied ? (lang === 'en' ? '\u2713 Copied' : '\u2713 Kopiert') : (lang === 'en' ? 'Copy' : 'Kopieren')}
           </button>
         </div>
       );
@@ -248,6 +248,7 @@
           { href: '#qualitaet',     label: 'Datenqualit\u00E4t' },
           { href: '#youtube',       label: 'Ressourcen' },
           { href: '#quiz',          label: 'Quiz' },
+          { href: '#zusammenfassung', label: 'Zusammenfassung' },
         ],
         backLabel: '\u2190 \u00DCbersicht',
 
@@ -268,10 +269,16 @@
             desc: 'Flexibles Schema, hierarchische oder verschachtelte Strukturen.',
           },
           {
+            label: 'Unstrukturiert',
+            color: '#7C3AED',
+            examples: ['PDF-Dokumente', 'E-Mails', 'Bilder', 'Log-Dateien', 'Audio/Video'],
+            desc: 'Kein festes Schema. Aufbereitung durch NLP, OCR oder KI nötig. Wachsende Relevanz durch LLMs.',
+          },
+          {
             label: 'Cloud-Quellen',
             color: '#3B82F6',
-            examples: ['Google Sheets', 'Azure Blob Storage', 'SharePoint', 'Snowflake (Cloud Data Warehouse)'],
-            desc: 'Online-Dienste mit API-Zugriff oder nativer Konnektorunterst\u00FCtzung.',
+            examples: ['Google Sheets', 'Azure Blob Storage', 'SharePoint', 'Snowflake', 'BigQuery'],
+            desc: 'Online-Dienste mit API-Zugriff oder nativer Konnektorunterstützung. Können strukturierte und unstrukturierte Daten enthalten.',
           },
         ],
         s1PowerBITitle: 'Daten laden in Power BI',
@@ -296,14 +303,20 @@
           ['Performance', 'Schnellere Abfragen', 'Etwas langsamer durch JOINs'],
           ['Speicher', 'H\u00F6herer Bedarf', 'Geringerer Bedarf'],
           ['Komplexit\u00E4t', 'Einfach zu verstehen', 'Komplexere Struktur'],
-          ['Einsatz', 'Power BI, Tableau', 'Snowflake DW, BigQuery'],
+          ['Einsatz', 'Standard in Power BI, Tableau, Looker', 'Klassisch in normalisierten DWH (z.\u00A0B. Inmon-Ansatz)'],
         ],
+        s2KimballInmonTitle: 'Kimball vs. Inmon',
+        s2KimballInmonText: 'Ralph Kimball (Bottom-Up, 1996): Fachbereichsbezogene Data Marts mit Star Schema, schnell produktiv. Bill Inmon (Top-Down, 1992): Unternehmensweites normalisiertes DWH (3NF), dann Data Marts ableiten. Moderne Praxis: Hybridansätze mit dem Data Vault 2.0 von Dan Linstedt.',
+        s2SCDTitle: 'Slowly Changing Dimensions (SCD)',
+        s2SCDText: 'Dimensionsdaten ändern sich über die Zeit (z.\u00A0B. Kundenadresse, Produktkategorie). SCD-Typen: Typ\u00A01 = Überschreiben (kein Verlauf), Typ\u00A02 = Neue Zeile mit Gültigkeitszeitraum (Standard im DWH), Typ\u00A03 = Zusätzliche Spalte für den alten Wert.',
         s2TipTitle: 'Empfehlung',
-        s2TipText: 'F\u00FCr die meisten BI-Projekte ist das Star Schema die bessere Wahl: es ist einfacher zu verstehen, leichter zu pflegen und liefert in den meisten BI-Tools schnellere Abfragezeiten.',
+        s2TipText: 'Für die meisten BI-Projekte ist das Star Schema (Kimball-Ansatz) die bessere Wahl: es ist einfacher zu verstehen, leichter zu pflegen und liefert in den meisten BI-Tools schnellere Abfragezeiten.',
 
         s3Title: 'Datenqualit\u00E4t',
         s3Desc: 'Schlechte Datenqualit\u00E4t ist die h\u00E4ufigste Ursache f\u00FCr falsche BI-Ergebnisse. Das Erkennen und Beheben von Qualit\u00E4tsproblemen ist ein zentraler Teil jedes ETL-Prozesses.',
-        s3ProblemsTitle: 'H\u00E4ufige Datenqualit\u00E4tsprobleme',
+        s3FrameworkTitle: 'Datenqualitätsdimensionen (DAMA DMBOK)',
+        s3FrameworkText: 'Das DAMA DMBOK-Framework definiert sechs Kernkategorien: Accuracy (Korrektheit), Completeness (Vollständigkeit), Consistency (Widerspruchsfreiheit), Timeliness (Aktualität), Validity (Regelkonformität) und Uniqueness (Eindeutigkeit). Diese Dimensionen bilden die Basis für systematisches Datenqualitätsmanagement.',
+        s3ProblemsTitle: 'Häufige Datenqualitätsprobleme',
         s3Problems: [
           { name: 'Nullwerte', desc: 'Fehlende Werte in Pflichtfeldern (z.\u202FB. kein Umsatz eingetragen)', fix: 'Zeilen entfernen oder mit Standardwert f\u00FCllen' },
           { name: 'Duplikate', desc: 'Gleiche Datens\u00E4tze mehrfach vorhanden (z.\u202FB. doppelte Bestellungen)', fix: 'Mit drop_duplicates() oder Power Query entfernen' },
@@ -370,10 +383,54 @@
               'Ein Cloud-Speicherdienst',
             ],
             correct: 2,
-            exp: 'GraphQL ist eine API-Abfragesprache (kein Datenformat). Die Antworten einer GraphQL-API werden als JSON zur\u00fcckgegeben.',
+            exp: 'GraphQL ist eine API-Abfragesprache (kein Datenformat). Die Antworten einer GraphQL-API werden als JSON zurückgegeben.',
+          },
+          {
+            q: 'Welcher DWH-Architekturansatz verwendet Star Schemata in fachbereichsbezogenen Data Marts?',
+            opts: [
+              'Bill Inmon (Top-Down)',
+              'Ralph Kimball (Bottom-Up)',
+              'Dan Linstedt (Data Vault)',
+              'Edgar F. Codd (Relational)',
+            ],
+            correct: 1,
+            exp: 'Ralph Kimball (1996) propagiert den Bottom-Up-Ansatz: fachbereichsbezogene Data Marts mit Star Schema, die schnell produktiv sind. Inmon bevorzugt ein unternehmensweites normalisiertes DWH.',
+          },
+          {
+            q: 'Welcher SCD-Typ speichert historische Änderungen mit Gültigkeitszeitraum?',
+            opts: [
+              'SCD Typ 1 (Überschreiben)',
+              'SCD Typ 2 (Neue Zeile)',
+              'SCD Typ 3 (Zusätzliche Spalte)',
+              'SCD Typ 0 (Keine Änderung)',
+            ],
+            correct: 1,
+            exp: 'SCD Typ 2 fügt bei jeder Änderung eine neue Zeile mit Gültigkeitszeitraum (valid_from, valid_to) ein. Das ist der Standard im Data Warehousing, weil die vollständige Historie erhalten bleibt.',
+          },
+          {
+            q: 'Welche der folgenden ist KEINE Dimension im DAMA DMBOK-Datenqualitätsframework?',
+            opts: [
+              'Accuracy (Korrektheit)',
+              'Scalability (Skalierbarkeit)',
+              'Completeness (Vollständigkeit)',
+              'Timeliness (Aktualität)',
+            ],
+            correct: 1,
+            exp: 'Scalability ist keine Datenqualitätsdimension. Die sechs DAMA DMBOK-Dimensionen sind: Accuracy, Completeness, Consistency, Timeliness, Validity und Uniqueness.',
           },
         ],
 
+        // Zusammenfassung
+        summaryTitle: 'Zusammenfassung',
+        summaryItems: [
+          'Datenquellen werden nach Struktur klassifiziert: strukturiert (CSV, SQL), semi-strukturiert (JSON, XML, APIs), unstrukturiert (PDFs, Bilder, Logs) und Cloud-Quellen (Snowflake, BigQuery, Azure).',
+          'Das Star Schema (Kimball, 1996) ist das verbreitetste Modell im Data Warehousing: eine zentrale Faktentabelle mit Kennzahlen, umgeben von denormalisierten Dimensionstabellen.',
+          'Das Snowflake Schema normalisiert Dimensionen in mehrere Tabellen – spart Speicher, erfordert aber mehr JOINs. Kimball (Bottom-Up) und Inmon (Top-Down, 1992) beschreiben die zwei grundlegenden DWH-Architekturschulen.',
+          'Slowly Changing Dimensions (SCD) behandeln zeitliche Änderungen in Dimensionsdaten: Typ\u00A01 (Überschreiben), Typ\u00A02 (neue Zeile mit Gültigkeitszeitraum) und Typ\u00A03 (zusätzliche Spalte).',
+          'Datenqualität wird nach dem DAMA DMBOK-Framework in sechs Dimensionen bewertet: Accuracy, Completeness, Consistency, Timeliness, Validity und Uniqueness.',
+          'Häufige Qualitätsprobleme (Nullwerte, Duplikate, falsche Datentypen, Inkonsistenzen) werden mit pandas (Python) oder Power Query (Power BI) behoben.',
+          'GraphQL ist eine API-Abfragesprache (kein Datenformat) – die Antworten werden als JSON zurückgegeben.',
+        ],
         navPrev: '\u2190 Lab 01: Grundlagen',
         navNext: 'Lab 03: KPIs \u2192',
       },
@@ -394,6 +451,7 @@
           { href: '#qualitaet',     label: 'Data Quality' },
           { href: '#youtube',       label: 'Resources' },
           { href: '#quiz',          label: 'Quiz' },
+          { href: '#zusammenfassung', label: 'Summary' },
         ],
         backLabel: '\u2190 Overview',
 
@@ -414,10 +472,16 @@
             desc: 'Flexible schema, hierarchical or nested structures.',
           },
           {
+            label: 'Unstructured',
+            color: '#7C3AED',
+            examples: ['PDF documents', 'Emails', 'Images', 'Log files', 'Audio/Video'],
+            desc: 'No fixed schema. Requires NLP, OCR or AI processing. Growing relevance through LLMs.',
+          },
+          {
             label: 'Cloud Sources',
             color: '#3B82F6',
-            examples: ['Google Sheets', 'Azure Blob Storage', 'SharePoint', 'Snowflake (Cloud Data Warehouse)'],
-            desc: 'Online services with API access or native connector support.',
+            examples: ['Google Sheets', 'Azure Blob Storage', 'SharePoint', 'Snowflake', 'BigQuery'],
+            desc: 'Online services with API access or native connector support. Can contain structured and unstructured data.',
           },
         ],
         s1PowerBITitle: 'Loading Data in Power BI',
@@ -442,13 +506,19 @@
           ['Performance', 'Faster queries', 'Slightly slower due to JOINs'],
           ['Storage', 'Higher requirement', 'Lower requirement'],
           ['Complexity', 'Easy to understand', 'More complex structure'],
-          ['Usage', 'Power BI, Tableau', 'Snowflake DW, BigQuery'],
+          ['Usage', 'Standard in Power BI, Tableau, Looker', 'Classic in normalised DWH (e.g. Inmon approach)'],
         ],
+        s2KimballInmonTitle: 'Kimball vs. Inmon',
+        s2KimballInmonText: 'Ralph Kimball (Bottom-Up, 1996): Business-area data marts with star schema, quick to productionise. Bill Inmon (Top-Down, 1992): Enterprise-wide normalised DWH (3NF), then derive data marts. Modern practice: Hybrid approaches with Dan Linstedt\u2019s Data Vault 2.0.',
+        s2SCDTitle: 'Slowly Changing Dimensions (SCD)',
+        s2SCDText: 'Dimension data changes over time (e.g. customer address, product category). SCD types: Type\u00A01 = Overwrite (no history), Type\u00A02 = New row with validity period (standard in DWH), Type\u00A03 = Additional column for the old value.',
         s2TipTitle: 'Recommendation',
-        s2TipText: 'For most BI projects, the star schema is the better choice: it is easier to understand, easier to maintain, and delivers faster query times in most BI tools.',
+        s2TipText: 'For most BI projects, the star schema (Kimball approach) is the better choice: it is easier to understand, easier to maintain, and delivers faster query times in most BI tools.',
 
         s3Title: 'Data Quality',
         s3Desc: 'Poor data quality is the most common cause of incorrect BI results. Identifying and fixing quality issues is a central part of every ETL process.',
+        s3FrameworkTitle: 'Data Quality Dimensions (DAMA DMBOK)',
+        s3FrameworkText: 'The DAMA DMBOK framework defines six core dimensions: Accuracy, Completeness, Consistency, Timeliness, Validity, and Uniqueness. These dimensions form the basis for systematic data quality management.',
         s3ProblemsTitle: 'Common Data Quality Issues',
         s3Problems: [
           { name: 'Null values', desc: 'Missing values in required fields (e.g. no revenue entered)', fix: 'Remove rows or fill with default value' },
@@ -518,8 +588,52 @@
             correct: 2,
             exp: 'GraphQL is an API query language (not a data format). Responses from a GraphQL API are returned as JSON.',
           },
+          {
+            q: 'Which DWH architecture approach uses star schemas in business-area data marts?',
+            opts: [
+              'Bill Inmon (Top-Down)',
+              'Ralph Kimball (Bottom-Up)',
+              'Dan Linstedt (Data Vault)',
+              'Edgar F. Codd (Relational)',
+            ],
+            correct: 1,
+            exp: 'Ralph Kimball (1996) advocates the Bottom-Up approach: business-area data marts with star schema that are quick to productionise. Inmon prefers an enterprise-wide normalised DWH.',
+          },
+          {
+            q: 'Which SCD type stores historical changes with a validity period?',
+            opts: [
+              'SCD Type 1 (Overwrite)',
+              'SCD Type 2 (New row)',
+              'SCD Type 3 (Additional column)',
+              'SCD Type 0 (No change)',
+            ],
+            correct: 1,
+            exp: 'SCD Type 2 adds a new row with validity period (valid_from, valid_to) for each change. This is the standard in data warehousing because the complete history is preserved.',
+          },
+          {
+            q: 'Which of the following is NOT a dimension in the DAMA DMBOK data quality framework?',
+            opts: [
+              'Accuracy',
+              'Scalability',
+              'Completeness',
+              'Timeliness',
+            ],
+            correct: 1,
+            exp: 'Scalability is not a data quality dimension. The six DAMA DMBOK dimensions are: Accuracy, Completeness, Consistency, Timeliness, Validity, and Uniqueness.',
+          },
         ],
 
+        // Summary
+        summaryTitle: 'Summary',
+        summaryItems: [
+          'Data sources are classified by structure: structured (CSV, SQL), semi-structured (JSON, XML, APIs), unstructured (PDFs, images, logs) and cloud sources (Snowflake, BigQuery, Azure).',
+          'The Star Schema (Kimball, 1996) is the most common model in data warehousing: a central fact table with measures, surrounded by denormalised dimension tables.',
+          'The Snowflake Schema normalises dimensions into multiple tables – saves storage but requires more JOINs. Kimball (Bottom-Up) and Inmon (Top-Down, 1992) describe the two fundamental DWH architecture schools.',
+          'Slowly Changing Dimensions (SCD) handle temporal changes in dimension data: Type\u00A01 (overwrite), Type\u00A02 (new row with validity period) and Type\u00A03 (additional column).',
+          'Data quality is assessed using the DAMA DMBOK framework across six dimensions: Accuracy, Completeness, Consistency, Timeliness, Validity, and Uniqueness.',
+          'Common quality issues (null values, duplicates, wrong data types, inconsistencies) are fixed with pandas (Python) or Power Query (Power BI).',
+          'GraphQL is an API query language (not a data format) – responses are returned as JSON.',
+        ],
         navPrev: '\u2190 Lab 01: Foundations',
         navNext: 'Lab 03: KPIs \u2192',
       },
@@ -537,7 +651,7 @@
       };
 
       useEffect(() => {
-        const sections = ['datenquellen', 'modellierung', 'qualitaet', 'youtube', 'quiz'];
+        const sections = ['datenquellen', 'modellierung', 'qualitaet', 'youtube', 'quiz', 'zusammenfassung'];
         const handler = () => {
           for (let i = sections.length - 1; i >= 0; i--) {
             const el = document.getElementById(sections[i]);
@@ -633,7 +747,7 @@
 
               <h3 style={{ marginTop: '2rem' }}>{tx.s1PythonTitle}</h3>
               <p style={{ marginBottom: '0.5rem' }}>{tx.s1PythonDesc}</p>
-              <CodeBlock code={tx.s1CodePython} />
+              <CodeBlock code={tx.s1CodePython} lang={lang} />
             </section>
 
             {/* ── Section 2: Datenmodellierung ── */}
@@ -645,7 +759,7 @@
               <h3 style={{ marginTop: '1.5rem' }}>{tx.s2StarTitle}</h3>
               <p>{tx.s2StarDesc}</p>
 
-              <CodeBlock code={tx.s2DiagramCode} />
+              <CodeBlock code={tx.s2DiagramCode} lang={lang} />
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', margin: '1.5rem 0' }}>
                 <div className="concept-box" style={{ margin: 0 }}>
@@ -670,6 +784,16 @@
                 </tbody>
               </table>
 
+              <h3 style={{ marginTop: '2rem' }}>{tx.s2KimballInmonTitle}</h3>
+              <div className="concept-box">
+                <p style={{ margin: 0, fontSize: '0.9rem', lineHeight: 1.7 }}>{tx.s2KimballInmonText}</p>
+              </div>
+
+              <h3 style={{ marginTop: '2rem' }}>{tx.s2SCDTitle}</h3>
+              <div className="tip-box">
+                <p style={{ margin: 0, fontSize: '0.9rem', lineHeight: 1.7 }}>{tx.s2SCDText}</p>
+              </div>
+
               <div className="info-box" style={{ marginTop: '1.5rem' }}>
                 <h4 style={{ margin: '0 0 0.4rem', color: 'var(--col-primary)' }}>{tx.s2TipTitle}</h4>
                 <p style={{ margin: 0 }}>{tx.s2TipText}</p>
@@ -681,6 +805,11 @@
               <h2>{tx.s3Title}</h2>
               <div className="bauhaus-accent-line"></div>
               <p>{tx.s3Desc}</p>
+
+              <div className="info-box" style={{ marginTop: '1rem' }}>
+                <h4 style={{ margin: '0 0 0.4rem', color: 'var(--col-primary)' }}>{tx.s3FrameworkTitle}</h4>
+                <p style={{ margin: 0, fontSize: '0.9rem', lineHeight: 1.7 }}>{tx.s3FrameworkText}</p>
+              </div>
 
               <h3 style={{ marginTop: '1.5rem' }}>{tx.s3ProblemsTitle}</h3>
               <div style={{ margin: '1rem 0' }}>
@@ -708,7 +837,7 @@
               </div>
 
               <h3 style={{ marginTop: '2rem' }}>{tx.s3PandasTitle}</h3>
-              <CodeBlock code={tx.s3CodePandas} />
+              <CodeBlock code={tx.s3CodePandas} lang={lang} />
 
               <h3 style={{ marginTop: '2rem' }}>{tx.s3PowerBITitle}</h3>
               <div className="concept-box">
@@ -757,6 +886,18 @@
                   explanation={q.exp}
                 />
               ))}
+            </section>
+
+            {/* ── Section 6: Zusammenfassung ── */}
+            <section id="zusammenfassung" className="section-block">
+              <span className="bauhaus-badge">{lang === 'de' ? 'ZUSAMMENFASSUNG' : 'SUMMARY'}</span>
+              <div className="bauhaus-accent-line" />
+              <h2>{tx.summaryTitle}</h2>
+              <div className="concept-box">
+                <ul style={{ margin: 0, paddingLeft: '1.2rem', lineHeight: 1.85 }}>
+                  {tx.summaryItems.map((item, i) => <li key={i} style={{ fontSize: '0.92rem', marginBottom: '0.3rem' }}>{item}</li>)}
+                </ul>
+              </div>
             </section>
 
             {/* ── Nav Bottom ── */}
