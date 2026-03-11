@@ -146,6 +146,7 @@
     [data-lang="en"] .concept-box { border-left-color: #0D9488; background: rgba(13,148,136,0.08); }
     [data-lang="en"] .info-box { border-left-color: #0D9488; background: #F0FDFA; }
     [data-lang="en"] .challenge-box { border-left-color: #0D9488; }
+    .quiz-option:hover:not(:disabled) { border-color: #2563EB; background: rgba(37,99,235,0.04); }
     [data-lang="en"] .quiz-option:hover:not(:disabled) { border-color: #0D9488; background: rgba(13,148,136,0.04); }
     [data-lang="en"] .footer { background: #0D9488; }
   </style>
@@ -157,7 +158,7 @@
     const { useState, useEffect } = React;
 
     // ─── CodeBlock Component ──────────────────────────────────────────────────
-    function CodeBlock({ code }) {
+    function CodeBlock({ code, lang }) {
       const [copied, setCopied] = React.useState(false);
       const copy = () => {
         navigator.clipboard.writeText(code).then(() => {
@@ -174,6 +175,8 @@
           setTimeout(() => setCopied(false), 1500);
         });
       };
+      const labelCopy = lang === 'en' ? 'Copy' : 'Kopieren';
+      const labelDone = lang === 'en' ? '\u2713 Copied' : '\u2713 Kopiert';
       return (
         <div style={{ position: 'relative', marginBottom: '1rem' }}>
           <pre className="code-block">{code}</pre>
@@ -185,8 +188,47 @@
             padding: '0.2rem 0.5rem', fontSize: '0.75rem',
             cursor: 'pointer', fontFamily: 'Space Grotesk, sans-serif'
           }}>
-            {copied ? '\u2713 Kopiert' : 'Kopieren'}
+            {copied ? labelDone : labelCopy}
           </button>
+        </div>
+      );
+    }
+
+    // ─── QuizQuestion Component ──────────────────────────────────────────────
+    function QuizQuestion({ question, index, lang }) {
+      const [selected, setSelected] = React.useState(null);
+      const isCorrect = selected === question.correct;
+      return (
+        <div style={{ marginBottom: '1.5rem', padding: '1.25rem', background: 'white', border: '1px solid #E5E7EB', borderRadius: '10px' }}>
+          <p style={{ fontWeight: 700, fontFamily: "'Space Grotesk', sans-serif", margin: '0 0 0.75rem', color: '#1A1A1A' }}>
+            {index + 1}. {question.q}
+          </p>
+          <div style={{ display: 'grid', gap: '0.5rem' }}>
+            {question.options.map((opt, oi) => {
+              let bg = 'white'; let border = '#D1D5DB'; let color = '#374151';
+              if (selected !== null) {
+                if (oi === question.correct) { bg = '#D1FAE5'; border = '#059669'; color = '#065F46'; }
+                else if (oi === selected) { bg = '#FEE2E2'; border = '#DC2626'; color = '#991B1B'; }
+              }
+              return (
+                <button key={oi} disabled={selected !== null} onClick={() => setSelected(oi)}
+                  className="quiz-option"
+                  style={{
+                    textAlign: 'left', padding: '0.6rem 1rem', fontSize: '0.88rem',
+                    background: bg, border: '1.5px solid ' + border, borderRadius: '6px',
+                    color, cursor: selected !== null ? 'default' : 'pointer',
+                    fontFamily: 'inherit', transition: 'border-color 0.15s, background 0.15s'
+                  }}>
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+          {selected !== null && (
+            <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: isCorrect ? '#059669' : '#DC2626' }}>
+              {isCorrect ? (lang === 'en' ? '\u2713 Correct!' : '\u2713 Richtig!') : (lang === 'en' ? '\u2717 Incorrect' : '\u2717 Falsch')}
+            </p>
+          )}
         </div>
       );
     }
@@ -203,7 +245,7 @@ fig = px.bar(
     x='Category',
     y='Sales',
     title='Umsatz nach Kategorie',
-    color_discrete_sequence=['var(--col-accent)']
+    color_discrete_sequence=['#2563EB']
 )
 fig.update_layout(
     plot_bgcolor='white',
@@ -247,7 +289,7 @@ server = app.server  # Nötig für gunicorn app:server
 df = pd.read_csv('superstore.csv', encoding='latin-1')
 
 app.layout = html.Div([
-    html.H1('Sales Dashboard', style={'fontFamily': 'Space Grotesk', 'color': 'var(--col-primary)'}),
+    html.H1('Sales Dashboard', style={'fontFamily': 'Space Grotesk', 'color': '#1E3A8A'}),
 
     html.Label('Kategorie auswählen:'),
     dcc.Dropdown(
@@ -274,7 +316,7 @@ def update_bar(category):
         x='Sub-Category',
         y='Sales',
         title=f'Umsatz nach Sub-Kategorie: {category}',
-        color_discrete_sequence=['var(--col-accent)']
+        color_discrete_sequence=['#2563EB']
     )
     return fig
 
@@ -332,6 +374,8 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
           { href: '#plotly-dash',       label: 'Plotly Dash' },
           { href: '#vergleich',         label: 'Power BI vs. Dash' },
           { href: '#youtube',           label: 'Ressourcen' },
+          { href: '#quiz',             label: 'Quiz' },
+          { href: '#zusammenfassung',  label: 'Zusammenfassung' },
         ],
         backLabel: '\u2190 Übersicht',
 
@@ -366,6 +410,11 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
           ['Geografisch', 'Choropleth / Karte'],
           ['KPI-Einzelwert', 'Card / Scorecard'],
         ],
+        s1TufteRef: 'Quellenverweis: Edward Tufte, "The Visual Display of Quantitative Information" (1983) \u2013 das Standardwerk zur datengetriebenen Visualisierung. Erg\u00E4nzend: Stephen Few, "Information Dashboard Design" (2006) \u2013 speziell f\u00FCr Dashboard-Gestaltung.',
+        s1GestaltTitle: 'Gestalt-Prinzipien im Dashboard-Design',
+        s1GestaltText: 'Die Gestalt-Prinzipien (N\u00E4he, \u00C4hnlichkeit, Geschlossenheit, Kontinuit\u00E4t) beeinflussen, wie Nutzer visuelle Gruppen wahrnehmen. KPIs, die zusammengeh\u00F6ren, sollten r\u00E4umlich nahe platziert werden (N\u00E4he); gleiche Chart-Typen signalisieren Vergleichbarkeit (\u00C4hnlichkeit).',
+        s1AccessTitle: 'Barrierefreiheit',
+        s1AccessText: 'Ca. 8\u00A0% der M\u00E4nner haben eine Rot-Gr\u00FCn-Schw\u00E4che. Verwenden Sie farbenblind-sichere Paletten (z.\u00A0B. Viridis, Cividis) und erg\u00E4nzen Sie Farben durch Muster oder Beschriftungen. WCAG 2.1 empfiehlt ein Kontrastverh\u00E4ltnis von mindestens 4,5:1.',
         s1TipTitle: 'Wann KEIN Tortendiagramm?',
         s1TipText: 'Bei mehr als 4 Kategorien oder wenn exakte Wertevergleiche wichtig sind. Das menschliche Auge vergleicht Winkel schlecht. Ein horizontales Balkendiagramm ist fast immer besser.',
 
@@ -426,6 +475,60 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
             url: 'https://www.youtube.com/@RobMulla',
             desc: 'Umfangreiche Tutorials zu Plotly Express und Python Data Visualization.',
           },
+          {
+            title: 'Streamlit',
+            url: 'https://www.youtube.com/@Streamlit',
+            desc: 'Offizieller Streamlit-Kanal. Tutorials, neue Features und Community-Showcases.',
+          },
+        ],
+
+        // Streamlit note
+        s4StreamlitTitle: 'Alternative: Streamlit',
+        s4StreamlitText: 'Streamlit (seit 2019, von Snowflake \u00FCbernommen 2022) ist eine beliebte Dash-Alternative mit noch einfacherer Syntax. Ideal f\u00FCr schnelle Prototypen und ML-Demos. Dash bleibt leistungsst\u00E4rker f\u00FCr komplexe Multi-Page-Apps und Enterprise-Deployments.',
+        // Quiz
+        quizTitle: 'Quiz',
+        quizQuestions: [
+          {
+            q: 'Was beschreibt das Data-Ink-Ratio-Prinzip (Tufte)?',
+            options: ['M\u00F6glichst viele Farben verwenden', 'Nur n\u00F6tige visuelle Elemente \u2013 jede Tinte muss Daten repr\u00E4sentieren', 'Alle Achsen entfernen', 'Immer 3D-Charts verwenden'],
+            correct: 1,
+          },
+          {
+            q: 'Warum sind Tortendiagramme bei > 4 Kategorien problematisch?',
+            options: ['Sie laden langsamer', 'Das menschliche Auge vergleicht Winkel schlecht', 'Plotly unterst\u00FCtzt sie nicht', 'Sie ben\u00F6tigen zu viel Speicher'],
+            correct: 1,
+          },
+          {
+            q: 'Was ist ein Callback in Plotly Dash?',
+            options: ['Ein CSS-Selektor', 'Eine Datenbankabfrage', 'Eine reaktive Funktion: Input \u2192 Python \u2192 Output', 'Ein Plotly-Chart-Typ'],
+            correct: 2,
+          },
+          {
+            q: 'Welches Gestalt-Prinzip empfiehlt, zusammengeh\u00F6rige KPIs r\u00E4umlich nah zu platzieren?',
+            options: ['Kontinuit\u00E4t', 'N\u00E4he (Proximity)', '\u00C4hnlichkeit', 'Geschlossenheit'],
+            correct: 1,
+          },
+          {
+            q: 'Welcher Production-Server ersetzt den Dash-Dev-Server?',
+            options: ['nginx', 'Apache', 'Gunicorn', 'Traefik'],
+            correct: 2,
+          },
+          {
+            q: 'Ca. wie viel Prozent der M\u00E4nner haben eine Rot-Gr\u00FCn-Schw\u00E4che?',
+            options: ['1 %', '4 %', '8 %', '15 %'],
+            correct: 2,
+          },
+        ],
+        // Zusammenfassung
+        summaryTitle: 'Zusammenfassung',
+        summaryItems: [
+          'Gute Dashboards folgen dem Data-Ink-Ratio (Tufte) und der 5-Sekunden-Regel.',
+          'Gestalt-Prinzipien (N\u00E4he, \u00C4hnlichkeit) strukturieren die visuelle Wahrnehmung.',
+          'Barrierefreiheit erfordert farbenblind-sichere Paletten und ausreichende Kontraste (WCAG 2.1).',
+          'Plotly Express erm\u00F6glicht interaktive Charts mit wenigen Zeilen Python.',
+          'Plotly Dash verbindet ein Flask-Backend mit einem React-Frontend \u00FCber deklarative Callbacks.',
+          'Power BI eignet sich f\u00FCr schnelle Reports; Dash f\u00FCr flexible, selbst gehostete Web-Apps.',
+          'Production-Deployment: Gunicorn \u2192 Docker \u2192 Traefik (HTTPS).',
         ],
 
         navPrev: '\u2190 Lab 03: KPIs',
@@ -448,6 +551,8 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
           { href: '#plotly-dash',       label: 'Plotly Dash' },
           { href: '#vergleich',         label: 'Power BI vs. Dash' },
           { href: '#youtube',           label: 'Resources' },
+          { href: '#quiz',             label: 'Quiz' },
+          { href: '#zusammenfassung',  label: 'Summary' },
         ],
         backLabel: '\u2190 Overview',
 
@@ -482,6 +587,11 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
           ['Geographic distribution', 'Choropleth / Map'],
           ['Single KPI value', 'Card / Scorecard'],
         ],
+        s1TufteRef: 'Source reference: Edward Tufte, "The Visual Display of Quantitative Information" (1983) \u2013 the seminal work on data-driven visualisation. Supplementary: Stephen Few, "Information Dashboard Design" (2006) \u2013 specifically for dashboard design.',
+        s1GestaltTitle: 'Gestalt Principles in Dashboard Design',
+        s1GestaltText: 'The Gestalt principles (proximity, similarity, closure, continuity) influence how users perceive visual groups. KPIs that belong together should be placed close to each other (proximity); similar chart types signal comparability (similarity).',
+        s1AccessTitle: 'Accessibility',
+        s1AccessText: 'Approx. 8% of men have a red-green colour deficiency. Use colourblind-safe palettes (e.g. Viridis, Cividis) and supplement colour with patterns or labels. WCAG 2.1 recommends a minimum contrast ratio of 4.5:1.',
         s1TipTitle: 'When NOT to use a pie chart?',
         s1TipText: 'When more than 4 categories exist or when exact value comparisons matter. The human eye is poor at comparing angles. A horizontal bar chart is almost always better.',
 
@@ -542,6 +652,60 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
             url: 'https://www.youtube.com/@RobMulla',
             desc: 'Extensive tutorials on Plotly Express and Python data visualization.',
           },
+          {
+            title: 'Streamlit',
+            url: 'https://www.youtube.com/@Streamlit',
+            desc: 'Official Streamlit channel. Tutorials, new features and community showcases.',
+          },
+        ],
+
+        // Streamlit note
+        s4StreamlitTitle: 'Alternative: Streamlit',
+        s4StreamlitText: 'Streamlit (since 2019, acquired by Snowflake in 2022) is a popular Dash alternative with even simpler syntax. Ideal for rapid prototypes and ML demos. Dash remains more powerful for complex multi-page apps and enterprise deployments.',
+        // Quiz
+        quizTitle: 'Quiz',
+        quizQuestions: [
+          {
+            q: 'What does Tufte\'s Data-Ink Ratio principle describe?',
+            options: ['Use as many colours as possible', 'Only necessary visual elements \u2013 every drop of ink must represent data', 'Remove all axes', 'Always use 3D charts'],
+            correct: 1,
+          },
+          {
+            q: 'Why are pie charts problematic with > 4 categories?',
+            options: ['They load more slowly', 'The human eye is poor at comparing angles', 'Plotly doesn\'t support them', 'They require too much memory'],
+            correct: 1,
+          },
+          {
+            q: 'What is a Callback in Plotly Dash?',
+            options: ['A CSS selector', 'A database query', 'A reactive function: Input \u2192 Python \u2192 Output', 'A Plotly chart type'],
+            correct: 2,
+          },
+          {
+            q: 'Which Gestalt principle recommends placing related KPIs close together?',
+            options: ['Continuity', 'Proximity', 'Similarity', 'Closure'],
+            correct: 1,
+          },
+          {
+            q: 'Which production server replaces the Dash dev server?',
+            options: ['nginx', 'Apache', 'Gunicorn', 'Traefik'],
+            correct: 2,
+          },
+          {
+            q: 'Approximately what percentage of men have a red-green colour deficiency?',
+            options: ['1%', '4%', '8%', '15%'],
+            correct: 2,
+          },
+        ],
+        // Summary
+        summaryTitle: 'Summary',
+        summaryItems: [
+          'Good dashboards follow the Data-Ink Ratio (Tufte) and the 5-second rule.',
+          'Gestalt principles (proximity, similarity) structure visual perception.',
+          'Accessibility requires colourblind-safe palettes and sufficient contrast (WCAG 2.1).',
+          'Plotly Express enables interactive charts with just a few lines of Python.',
+          'Plotly Dash connects a Flask backend with a React frontend via declarative callbacks.',
+          'Power BI suits quick reports; Dash suits flexible, self-hosted web apps.',
+          'Production deployment: Gunicorn \u2192 Docker \u2192 Traefik (HTTPS).',
         ],
 
         navPrev: '\u2190 Lab 03: KPIs',
@@ -561,7 +725,7 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
       };
 
       useEffect(() => {
-        const sections = ['design-prinzipien', 'plotly-express', 'plotly-dash', 'vergleich', 'youtube'];
+        const sections = ['design-prinzipien', 'plotly-express', 'plotly-dash', 'vergleich', 'youtube', 'quiz', 'zusammenfassung'];
         const handler = () => {
           for (let i = sections.length - 1; i >= 0; i--) {
             const el = document.getElementById(sections[i]);
@@ -667,6 +831,23 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
                 <strong style={{ color: 'var(--col-primary)' }}>{tx.s1TipTitle}</strong>
                 <p style={{ margin: '0.4rem 0 0', fontSize: '0.9rem', color: '#1e40af' }}>{tx.s1TipText}</p>
               </div>
+
+              {/* Gestalt Principles */}
+              <div className="concept-box" style={{ marginTop: '1.5rem' }}>
+                <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.s1GestaltTitle}</h4>
+                <p style={{ margin: 0 }}>{tx.s1GestaltText}</p>
+              </div>
+
+              {/* Accessibility */}
+              <div className="info-box" style={{ marginTop: '1rem' }}>
+                <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.s1AccessTitle}</h4>
+                <p style={{ margin: 0 }}>{tx.s1AccessText}</p>
+              </div>
+
+              {/* Tufte / Few reference */}
+              <div className="tip-box" style={{ marginTop: '1rem' }}>
+                <p style={{ margin: 0, fontSize: '0.875rem' }}>{tx.s1TufteRef}</p>
+              </div>
             </section>
 
             {/* ── Section 2: Plotly Express ── */}
@@ -676,13 +857,13 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
               <p>{tx.s2Desc}</p>
 
               <h3 style={{ marginTop: '1.5rem' }}>{tx.s2Code1Title}</h3>
-              <CodeBlock code={CODE_PX_BAR} />
+              <CodeBlock code={CODE_PX_BAR} lang={lang} />
 
               <h3 style={{ marginTop: '1.5rem' }}>{tx.s2Code2Title}</h3>
-              <CodeBlock code={CODE_PX_LINE} />
+              <CodeBlock code={CODE_PX_LINE} lang={lang} />
 
               <h3 style={{ marginTop: '1.5rem' }}>{tx.s2Code3Title}</h3>
-              <CodeBlock code={CODE_PX_SCATTER} />
+              <CodeBlock code={CODE_PX_SCATTER} lang={lang} />
             </section>
 
             {/* ── Section 3: Plotly Dash ── */}
@@ -702,14 +883,19 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
               </div>
 
               <h3 style={{ marginTop: '2rem' }}>{tx.s3AppTitle}</h3>
-              <CodeBlock code={CODE_DASH_APP} />
+              <CodeBlock code={CODE_DASH_APP} lang={lang} />
 
               <h3 style={{ marginTop: '1.5rem' }}>{tx.s3InstallTitle}</h3>
               <div className="install-box">
                 <p style={{ margin: '0 0 0.5rem', fontWeight: 700, color: '#065F46', fontSize: '0.85rem', fontFamily: "'Space Grotesk', sans-serif" }}>
                   {'Terminal'}
                 </p>
-                <CodeBlock code={CODE_INSTALL} />
+                <CodeBlock code={CODE_INSTALL} lang={lang} />
+              </div>
+
+              {/* Google Colab note */}
+              <div className="info-box" style={{ marginTop: '1rem' }}>
+                <p style={{ margin: 0, fontSize: '0.875rem' }}>{tx.s3ColabNote}</p>
               </div>
 
               <h3 style={{ marginTop: '2.5rem' }}>{tx.s3DeployTitle}</h3>
@@ -719,11 +905,11 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
 
               <h4 style={{ marginTop: '1.5rem', color: 'var(--col-primary)' }}>{tx.s3GunicornTitle}</h4>
               <p style={{ margin: '0.25rem 0 0.5rem', fontSize: '0.9rem', color: '#374151' }}>{tx.s3GunicornDesc}</p>
-              <CodeBlock code={CODE_GUNICORN} />
+              <CodeBlock code={CODE_GUNICORN} lang={lang} />
 
               <h4 style={{ marginTop: '1.5rem', color: 'var(--col-primary)' }}>{tx.s3DockerTitle}</h4>
               <p style={{ margin: '0.25rem 0 0.5rem', fontSize: '0.9rem', color: '#374151' }}>{tx.s3DockerDesc}</p>
-              <CodeBlock code={CODE_DOCKERFILE} />
+              <CodeBlock code={CODE_DOCKERFILE} lang={lang} />
 
               <div className="tip-box" style={{ marginTop: '1rem' }}>
                 <strong style={{ color: 'var(--col-primary)' }}>{tx.s3TraefikTitle}:</strong>{' '}
@@ -761,6 +947,12 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
               <div className="tip-box" style={{ marginTop: '1rem' }}>
                 <p style={{ margin: 0, fontSize: '0.875rem', color: '#374151' }}><em>{tx.s4VendorNote}</em></p>
               </div>
+
+              {/* Streamlit alternative */}
+              <div className="info-box" style={{ marginTop: '1rem' }}>
+                <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.s4StreamlitTitle}</h4>
+                <p style={{ margin: 0 }}>{tx.s4StreamlitText}</p>
+              </div>
             </section>
 
             {/* ── Section 5: YouTube-Ressourcen ── */}
@@ -781,6 +973,28 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
                     <p style={{ margin: '0.25rem 0 0', fontSize: '0.875rem', color: '#78350F' }}>{res.desc}</p>
                   </div>
                 ))}
+              </div>
+            </section>
+
+            {/* ── Section 6: Quiz ── */}
+            <section id="quiz" className="section-block">
+              <h2>{tx.quizTitle}</h2>
+              <div className="bauhaus-accent-line"></div>
+              {tx.quizQuestions.map((qq, qi) => (
+                <QuizQuestion key={qi} question={qq} index={qi} lang={lang} />
+              ))}
+            </section>
+
+            {/* ── Section 7: Zusammenfassung ── */}
+            <section id="zusammenfassung" className="section-block">
+              <h2>{tx.summaryTitle}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <div className="concept-box">
+                <ol style={{ margin: 0, paddingLeft: '1.25rem' }}>
+                  {tx.summaryItems.map((item, i) => (
+                    <li key={i} style={{ fontSize: '0.9rem', lineHeight: 1.7, color: '#1A1A1A', marginBottom: '0.35rem' }}>{item}</li>
+                  ))}
+                </ol>
               </div>
             </section>
 
