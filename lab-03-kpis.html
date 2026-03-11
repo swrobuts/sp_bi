@@ -145,6 +145,7 @@
     [data-lang="en"] .concept-box { border-left-color: #0D9488; background: rgba(13,148,136,0.08); }
     [data-lang="en"] .info-box { border-left-color: #0D9488; background: #F0FDFA; }
     [data-lang="en"] .challenge-box { border-left-color: #0D9488; }
+    .quiz-option:hover:not(:disabled) { border-color: #2563EB; background: rgba(37,99,235,0.04); }
     [data-lang="en"] .quiz-option:hover:not(:disabled) { border-color: #0D9488; background: rgba(13,148,136,0.04); }
     [data-lang="en"] .footer { background: #0D9488; }
   </style>
@@ -156,7 +157,7 @@
     const { useState, useEffect } = React;
 
     // ─── CodeBlock Component ──────────────────────────────────────────────────
-    function CodeBlock({ code }) {
+    function CodeBlock({ code, lang }) {
       const [copied, setCopied] = React.useState(false);
       const copy = () => {
         navigator.clipboard.writeText(code).then(() => {
@@ -173,6 +174,8 @@
           setTimeout(() => setCopied(false), 1500);
         });
       };
+      const labelCopy = lang === 'en' ? 'Copy' : 'Kopieren';
+      const labelDone = lang === 'en' ? '\u2713 Copied' : '\u2713 Kopiert';
       return (
         <div style={{ position: 'relative', marginBottom: '1rem' }}>
           <pre className="code-block">{code}</pre>
@@ -184,8 +187,47 @@
             padding: '0.2rem 0.5rem', fontSize: '0.75rem',
             cursor: 'pointer', fontFamily: 'Space Grotesk, sans-serif'
           }}>
-            {copied ? '\u2713 Kopiert' : 'Kopieren'}
+            {copied ? labelDone : labelCopy}
           </button>
+        </div>
+      );
+    }
+
+    // ─── QuizQuestion Component ──────────────────────────────────────────────
+    function QuizQuestion({ question, index, lang }) {
+      const [selected, setSelected] = React.useState(null);
+      const isCorrect = selected === question.correct;
+      return (
+        <div style={{ marginBottom: '1.5rem', padding: '1.25rem', background: 'white', border: '1px solid #E5E7EB', borderRadius: '10px' }}>
+          <p style={{ fontWeight: 700, fontFamily: "'Space Grotesk', sans-serif", margin: '0 0 0.75rem', color: '#1A1A1A' }}>
+            {index + 1}. {question.q}
+          </p>
+          <div style={{ display: 'grid', gap: '0.5rem' }}>
+            {question.options.map((opt, oi) => {
+              let bg = 'white'; let border = '#D1D5DB'; let color = '#374151';
+              if (selected !== null) {
+                if (oi === question.correct) { bg = '#D1FAE5'; border = '#059669'; color = '#065F46'; }
+                else if (oi === selected) { bg = '#FEE2E2'; border = '#DC2626'; color = '#991B1B'; }
+              }
+              return (
+                <button key={oi} disabled={selected !== null} onClick={() => setSelected(oi)}
+                  className="quiz-option"
+                  style={{
+                    textAlign: 'left', padding: '0.6rem 1rem', fontSize: '0.88rem',
+                    background: bg, border: '1.5px solid ' + border, borderRadius: '6px',
+                    color, cursor: selected !== null ? 'default' : 'pointer',
+                    fontFamily: 'inherit', transition: 'border-color 0.15s, background 0.15s'
+                  }}>
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+          {selected !== null && (
+            <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: isCorrect ? '#059669' : '#DC2626' }}>
+              {isCorrect ? (lang === 'en' ? '\u2713 Correct!' : '\u2713 Richtig!') : (lang === 'en' ? '\u2717 Incorrect' : '\u2717 Falsch')}
+            </p>
+          )}
         </div>
       );
     }
@@ -208,6 +250,8 @@
           { href: '#kpi-tabelle',      label: 'KPI-Tabelle' },
           { href: '#filter-kontext',   label: 'Filter-Kontext' },
           { href: '#youtube',          label: 'Ressourcen' },
+          { href: '#quiz',             label: 'Quiz' },
+          { href: '#zusammenfassung',  label: 'Zusammenfassung' },
         ],
         backLabel: '\u2190 \u00DCbersicht',
 
@@ -251,11 +295,11 @@
         s3Headers: ['KPI', 'Formel', 'DAX-Funktion', 'Python (Pandas)'],
         s3Rows: [
           ['Gesamtumsatz', '\u03A3 Betrag', 'SUM()', '.sum()'],
-          ['Bruttogewinn', 'Umsatz \u2212 COGS', 'CALCULATE()', 'Subtraktion'],
+          ['Bruttogewinn', 'Umsatz \u2212 COGS', 'SUM() \u2212 SUM()', 'Subtraktion'],
           ['Marge %', 'Gewinn / Umsatz \u00D7 100', 'DIVIDE()', '/ * 100'],
           ['YoY-Wachstum', '(Jetzt \u2212 VJ) / VJ', 'SAMEPERIODLASTYEAR', 'pct_change()'],
           ['Conversion Rate', 'K\u00E4ufe / Besuche', 'DIVIDE()', '/'],
-          ['Customer LTV', '\u00D8 Bestellwert \u00D7 Frequenz', 'Measures', 'groupby'],
+          ['Customer LTV', '\u00D8 Bestellwert \u00D7 Frequenz', 'AVERAGEX + COUNTROWS', 'groupby + mean'],
           ['Churn Rate', 'Abgewanderte / Gesamt', 'COUNTROWS + DIVIDE', 'count + /'],
         ],
 
@@ -267,7 +311,7 @@
         s4FilterText: 'Der Filter Context ist die Menge aller aktiven Filter, wenn ein Measure ausgewertet wird. Diese Filter entstehen durch Slicers, Report-Filter, Zeilen/Spalten in einer Matrix oder durch CALCULATE()-Aufrufe im DAX-Code selbst.',
         s4WhyCalcTitle: 'Warum CALCULATE() so m\u00E4chtig ist',
         s4WhyCalcText: 'CALCULATE() ist die einzige Funktion in DAX, die den Filter Context ver\u00E4ndern kann. Damit k\u00F6nnen Sie Filter hinzuf\u00FCgen, entfernen oder \u00FCberschreiben \u2013 direkt in einer Formel. Ohne CALCULATE k\u00F6nnen Sie nicht filtern innerhalb eines Measures.',
-        s4CodeCalc: '-- Ohne CALCULATE: kein Filtern m\u00F6glich\nUmsatz_falsch = SUM(Umsatz[Betrag])  -- ignoriert alle Filter (kein Filtern m\u00F6glich)\n\n-- Mit CALCULATE: Filter-Kontext \u00E4ndern\nUmsatz_DE = CALCULATE(\n    SUM(Umsatz[Betrag]),\n    Umsatz[Land] = "Deutschland"\n)\n\n-- Filter entfernen mit ALL()\nUmsatz_Gesamt_Immer = CALCULATE(\n    SUM(Umsatz[Betrag]),\n    ALL(Umsatz)\n)\n\n-- Anteil am Gesamtumsatz\nAnteil_% = DIVIDE(\n    [Gesamtumsatz],\n    CALCULATE([Gesamtumsatz], ALL(Umsatz[Land])),\n    0\n)',
+        s4CodeCalc: '-- Ohne CALCULATE: bestehende Filter gelten, aber\n-- man kann keine NEUEN Filter hinzuf\u00FCgen\nUmsatz_einfach = SUM(Umsatz[Betrag])  -- respektiert aktive Slicer/Filter\n\n-- Mit CALCULATE: Filter-Kontext gezielt \u00E4ndern\nUmsatz_DE = CALCULATE(\n    SUM(Umsatz[Betrag]),\n    Umsatz[Land] = "Deutschland"   -- neuer Filter wird hinzugef\u00FCgt\n)\n\n-- Filter entfernen mit ALL()\nUmsatz_Gesamt_Immer = CALCULATE(\n    SUM(Umsatz[Betrag]),\n    ALL(Umsatz)                    -- ALLE Filter auf Umsatz entfernt\n)\n\n-- Anteil am Gesamtumsatz\nAnteil_% = DIVIDE(\n    [Gesamtumsatz],\n    CALCULATE([Gesamtumsatz], ALL(Umsatz[Land])),\n    0\n)\n\n-- VAR / RETURN (modernes DAX-Pattern)\nGewinnmarge =\n    VAR _umsatz = [Gesamtumsatz]\n    VAR _kosten = [Gesamtkosten]\n    RETURN\n        DIVIDE(_umsatz - _kosten, _umsatz, 0)',
 
         s5Title: 'Lernressourcen',
         s5Desc: 'Erg\u00E4nzende YouTube-Kanalempfehlungen f\u00FCr DAX und Python-Analysen:',
@@ -282,6 +326,73 @@
             url: 'https://www.youtube.com/@Curbal',
             desc: 'W\u00F6chentliche DAX-Tipps und Tutorials. Sehr praxisnah, gut f\u00FCr Einsteiger und Fortgeschrittene.',
           },
+          {
+            title: 'Guy in a Cube',
+            url: 'https://www.youtube.com/@GuyInACube',
+            desc: 'Offizieller Microsoft-naher Kanal (Adam Saxton & Patrick LeBlanc). Power BI News, Tipps und Best Practices.',
+          },
+          {
+            title: 'Enterprise DNA',
+            url: 'https://www.youtube.com/@EnterpriseDNA',
+            desc: 'Fortgeschrittene DAX-Patterns, Datenmodellierung und reale Business-Szenarien.',
+          },
+        ],
+
+        // SMART KPI Framework
+        s3SmartTitle: 'SMART-KPI-Framework',
+        s3SmartText: 'Gute KPIs erf\u00FCllen die SMART-Kriterien (Doran, 1981): Specific \u2013 klar definiert und eindeutig messbar; Measurable \u2013 quantifizierbar mit konkreten Metriken; Achievable \u2013 realistisch erreichbar; Relevant \u2013 strategisch bedeutsam f\u00FCr das Unternehmensziel; Time-bound \u2013 mit klarem Zeithorizont (z.\u00A0B. monatlich, quartalsweise).',
+        // Leading vs. Lagging
+        s3LeadLagTitle: 'Leading vs. Lagging Indicators',
+        s3LeadLagText: 'Lagging Indicators messen vergangene Ergebnisse (Umsatz, Gewinn, Churn Rate). Leading Indicators sind Fr\u00FChwarn-Kennzahlen, die zuk\u00FCnftige Ergebnisse vorhersagen (Website-Traffic, Pipeline-Volumen, Kundenzufriedenheit). Eine gute KPI-Strategie kombiniert beide Typen.',
+        // DAX Variables
+        s4VarTitle: 'DAX-Variablen (VAR / RETURN)',
+        s4VarText: 'Seit SQL Server 2016 / Power BI unterst\u00FCtzt DAX Variablen mit VAR / RETURN. Vorteile: Lesbarkeit \u2013 komplexe Formeln werden in benannte Zwischenschritte zerlegt; Performance \u2013 ein Ausdruck wird nur einmal ausgewertet; Debugging \u2013 Variablen k\u00F6nnen einzeln getestet werden.',
+        // Additional resources
+        s5BookRef: 'Buchempfehlung: "The Definitive Guide to DAX" von Marco Russo & Alberto Ferrari (Microsoft Press, 2. Aufl. 2019) \u2013 das Standardwerk f\u00FCr fortgeschrittenes DAX.',
+        // Quiz
+        quizTitle: 'Quiz',
+        quizQuestions: [
+          {
+            q: 'Wof\u00FCr steht das M in SMART-KPIs?',
+            options: ['Modular', 'Measurable', 'Mandatory', 'Manual'],
+            correct: 1,
+          },
+          {
+            q: 'Welches Konzept ver\u00E4ndert den Filter-Kontext in DAX?',
+            options: ['SUM()', 'CALCULATE()', 'VAR', 'ALL()'],
+            correct: 1,
+          },
+          {
+            q: 'Was ist ein Leading Indicator?',
+            options: ['Quartals-Umsatz', 'Website-Traffic', 'Jahresgewinn', 'Churn Rate'],
+            correct: 1,
+          },
+          {
+            q: 'Wo werden Calculated Columns gespeichert?',
+            options: ['Im Measure-Bereich', 'Im Filter-Kontext', 'In der Tabelle (Row Context)', 'Nur zur Laufzeit'],
+            correct: 2,
+          },
+          {
+            q: 'Was liefert SAMEPERIODLASTYEAR() zur\u00FCck?',
+            options: ['Die Vorwoche', 'Den gleichen Zeitraum im Vorjahr', 'Den Monatsdurchschnitt', 'Den kumulierten Wert'],
+            correct: 1,
+          },
+          {
+            q: 'Was bewirkt ALL() in CALCULATE()?',
+            options: ['F\u00FCgt neue Filter hinzu', 'Entfernt bestehende Filter', 'Sortiert die Tabelle', 'Erstellt eine Calculated Column'],
+            correct: 1,
+          },
+        ],
+        // Zusammenfassung
+        summaryTitle: 'Zusammenfassung',
+        summaryItems: [
+          'DAX ist die Formelsprache von Power BI \u2013 optimiert f\u00FCr tabellarische Datenmodelle.',
+          'Measures (dynamisch, zur Laufzeit) sind fast immer Calculated Columns (statisch, gespeichert) vorzuziehen.',
+          'CALCULATE() ist die m\u00E4chtigste DAX-Funktion \u2013 sie ver\u00E4ndert den Filter-Kontext.',
+          'VAR / RETURN verbessert Lesbarkeit und Performance komplexer DAX-Formeln.',
+          'Gute KPIs erf\u00FCllen die SMART-Kriterien (Doran, 1981).',
+          'Leading Indicators (Fr\u00FChwarn-KPIs) erg\u00E4nzen Lagging Indicators (Ergebnis-KPIs).',
+          'Python (pandas) eignet sich als Vergleichstool und f\u00FCr explorative Analysen.',
         ],
 
         navPrev: '\u2190 Lab 02: Daten',
@@ -304,6 +415,8 @@
           { href: '#kpi-tabelle',      label: 'KPI Table' },
           { href: '#filter-kontext',   label: 'Filter Context' },
           { href: '#youtube',          label: 'Resources' },
+          { href: '#quiz',             label: 'Quiz' },
+          { href: '#zusammenfassung',  label: 'Summary' },
         ],
         backLabel: '\u2190 Overview',
 
@@ -347,11 +460,11 @@
         s3Headers: ['KPI', 'Formula', 'DAX Function', 'Python (Pandas)'],
         s3Rows: [
           ['Total Revenue', '\u03A3 Amount', 'SUM()', '.sum()'],
-          ['Gross Profit', 'Revenue \u2212 COGS', 'CALCULATE()', 'Subtraction'],
+          ['Gross Profit', 'Revenue \u2212 COGS', 'SUM() \u2212 SUM()', 'Subtraction'],
           ['Margin %', 'Profit / Revenue \u00D7 100', 'DIVIDE()', '/ * 100'],
           ['YoY Growth', '(Now \u2212 PY) / PY', 'SAMEPERIODLASTYEAR', 'pct_change()'],
           ['Conversion Rate', 'Purchases / Visits', 'DIVIDE()', '/'],
-          ['Customer LTV', 'Avg Order Value \u00D7 Frequency', 'Measures', 'groupby'],
+          ['Customer LTV', 'Avg Order Value \u00D7 Frequency', 'AVERAGEX + COUNTROWS', 'groupby + mean'],
           ['Churn Rate', 'Churned / Total', 'COUNTROWS + DIVIDE', 'count + /'],
         ],
 
@@ -363,7 +476,7 @@
         s4FilterText: 'The Filter Context is the set of all active filters when a Measure is evaluated. These filters are created by slicers, report filters, rows/columns in a matrix or by CALCULATE() calls in the DAX code itself.',
         s4WhyCalcTitle: 'Why CALCULATE() is so powerful',
         s4WhyCalcText: 'CALCULATE() is the only function in DAX that can modify the Filter Context. This allows you to add, remove or override filters \u2013 directly in a formula. Without CALCULATE you cannot filter inside a measure.',
-        s4CodeCalc: '-- Without CALCULATE: no filtering possible\nRevenue_wrong = SUM(Sales[Amount])  -- ignores all filters (no filtering possible)\n\n-- With CALCULATE: modify filter context\nRevenue_DE = CALCULATE(\n    SUM(Sales[Amount]),\n    Sales[Country] = "Germany"\n)\n\n-- Remove filter with ALL()\nRevenue_Always_Total = CALCULATE(\n    SUM(Sales[Amount]),\n    ALL(Sales)\n)\n\n-- Share of total revenue\nShare_% = DIVIDE(\n    [TotalRevenue],\n    CALCULATE([TotalRevenue], ALL(Sales[Country])),\n    0\n)',
+        s4CodeCalc: '-- Without CALCULATE: existing filters apply, but\n-- you cannot ADD new filters\nRevenue_simple = SUM(Sales[Amount])  -- respects active slicers/filters\n\n-- With CALCULATE: modify filter context explicitly\nRevenue_DE = CALCULATE(\n    SUM(Sales[Amount]),\n    Sales[Country] = "Germany"     -- new filter is added\n)\n\n-- Remove filter with ALL()\nRevenue_Always_Total = CALCULATE(\n    SUM(Sales[Amount]),\n    ALL(Sales)                     -- ALL filters on Sales removed\n)\n\n-- Share of total revenue\nShare_% = DIVIDE(\n    [TotalRevenue],\n    CALCULATE([TotalRevenue], ALL(Sales[Country])),\n    0\n)\n\n-- VAR / RETURN (modern DAX pattern)\nProfitMargin =\n    VAR _revenue = [TotalRevenue]\n    VAR _cost    = [TotalCost]\n    RETURN\n        DIVIDE(_revenue - _cost, _revenue, 0)',
 
         s5Title: 'Learning Resources',
         s5Desc: 'Recommended YouTube channels for DAX and Python analytics:',
@@ -378,6 +491,73 @@
             url: 'https://www.youtube.com/@Curbal',
             desc: 'Weekly DAX tips and tutorials. Very practical, suitable for beginners and advanced users alike.',
           },
+          {
+            title: 'Guy in a Cube',
+            url: 'https://www.youtube.com/@GuyInACube',
+            desc: 'Official Microsoft-adjacent channel (Adam Saxton & Patrick LeBlanc). Power BI news, tips and best practices.',
+          },
+          {
+            title: 'Enterprise DNA',
+            url: 'https://www.youtube.com/@EnterpriseDNA',
+            desc: 'Advanced DAX patterns, data modelling and real-world business scenarios.',
+          },
+        ],
+
+        // SMART KPI Framework
+        s3SmartTitle: 'SMART KPI Framework',
+        s3SmartText: 'Good KPIs meet the SMART criteria (Doran, 1981): Specific \u2013 clearly defined and unambiguously measurable; Measurable \u2013 quantifiable with concrete metrics; Achievable \u2013 realistically attainable; Relevant \u2013 strategically significant for business goals; Time-bound \u2013 with a clear time horizon (e.g. monthly, quarterly).',
+        // Leading vs. Lagging
+        s3LeadLagTitle: 'Leading vs. Lagging Indicators',
+        s3LeadLagText: 'Lagging indicators measure past outcomes (revenue, profit, churn rate). Leading indicators are early-warning metrics that predict future results (website traffic, pipeline volume, customer satisfaction). A sound KPI strategy combines both types.',
+        // DAX Variables
+        s4VarTitle: 'DAX Variables (VAR / RETURN)',
+        s4VarText: 'Since SQL Server 2016 / Power BI, DAX supports variables with VAR / RETURN. Benefits: Readability \u2013 complex formulas are broken into named intermediate steps; Performance \u2013 an expression is evaluated only once; Debugging \u2013 variables can be tested individually.',
+        // Additional resources
+        s5BookRef: 'Book recommendation: "The Definitive Guide to DAX" by Marco Russo & Alberto Ferrari (Microsoft Press, 2nd ed. 2019) \u2013 the standard reference for advanced DAX.',
+        // Quiz
+        quizTitle: 'Quiz',
+        quizQuestions: [
+          {
+            q: 'What does the M in SMART KPIs stand for?',
+            options: ['Modular', 'Measurable', 'Mandatory', 'Manual'],
+            correct: 1,
+          },
+          {
+            q: 'Which concept modifies the filter context in DAX?',
+            options: ['SUM()', 'CALCULATE()', 'VAR', 'ALL()'],
+            correct: 1,
+          },
+          {
+            q: 'What is a leading indicator?',
+            options: ['Quarterly revenue', 'Website traffic', 'Annual profit', 'Churn rate'],
+            correct: 1,
+          },
+          {
+            q: 'Where are Calculated Columns stored?',
+            options: ['In the Measure area', 'In the filter context', 'In the table (Row Context)', 'Only at runtime'],
+            correct: 2,
+          },
+          {
+            q: 'What does SAMEPERIODLASTYEAR() return?',
+            options: ['The previous week', 'The same period in the prior year', 'The monthly average', 'The cumulative value'],
+            correct: 1,
+          },
+          {
+            q: 'What does ALL() do inside CALCULATE()?',
+            options: ['Adds new filters', 'Removes existing filters', 'Sorts the table', 'Creates a Calculated Column'],
+            correct: 1,
+          },
+        ],
+        // Summary
+        summaryTitle: 'Summary',
+        summaryItems: [
+          'DAX is the formula language of Power BI \u2013 optimised for tabular data models.',
+          'Measures (dynamic, at runtime) are almost always preferable to Calculated Columns (static, stored).',
+          'CALCULATE() is the most powerful DAX function \u2013 it modifies the filter context.',
+          'VAR / RETURN improves readability and performance of complex DAX formulas.',
+          'Good KPIs meet the SMART criteria (Doran, 1981).',
+          'Leading indicators (early-warning KPIs) complement lagging indicators (outcome KPIs).',
+          'Python (pandas) serves as a comparison tool and for exploratory analysis.',
         ],
 
         navPrev: '\u2190 Lab 02: Data',
@@ -397,7 +577,7 @@
       };
 
       useEffect(() => {
-        const sections = ['dax-grundlagen', 'python', 'kpi-tabelle', 'filter-kontext', 'youtube'];
+        const sections = ['dax-grundlagen', 'python', 'kpi-tabelle', 'filter-kontext', 'youtube', 'quiz', 'zusammenfassung'];
         const handler = () => {
           for (let i = sections.length - 1; i >= 0; i--) {
             const el = document.getElementById(sections[i]);
@@ -496,7 +676,7 @@
               </div>
 
               <h3 style={{ marginTop: '2rem' }}>{'DAX Code'}</h3>
-              <CodeBlock code={tx.s1CodeDax} />
+              <CodeBlock code={tx.s1CodeDax} lang={lang} />
             </section>
 
             {/* ── Section 2: Python Aquivalente ── */}
@@ -504,7 +684,7 @@
               <h2>{tx.s2Title}</h2>
               <div className="bauhaus-accent-line"></div>
               <p>{tx.s2Desc}</p>
-              <CodeBlock code={tx.s2CodePython} />
+              <CodeBlock code={tx.s2CodePython} lang={lang} />
             </section>
 
             {/* ── Section 3: KPI-Tabelle ── */}
@@ -527,6 +707,17 @@
                   ))}
                 </tbody>
               </table>
+              {/* SMART KPI Framework */}
+              <div className="concept-box" style={{ marginTop: '1.5rem' }}>
+                <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.s3SmartTitle}</h4>
+                <p style={{ margin: 0 }}>{tx.s3SmartText}</p>
+              </div>
+
+              {/* Leading vs. Lagging */}
+              <div className="tip-box" style={{ marginTop: '1rem' }}>
+                <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.s3LeadLagTitle}</h4>
+                <p style={{ margin: 0 }}>{tx.s3LeadLagText}</p>
+              </div>
             </section>
 
             {/* ── Section 4: Filter-Kontext ── */}
@@ -551,7 +742,13 @@
                 <p style={{ margin: 0 }}>{tx.s4WhyCalcText}</p>
               </div>
 
-              <CodeBlock code={tx.s4CodeCalc} />
+              <CodeBlock code={tx.s4CodeCalc} lang={lang} />
+
+              {/* DAX Variables */}
+              <div className="info-box" style={{ marginTop: '1.5rem' }}>
+                <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.s4VarTitle}</h4>
+                <p style={{ margin: 0 }}>{tx.s4VarText}</p>
+              </div>
             </section>
 
             {/* ── Section 5: YouTube-Ressourcen ── */}
@@ -572,6 +769,31 @@
                     <p style={{ margin: '0.25rem 0 0', fontSize: '0.875rem', color: '#78350F' }}>{res.desc}</p>
                   </div>
                 ))}
+              {/* Book reference */}
+              <div className="info-box" style={{ marginTop: '1.25rem' }}>
+                <p style={{ margin: 0, fontSize: '0.875rem' }}>{tx.s5BookRef}</p>
+              </div>
+            </section>
+
+            {/* ── Section 6: Quiz ── */}
+            <section id="quiz" className="section-block">
+              <h2>{tx.quizTitle}</h2>
+              <div className="bauhaus-accent-line"></div>
+              {tx.quizQuestions.map((qq, qi) => (
+                <QuizQuestion key={qi} question={qq} index={qi} lang={lang} />
+              ))}
+            </section>
+
+            {/* ── Section 7: Zusammenfassung ── */}
+            <section id="zusammenfassung" className="section-block">
+              <h2>{tx.summaryTitle}</h2>
+              <div className="bauhaus-accent-line"></div>
+              <div className="concept-box">
+                <ol style={{ margin: 0, paddingLeft: '1.25rem' }}>
+                  {tx.summaryItems.map((item, i) => (
+                    <li key={i} style={{ fontSize: '0.9rem', lineHeight: 1.7, color: '#1A1A1A', marginBottom: '0.35rem' }}>{item}</li>
+                  ))}
+                </ol>
               </div>
             </section>
 
