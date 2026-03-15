@@ -274,85 +274,63 @@
 
     /* Quote Section */
     .quote-section {
-      background: #FAFAFA;
-      padding: 3rem 2rem;
+      background: #F7F7F5;
+      padding: 5.5rem 2rem 5rem;
       border-top: 1px solid #E5E7EB;
       border-bottom: 1px solid #E5E7EB;
-      overflow: hidden;
     }
     .quote-inner {
-      max-width: 1200px;
+      max-width: 900px;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 1.25rem;
+      gap: 3.5rem;
     }
     .quote-text-block {
       opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.2s,
-                  transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
-      position: relative;
+      transform: translateY(20px);
+      transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s,
+                  transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
     }
     .quote-text-block.q-visible {
       opacity: 1;
       transform: translateY(0);
     }
-    .quote-deco {
-      position: absolute;
-      top: -3.5rem;
-      left: -1.5rem;
-      font-family: 'EB Garamond', Georgia, serif;
-      font-size: 20rem;
-      line-height: 1;
-      color: rgba(30, 58, 138, 0.07);
-      font-style: normal;
-      font-weight: 400;
-      user-select: none;
-      pointer-events: none;
-      z-index: 0;
-      letter-spacing: -0.05em;
-    }
-    [data-lang="en"] .quote-deco { color: rgba(13, 148, 136, 0.09); }
     .quote-body {
-      position: relative;
-      z-index: 1;
       font-family: 'EB Garamond', Georgia, serif;
-      font-size: clamp(1.8rem, 4.5vw, 3.5rem);
-      line-height: 1.3;
+      font-size: clamp(2.6rem, 5vw, 4.5rem);
+      line-height: 1.2;
       color: #1A1A1A;
       font-style: italic;
       font-weight: 400;
-      white-space: nowrap;
-      overflow: hidden;
-      margin-bottom: 0;
+      margin: 0;
     }
     .quote-author-row {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 1.5rem;
     }
     .quote-attribution {
       display: flex;
       flex-direction: column;
-      gap: 0.2rem;
+      gap: 0.3rem;
     }
     .quote-name {
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: #1E3A8A;
-      letter-spacing: 0.02em;
+      font-family: 'EB Garamond', Georgia, serif;
+      font-weight: 500;
+      font-size: 1.2rem;
+      color: #1A1A1A;
+      font-style: normal;
     }
     .quote-role {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.8rem;
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 1rem;
       color: #9CA3AF;
-      font-weight: 500;
+      font-weight: 400;
+      font-style: normal;
     }
     @media (max-width: 640px) {
-      .quote-body { white-space: normal; font-size: 1.6rem; }
-      .quote-author-row { flex-direction: column; align-items: flex-start; }
+      .quote-body { font-size: 2rem; }
     }
 
     /* Labs Section */
@@ -686,13 +664,14 @@
 
     /* Deming Portrait */
     .deming-portrait {
-      width: 56px;
-      height: 56px;
+      width: 84px;
+      height: 84px;
       border-radius: 50%;
       flex-shrink: 0;
       object-fit: cover;
       object-position: top center;
-      filter: grayscale(20%);
+      filter: grayscale(100%) contrast(0.9);
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.08);
     }
 
     /* Praxis-Dashboards Section */
@@ -1089,9 +1068,9 @@
           <section className="quote-section">
             <div className="quote-inner">
               <div className="quote-text-block">
-                <div className="quote-deco">&ldquo;</div>
                 <p className="quote-body">
-                  {'In God we trust. All others must bring data.'}
+                  <span style={{ display: 'block' }}>In God we trust.</span>
+                  <span style={{ display: 'block' }}>All others must bring data.</span>
                 </p>
               </div>
               <div className="quote-author-row">
