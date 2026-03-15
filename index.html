@@ -297,6 +297,18 @@
       opacity: 1;
       transform: translateY(0);
     }
+    .quote-deco {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 6rem;
+      line-height: 0.75;
+      color: rgba(30, 58, 138, 0.13);
+      font-style: normal;
+      font-weight: 400;
+      user-select: none;
+      pointer-events: none;
+      margin-bottom: 0.1rem;
+    }
+    [data-lang="en"] .quote-deco { color: rgba(13, 148, 136, 0.13); }
     .quote-body {
       font-family: 'EB Garamond', Georgia, serif;
       font-size: clamp(1.8rem, 4.5vw, 3.5rem);
@@ -1070,8 +1082,9 @@
           <section className="quote-section">
             <div className="quote-inner">
               <div className="quote-text-block">
+                <div className="quote-deco">&ldquo;</div>
                 <p className="quote-body">
-                  {'\u201EIn God we trust. All others must bring data.\u201C'}
+                  {'In God we trust. All others must bring data.'}
                 </p>
               </div>
               <div className="quote-author-row">
