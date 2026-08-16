@@ -264,7 +264,7 @@
 
         s4Title: 'Schritt 3 \u2013 Power BI Step by Step',
         s4Steps: [
-          { label: 'CSV importieren', text: 'Home \u2192 Daten abrufen \u2192 Text/CSV \u2192 train.csv ausw\u00E4hlen \u2192 Laden. Wichtig: Order Date und Ship Date im Power Query Editor als Datum (TT/MM/JJJJ) typisieren.' },
+          { label: 'CSV importieren', text: 'Home \u2192 Daten abrufen \u2192 Text/CSV \u2192 train.csv ausw\u00E4hlen \u2192 Laden. Danach die Tabelle im Feldbereich von \u201Etrain\u201C in \u201EOrders\u201C umbenennen \u2013 die DAX-Measures in Schritt\u00A03 referenzieren Orders. Ebenfalls wichtig: Order Date und Ship Date im Power Query Editor als Datum (TT/MM/JJJJ) typisieren.' },
           { label: 'Power Query \u2013 Datentransformation', text: 'Sicherstellen: Order Date als Datum/Uhrzeit, Spalten pr\u00FCfen auf Nullwerte, Datentypen kontrollieren.' },
           { label: 'Measures erstellen', text: 'Im Datenmodell unter \u201ENew Measure\u201C die folgenden DAX-Ausdr\u00FCcke anlegen:', hasCode: true },
           { label: 'Dashboard aufbauen', text: '4 KPI-Cards oben (Umsatz, Bestellungen, \u00D8 Bestellwert, Positionen), Umsatz-Trend-Linie (monatlich), Kategorie-Balkendiagramm, Region-Karte, Streudiagramm Umsatz vs. Bestellpositionen je Sub-Kategorie.' },
@@ -380,7 +380,7 @@
 
         s4Title: 'Step 3 \u2013 Power BI Step by Step',
         s4Steps: [
-          { label: 'Import CSV', text: 'Home \u2192 Get Data \u2192 Text/CSV \u2192 select train.csv \u2192 Load. Important: set Order Date and Ship Date to Date (DD/MM/YYYY) in the Power Query Editor.' },
+          { label: 'Import CSV', text: 'Home \u2192 Get Data \u2192 Text/CSV \u2192 select train.csv \u2192 Load. Then rename the table in the Fields pane from \u201Ctrain\u201D to \u201COrders\u201D \u2013 the DAX measures in step\u00A03 reference Orders. Also important: set Order Date and Ship Date to Date (DD/MM/YYYY) in the Power Query Editor.' },
           { label: 'Power Query \u2013 Data Transformation', text: 'Ensure: Order Date is Date/Time type, check columns for null values, verify data types.' },
           { label: 'Create Measures', text: 'In the data model under \u201CNew Measure\u201D, create the following DAX expressions:', hasCode: true },
           { label: 'Build Dashboard', text: '4 KPI cards at the top (Revenue, Orders, Avg. Order Value, Line Items), Revenue trend line (monthly), Category bar chart, Region map, scatter of revenue vs. line items per sub-category.' },
