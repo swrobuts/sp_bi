@@ -249,7 +249,7 @@
     const CODE_PX_BAR = `import plotly.express as px
 import pandas as pd
 
-df = pd.read_csv('superstore.csv', encoding='latin-1')
+df = pd.read_csv('train.csv', encoding='latin-1')
 
 # Umsatz nach Kategorie (Balkendiagramm)
 fig = px.bar(
@@ -267,7 +267,9 @@ fig.update_layout(
 fig.show()`;
 
     const CODE_PX_LINE = `# Umsatz-Trend über Zeit (Linie)
-df['Order Date'] = pd.to_datetime(df['Order Date'])
+# dayfirst=True ist Pflicht: die Daten liegen als TT/MM/JJJJ vor.
+# Ohne den Parameter bricht pandas ab, sobald der Tag > 12 ist.
+df['Order Date'] = pd.to_datetime(df['Order Date'], dayfirst=True)
 monthly = df.groupby(df['Order Date'].dt.to_period('M'))['Sales'].sum().reset_index()
 monthly['Order Date'] = monthly['Order Date'].astype(str)
 
@@ -279,15 +281,24 @@ fig2 = px.line(
 )
 fig2.show()`;
 
-    const CODE_PX_SCATTER = `# Scatter: Umsatz vs. Gewinn
+    const CODE_PX_SCATTER = `# Scatter: Umsatz vs. Bestellanzahl je Sub-Kategorie
+# Der Datensatz enthaelt als einzige Kennzahl 'Sales'. Eine zweite
+# Dimension gewinnt man durch Aggregation - hier die Zahl der Positionen.
+by_sub = df.groupby(['Category', 'Sub-Category']).agg(
+    Umsatz=('Sales', 'sum'),
+    Positionen=('Order ID', 'count')
+).reset_index()
+
 fig3 = px.scatter(
-    df,
-    x='Sales',
-    y='Profit',
+    by_sub,
+    x='Positionen',
+    y='Umsatz',
     color='Category',
-    hover_data=['Product Name'],
-    title='Umsatz vs. Gewinn nach Kategorie'
+    text='Sub-Category',
+    size='Umsatz',
+    title='Umsatz vs. Bestellpositionen je Sub-Kategorie'
 )
+fig3.update_traces(textposition='top center')
 fig3.show()`;
 
     const CODE_DASH_APP = `# app.py – Vollständiges Dash-Dashboard
@@ -298,7 +309,7 @@ import pandas as pd
 
 app = dash.Dash(__name__)
 server = app.server  # Nötig für gunicorn app:server
-df = pd.read_csv('superstore.csv', encoding='latin-1')
+df = pd.read_csv('train.csv', encoding='latin-1')
 
 app.layout = html.Div([
     html.H1('Sales Dashboard', style={'fontFamily': 'Space Grotesk', 'color': '#1E3A8A'}),
@@ -312,7 +323,7 @@ app.layout = html.Div([
     ),
 
     dcc.Graph(id='subcategory-chart'),
-    dcc.Graph(id='profit-scatter')
+    dcc.Graph(id='orders-scatter')
 ], style={'maxWidth': '1200px', 'margin': '0 auto', 'padding': '2rem'})
 
 
@@ -334,19 +345,25 @@ def update_bar(category):
 
 
 @app.callback(
-    Output('profit-scatter', 'figure'),
+    Output('orders-scatter', 'figure'),
     Input('category-filter', 'value')
 )
 def update_scatter(category):
     filtered = df[df['Category'] == category]
+    by_sub = filtered.groupby('Sub-Category').agg(
+        Umsatz=('Sales', 'sum'),
+        Positionen=('Order ID', 'count')
+    ).reset_index()
     fig = px.scatter(
-        filtered,
-        x='Sales',
-        y='Profit',
-        hover_data=['Product Name'],
-        title=f'Umsatz vs. Gewinn: {category}',
+        by_sub,
+        x='Positionen',
+        y='Umsatz',
+        text='Sub-Category',
+        size='Umsatz',
+        title=f'Umsatz vs. Bestellpositionen: {category}',
         color_discrete_sequence=['#0D9488']
     )
+    fig.update_traces(textposition='top center')
     return fig
 
 
@@ -441,9 +458,13 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
 
         s2Title: 'Plotly Express',
         s2Desc: 'Plotly Express ist eine High-Level Python-Bibliothek für interaktive Charts. Mit wenigen Zeilen Code entstehen publikationsreife Visualisierungen, die im Browser als interaktive HTML-Grafiken dargestellt werden.',
+        dataTitle: 'Datensatz für alle Beispiele',
+        dataText: 'Alle Codebeispiele in diesem Lab arbeiten mit train.csv aus dem Superstore Sales Dataset (Kaggle, GPL 2): 9.800 Bestellpositionen, 2015\u20132018. Legen Sie die Datei in dasselbe Verzeichnis wie Ihr Skript. Achtung: Die Datumsspalten liegen als TT/MM/JJJJ vor \u2013 deshalb dayfirst=True beim Parsen. Eine Profit-Spalte gibt es in dieser Variante nicht; einzige Kennzahl ist Sales.',
+        dataDirect: '\u2193 train.csv herunterladen',
+        dataKaggle: 'Quelle auf Kaggle \u2197',
         s2Code1Title: 'Balkendiagramm: Umsatz nach Kategorie',
         s2Code2Title: 'Liniendiagramm: Umsatz-Trend über Zeit',
-        s2Code3Title: 'Scatter Plot: Umsatz vs. Gewinn',
+        s2Code3Title: 'Scatter Plot: Umsatz vs. Bestellvolumen',
 
         s3Title: 'Plotly Dash',
         s3Desc: 'Plotly Dash ist ein Python-Framework zum Erstellen vollständiger Web-Dashboards. Es verbindet ein Flask-Backend mit einem automatisch generierten React-Frontend. Das Layout ist deklarativ, die Reaktivität wird durch Callbacks gesteuert.',
@@ -625,9 +646,13 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
 
         s2Title: 'Plotly Express',
         s2Desc: 'Plotly Express is a high-level Python library for interactive charts. With just a few lines of code you can create publication-ready visualizations displayed as interactive HTML graphics in the browser.',
+        dataTitle: 'Dataset for all examples',
+        dataText: 'Every code example in this lab uses train.csv from the Superstore Sales Dataset (Kaggle, GPL 2): 9,800 order line items, 2015\u20132018. Place the file in the same directory as your script. Note: the date columns are DD/MM/YYYY, hence dayfirst=True when parsing. This variant has no Profit column; Sales is the only measure.',
+        dataDirect: '\u2193 Download train.csv',
+        dataKaggle: 'Source on Kaggle \u2197',
         s2Code1Title: 'Bar Chart: Revenue by Category',
         s2Code2Title: 'Line Chart: Revenue Trend over Time',
-        s2Code3Title: 'Scatter Plot: Revenue vs. Profit',
+        s2Code3Title: 'Scatter Plot: Revenue vs. Order Volume',
 
         s3Title: 'Plotly Dash',
         s3Desc: 'Plotly Dash is a Python framework for building complete web dashboards. It connects a Flask backend with an automatically generated React frontend. The layout is declarative and reactivity is controlled through callbacks.',
@@ -896,6 +921,26 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
               <h2>{tx.s2Title}</h2>
               <div className="bauhaus-accent-line"></div>
               <p>{tx.s2Desc}</p>
+
+              {/* Datensatz-Beschaffung – ohne die Datei laeuft kein Codeblock hier */}
+              <div className="info-box" style={{ marginTop: '1.25rem' }}>
+                <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.dataTitle}</h4>
+                <p style={{ margin: '0 0 0.75rem' }}>{tx.dataText}</p>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <a href="data/train.csv" download
+                     style={{ background: 'var(--col-primary)', color: 'white', textDecoration: 'none',
+                              padding: '0.45rem 0.9rem', borderRadius: '6px', fontSize: '0.82rem', fontWeight: 700 }}>
+                    {tx.dataDirect}
+                  </a>
+                  <a href="https://www.kaggle.com/datasets/rohitsahoo/sales-forecasting"
+                     target="_blank" rel="noopener noreferrer"
+                     style={{ border: '1.5px solid var(--col-primary)', color: 'var(--col-primary)',
+                              textDecoration: 'none', padding: '0.45rem 0.9rem', borderRadius: '6px',
+                              fontSize: '0.82rem', fontWeight: 700 }}>
+                    {tx.dataKaggle}
+                  </a>
+                </div>
+              </div>
 
               <h3 style={{ marginTop: '1.5rem' }}>{tx.s2Code1Title}</h3>
               <CodeBlock code={CODE_PX_BAR} lang={lang} />
