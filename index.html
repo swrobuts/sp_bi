@@ -6,10 +6,21 @@
   <title>BI Lab - Modul "Business Intelligence" im Schwerpunkt "Wirtschaftsinformatik und Digital Business" · THWS Business School</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=EB+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2/dist/tailwind.min.css" rel="stylesheet">
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
+  <!-- Tailwind CSS 2 wurde entfernt: keine einzige Tailwind-Utility-Klasse wurde benutzt
+       (alle Klassen sind eigene, unten definierte Klassen). Die 2,9 MB Datei lieferte faktisch
+       nur zwei Defaults aus dem Preflight-Reset, die jetzt unten explizit gesetzt sind:
+       body { line-height: 1.5 } und der border-style-Default. Die Lab-Seiten laden Tailwind
+       ohnehin nicht - damit sind alle sieben Seiten jetzt konsistent. -->
+  <!-- React 18.3.1 (UMD). Bewusst NICHT React 19: React 19 liefert keine UMD-Builds mehr,
+       die dieses build-freie Setup (Transpilierung per text/babel im Browser) voraussetzt. -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"
+          integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"
+          integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1" crossorigin="anonymous"></script>
+  <!-- Babel bewusst auf 7.x gepinnt: Babel 8 stellt auf den automatic JSX runtime um
+       und bricht damit text/babel ohne Bundler. 7.29.8 = letzter 7.x-Stand. -->
+  <script src="https://unpkg.com/@babel/standalone@7.29.8/babel.min.js"
+          integrity="sha384-Ux6uBqExf/7ahsSNrA9VI7vuaw6sKjDoVdjdUxmIoL2qdlzFVZ157sTi6JK3Z9Q8" crossorigin="anonymous"></script>
 
   <style>
     /* DESIGN DECISION: Bilingual color scheme
@@ -25,12 +36,17 @@
       --primary-light: rgba(30,58,138,0.08);
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* Ersetzt die beiden einzigen Defaults, die vorher aus Tailwinds Preflight kamen. */
+    *, *::before, *::after {
+      box-sizing: border-box; margin: 0; padding: 0;
+      border-width: 0; border-style: solid; border-color: currentColor;
+    }
 
     body {
       font-family: 'Space Grotesk', sans-serif;
       background: #FFFFFF;
       color: var(--dark);
+      line-height: 1.5;
     }
 
     h2 { color: #1E3A8A; font-weight: 800; font-family: 'Space Grotesk', sans-serif; }
@@ -825,7 +841,7 @@
         bonusBadge: 'BONUS-PROJEKT',
         bonusTitle: 'Data Sovereignty Stack',
         bonusSubtitle: 'Self-Hosted BI f\u00FCr DSGVO-konforme Unternehmen',
-        bonusWhy: 'Open-Source-BI-Tools auf eigener Infrastruktur erm\u00F6glichen volle Datensouver\u00E4nit\u00E4t \u2014 unabh\u00E4ngig von Cloud-Anbietern, vollst\u00E4ndig DSGVO-konform und kostenfrei.',
+        bonusWhy: 'Open-Source-BI-Tools auf eigener Infrastruktur erm\u00F6glichen volle Datensouver\u00E4nit\u00E4t \u2014 unabh\u00E4ngig von Cloud-Anbietern, ohne Lizenzkosten und mit deutlich einfacherem DSGVO-Nachweis, da die Daten die eigene Infrastruktur nicht verlassen.',
         bonusLink: 'Zum Lab \u2192',
         sectionDashboards: 'Implementierte Dashboards',
         dashboardsDesc: 'Diese Dashboards laufen produktiv \u2013 gebaut mit dem Stack aus diesem Kurs.',
@@ -906,7 +922,7 @@
         bonusBadge: 'BONUS PROJECT',
         bonusTitle: 'Data Sovereignty Stack',
         bonusSubtitle: 'Self-Hosted BI for GDPR-Compliant Organizations',
-        bonusWhy: 'Open-source BI tools hosted on your own infrastructure give you full data sovereignty \u2014 independent of cloud vendors, fully GDPR-compliant, and cost-free.',
+        bonusWhy: 'Open-source BI tools hosted on your own infrastructure give you full data sovereignty \u2014 independent of cloud vendors, free of licence fees, and far easier to evidence under the GDPR because the data never leaves your own infrastructure.',
         bonusLink: 'Go to Lab \u2192',
         sectionDashboards: 'Live Dashboards',
         dashboardsDesc: 'These dashboards run in production \u2013 built with the stack from this course.',
@@ -923,12 +939,13 @@
       { titleDe: 'Datensouver\u00E4nit\u00E4t', titleEn: 'Data Sovereignty', descDe: 'Volle Kontrolle \u00FCber eigene Daten', descEn: 'Full control over your own data' },
       { titleDe: 'No Vendor Lock-in', titleEn: 'No Vendor Lock-in', descDe: 'Unabh\u00E4ngig von Cloud-Anbietern', descEn: 'Independent of cloud providers' },
       { titleDe: 'DSGVO-Konformit\u00E4t', titleEn: 'GDPR Compliance', descDe: 'Daten bleiben in der EU', descEn: 'Data stays within the EU' },
-      { titleDe: 'Kostenersparnis', titleEn: 'Zero Cost', descDe: 'Open Source, keine unmittelbaren Lizenzkosten', descEn: 'Open Source, no licence fees' },
+      { titleDe: 'Kostenersparnis', titleEn: 'Cost Savings', descDe: 'Open Source, keine unmittelbaren Lizenzkosten', descEn: 'Open source, no licence fees (infrastructure and operations still cost)' },
       { titleDe: 'Volle Kontrolle', titleEn: 'Full Control', descDe: 'Eigene Infrastruktur, eigene Regeln', descEn: 'Your own infrastructure, your rules' },
     ];
 
     function App() {
-      const [lang, setLang] = useState(() => localStorage.getItem('bi-lang') || 'de');
+      const urlLang = new URLSearchParams(window.location.search).get('lang');
+      const [lang, setLang] = useState(() => urlLang || localStorage.getItem('bi-lang') || 'de');
       const toggleLang = (l) => { setLang(l); localStorage.setItem('bi-lang', l); };
 
       useEffect(() => {
@@ -947,6 +964,12 @@
       }, []);
 
       const t = translations[lang];
+
+      // Tab-Titel und html[lang] der gewaehlten Sprache folgen lassen
+      useEffect(() => {
+        document.title = lang === 'en' ? 'BI Lab \u00B7 Module "Business Intelligence" \u00B7 THWS Business School' : 'BI Lab \u00B7 Modul "Business Intelligence" \u00B7 THWS Business School';
+        document.documentElement.lang = lang;
+      }, [lang]);
       const heroColor = lang === 'en' ? '#0D9488' : '#1E3A8A';
       const geoCircleColor = lang === 'en' ? '#0F766E' : '#1E40AF';
       const geoSquareColor = lang === 'en' ? '#14B8A6' : '#2563EB';

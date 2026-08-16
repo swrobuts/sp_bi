@@ -6,9 +6,16 @@
   <title>Lab 06 – Digitale Souveränität &amp; Open-Source BI · THWS BI Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
+  <!-- React 18.3.1 (UMD). Bewusst NICHT React 19: React 19 liefert keine UMD-Builds mehr,
+       die dieses build-freie Setup (Transpilierung per text/babel im Browser) voraussetzt. -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"
+          integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"
+          integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1" crossorigin="anonymous"></script>
+  <!-- Babel bewusst auf 7.x gepinnt: Babel 8 stellt auf den automatic JSX runtime um
+       und bricht damit text/babel ohne Bundler. 7.29.8 = letzter 7.x-Stand. -->
+  <script src="https://unpkg.com/@babel/standalone@7.29.8/babel.min.js"
+          integrity="sha384-Ux6uBqExf/7ahsSNrA9VI7vuaw6sKjDoVdjdUxmIoL2qdlzFVZ157sTi6JK3Z9Q8" crossorigin="anonymous"></script>
   <style>
     :root {
       --col-primary: #1E3A8A;
@@ -184,13 +191,23 @@
 
   function App() {
     const urlLang = new URLSearchParams(window.location.search).get('lang');
-    const [lang, setLang] = React.useState(() => localStorage.getItem('bi-lang') || urlLang || 'de');
+    const [lang, setLang] = React.useState(() => urlLang || localStorage.getItem('bi-lang') || 'de');
     const toggleLang = (l) => { setLang(l); localStorage.setItem('bi-lang', l); };
 
     const [activeSection, setActiveSection] = React.useState('ueberblick');
 
     const checklistCount = 8;
-    const [checkedItems, setCheckedItems] = React.useState(() => new Array(checklistCount).fill(false));
+    // Fortschritt in localStorage sichern - ein Reload darf die Checkliste nicht zuruecksetzen.
+    const [checkedItems, setCheckedItems] = React.useState(() => {
+      try {
+        const saved = JSON.parse(localStorage.getItem('bi-lab06-dsgvo') || 'null');
+        if (Array.isArray(saved) && saved.length === checklistCount) return saved.map(Boolean);
+      } catch (e) { /* defekter Eintrag -> sauber neu anfangen */ }
+      return new Array(checklistCount).fill(false);
+    });
+    React.useEffect(() => {
+      try { localStorage.setItem('bi-lab06-dsgvo', JSON.stringify(checkedItems)); } catch (e) {}
+    }, [checkedItems]);
     const toggleCheck = (i) => {
       setCheckedItems((prev) => {
         const next = prev.slice();
@@ -198,6 +215,7 @@
         return next;
       });
     };
+    const resetChecklist = () => setCheckedItems(new Array(checklistCount).fill(false));
 
     React.useEffect(() => {
       document.documentElement.setAttribute('data-lang', lang);
@@ -271,16 +289,17 @@
         s2InfoTitle: 'Schrems II & EU-US Data Privacy Framework',
         s2InfoText: 'Nach Schrems II (EuGH, 2020) ist der Transfer personenbezogener Daten in die USA ohne spezielle Schutzma\u00dfnahmen rechtswidrig. Das EU-US Data Privacy Framework (2023) schafft eine neue Rechtsgrundlage, bleibt aber politisch umstritten. Unternehmen sollten zus\u00e4tzlich Standard Contractual Clauses (SCCs) und Transfer Impact Assessments (TIAs) einsetzen.',
         s3Title: 'SaaS BI-Tools: Cloud Lock-in',
-        s3P1: 'Cloud Lock-in entsteht, wenn der Wechsel zu einem alternativen Anbieter technisch oder wirtschaftlich prohibitiv wird. Im BI-Kontext sind propriet\u00e4re Datenmodelle, DAX/M-Formeln, Berechtigungsstrukturen und API-Abh\u00e4ngigkeiten die Haupttreiber.',
+        s3P1: 'Cloud Lock-in entsteht, wenn der Wechsel zu einem alternativen Anbieter technisch oder wirtschaftlich prohibitiv wird. Im BI-Kontext sind propriet\u00e4re Datenmodelle, DAX/M-Formeln, Berechtigungsstrukturen und API-Abh\u00e4ngigkeiten die Haupttreiber. Plattformen wie Microsoft Fabric verst\u00e4rken diesen Effekt: Wenn Ingestion, Transformation, Warehouse und Reporting gemeinsam auf OneLake liegen, w\u00e4chst die Wechselh\u00fcrde mit jedem zus\u00e4tzlichen Workload.',
         s3ConceptTitle: 'Total Cost of Ownership (TCO) bei BI-Tools',
         s3ConceptItems: [
-          'Direkte Kosten: Lizenzgeb\u00fchren pro User/Monat (Power BI: ~9\u201310 \u20ac, Tableau: ~15 \u20ac, Looker: Enterprise-Pricing auf Anfrage)',
+          'Direkte Kosten: Lizenzgeb\u00fchren pro User/Monat (Power BI Pro: 14 $, Power BI PPU: 24 $ \u2013 Stand seit 1. April 2025; Tableau Creator: ~75 $, Viewer: ~15 $; Looker: Enterprise-Pricing auf Anfrage) oder Kapazit\u00e4tsmodell (Microsoft Fabric F-SKU, ab F64 lesen Nutzer mit kostenloser Lizenz)',
           'Migrationskosten: Aufwand f\u00fcr Datenexport, Dashboard-Neubau, Schulung bei Anbieterwechsel',
           'Opportunit\u00e4tskosten: Funktionen, die nur im \u00d6kosystem des Anbieters verf\u00fcgbar sind (z.B. Copilot in Power BI)',
           'Risikokosten: Preiserh\u00f6hungen, Service-Einstellungen, regulatorische Konflikte (CLOUD Act)',
           'Betriebskosten Self-Hosted: Server, Wartung, Updates, Monitoring \u2013 personelle Kapazit\u00e4t erforderlich',
         ],
         s3LockInItems: [
+          'Plattform-Gravitation: Microsoft Fabric b\u00fcndelt Data Factory, Warehouse, Spark und Power BI auf OneLake \u2013 ein Wechsel bedeutet dann nicht mehr nur Dashboards, sondern die gesamte Datenplattform zu migrieren',
           'Daten liegen beim Anbieter \u2013 US-Server bei Microsoft (Power BI), Google (Looker), Salesforce (Tableau)',
           'Propriet\u00e4re Formate: DAX (Power BI), VizQL (Tableau), LookML (Looker) \u2013 nicht portabel',
           'DSGVO-Komplikationen betreffen ALLE US-Cloud-Anbieter gleicherma\u00dfen (Patriot Act, CLOUD Act)',
@@ -331,6 +350,7 @@
         ],
         s6ProgressLabel: 'Erledigt',
         s6Of: 'von',
+        s6Reset: 'Checkliste zur\u00fccksetzen',
         s7Title: 'Entscheidungsmatrix: Welches Tool wann?',
         s7ThScenario: 'Szenario',
         s7ThRec: 'Empfehlung',
@@ -390,7 +410,7 @@
         quizIntro: 'Teste dein Wissen zu Digitaler Souver\u00e4nit\u00e4t und Open-Source BI:',
         quizQuestions: [
           { q: 'Was ist der Haupttreiber f\u00fcr Cloud Lock-in bei BI-Tools?', options: ['Zu hohe Lizenzkosten', 'Propriet\u00e4re Datenformate und API-Abh\u00e4ngigkeiten', 'Fehlende Internet-Anbindung', 'Zu viele Nutzer im Team'], correct: 1, explanation: 'Lock-in entsteht prim\u00e4r durch propriet\u00e4re Formate (DAX, VizQL, LookML) und API-Abh\u00e4ngigkeiten, die einen Wechsel technisch aufwendig machen.' },
-          { q: 'Welches EU-Gesetz regelt seit 2024 den Zugang zu und die Nutzung von Daten?', options: ['DSGVO', 'EU AI Act', 'EU Data Act', 'ePrivacy-Verordnung'], correct: 2, explanation: 'Der EU Data Act (2024) regelt den fairen Zugang zu und die Nutzung von Daten, insbesondere IoT-Daten und Cloud-Wechsel-Rechte.' },
+          { q: 'Welches EU-Gesetz regelt den Zugang zu und die Nutzung von Daten (anwendbar seit 12.09.2025)?', options: ['DSGVO', 'EU AI Act', 'EU Data Act', 'ePrivacy-Verordnung'], correct: 2, explanation: 'Der EU Data Act (Verordnung (EU) 2023/2854) trat im Januar 2024 in Kraft und gilt seit dem 12. September 2025. Er regelt den fairen Zugang zu und die Nutzung von Daten, insbesondere IoT-Daten und Cloud-Wechsel-Rechte.' },
           { q: 'Welche Lizenz erfordert die Ver\u00f6ffentlichung von Modifikationen bei Server-Deployment?', options: ['MIT', 'Apache 2.0', 'AGPL 3.0', 'BSD'], correct: 2, explanation: 'Die AGPL 3.0 (z.B. Metabase, Grafana) verlangt, dass \u00c4nderungen am Quellcode auch bei reinem Server-Betrieb ver\u00f6ffentlicht werden m\u00fcssen.' },
           { q: 'Welches Tool eignet sich am besten f\u00fcr einen dbt-basierten Modern Data Stack?', options: ['Power BI', 'Metabase', 'Lightdash', 'Grafana'], correct: 2, explanation: 'Lightdash ist speziell f\u00fcr dbt-Workflows konzipiert und bietet native Metrics-Layer-Integration.' },
           { q: 'Was fordert Art. 32 DSGVO von Verantwortlichen?', options: ['Einwilligung der Nutzer', 'Technische und organisatorische Ma\u00dfnahmen (TOMs)', 'Datenschutzfolgenabsch\u00e4tzung', 'Verbot von Cloud-Nutzung'], correct: 1, explanation: 'Art. 32 DSGVO verpflichtet zur Umsetzung geeigneter technischer und organisatorischer Ma\u00dfnahmen (TOMs) zur Sicherheit der Datenverarbeitung.' },
@@ -460,16 +480,17 @@
         s2InfoTitle: 'Schrems II & EU-US Data Privacy Framework',
         s2InfoText: 'After Schrems II (CJEU, 2020), the transfer of personal data to the USA without special safeguards is unlawful. The EU-US Data Privacy Framework (2023) creates a new legal basis but remains politically controversial. Companies should additionally use Standard Contractual Clauses (SCCs) and Transfer Impact Assessments (TIAs).',
         s3Title: 'SaaS BI Tools: Cloud Lock-in',
-        s3P1: 'Cloud lock-in occurs when switching to an alternative provider becomes technically or economically prohibitive. In the BI context, proprietary data models, DAX/M formulas, permission structures, and API dependencies are the main drivers.',
+        s3P1: 'Cloud lock-in occurs when switching to an alternative provider becomes technically or economically prohibitive. In the BI context, proprietary data models, DAX/M formulas, permission structures, and API dependencies are the main drivers. Platforms such as Microsoft Fabric amplify this: once ingestion, transformation, warehousing and reporting all sit on OneLake, the switching barrier grows with every additional workload.',
         s3ConceptTitle: 'Total Cost of Ownership (TCO) for BI Tools',
         s3ConceptItems: [
-          'Direct costs: License fees per user/month (Power BI: ~\u20ac9\u201310, Tableau: ~\u20ac15, Looker: enterprise pricing on request)',
+          'Direct costs: license fees per user/month (Power BI Pro: $14, Power BI PPU: $24 \u2013 as of 1 April 2025; Tableau Creator: ~$75, Viewer: ~$15; Looker: enterprise pricing on request) or a capacity model (Microsoft Fabric F-SKU; from F64 free-licence users may read reports)',
           'Migration costs: Effort for data export, dashboard rebuilding, training when switching providers',
           'Opportunity costs: Features only available within the vendor ecosystem (e.g., Copilot in Power BI)',
           'Risk costs: Price increases, service discontinuation, regulatory conflicts (CLOUD Act)',
           'Self-hosted operations costs: Servers, maintenance, updates, monitoring \u2013 requires personnel capacity',
         ],
         s3LockInItems: [
+          'Platform gravity: Microsoft Fabric bundles Data Factory, Warehouse, Spark and Power BI on OneLake \u2013 switching then means migrating an entire data platform, not just dashboards',
           'Data stored with the provider \u2013 US servers at Microsoft (Power BI), Google (Looker), Salesforce (Tableau)',
           'Proprietary formats: DAX (Power BI), VizQL (Tableau), LookML (Looker) \u2013 not portable',
           'GDPR complications affect ALL US cloud providers equally (Patriot Act, CLOUD Act)',
@@ -520,6 +541,7 @@
         ],
         s6ProgressLabel: 'Completed',
         s6Of: 'of',
+        s6Reset: 'Reset checklist',
         s7Title: 'Decision Matrix: Which Tool When?',
         s7ThScenario: 'Scenario',
         s7ThRec: 'Recommendation',
@@ -579,7 +601,7 @@
         quizIntro: 'Test your knowledge on Digital Sovereignty and Open-Source BI:',
         quizQuestions: [
           { q: 'What is the main driver of cloud lock-in for BI tools?', options: ['License costs too high', 'Proprietary data formats and API dependencies', 'Lack of internet connectivity', 'Too many users on the team'], correct: 1, explanation: 'Lock-in primarily arises from proprietary formats (DAX, VizQL, LookML) and API dependencies that make switching technically complex.' },
-          { q: 'Which EU law has regulated access to and use of data since 2024?', options: ['GDPR', 'EU AI Act', 'EU Data Act', 'ePrivacy Regulation'], correct: 2, explanation: 'The EU Data Act (2024) regulates fair access to and use of data, particularly IoT data and cloud switching rights.' },
+          { q: 'Which EU law regulates access to and use of data (applicable since 12 Sep 2025)?', options: ['GDPR', 'EU AI Act', 'EU Data Act', 'ePrivacy Regulation'], correct: 2, explanation: 'The EU Data Act (Regulation (EU) 2023/2854) entered into force in January 2024 and has applied since 12 September 2025. It regulates fair access to and use of data, particularly IoT data and cloud switching rights.' },
           { q: 'Which license requires publication of modifications for server deployment?', options: ['MIT', 'Apache 2.0', 'AGPL 3.0', 'BSD'], correct: 2, explanation: 'AGPL 3.0 (e.g., Metabase, Grafana) requires that source code changes must be published even for server-only deployment.' },
           { q: 'Which tool is best suited for a dbt-based modern data stack?', options: ['Power BI', 'Metabase', 'Lightdash', 'Grafana'], correct: 2, explanation: 'Lightdash is specifically designed for dbt workflows and offers native metrics layer integration.' },
           { q: 'What does Art. 32 GDPR require from data controllers?', options: ['User consent', 'Technical and organizational measures (TOMs)', 'Data protection impact assessment', 'Prohibition of cloud use'], correct: 1, explanation: 'Art. 32 GDPR requires the implementation of appropriate technical and organizational measures (TOMs) for data processing security.' },
@@ -603,12 +625,18 @@
 
     const c = t[lang];
 
+    // Tab-Titel und html[lang] der gewaehlten Sprache folgen lassen
+    React.useEffect(() => {
+      document.title = 'Lab 06 \u2013 ' + c.pageTitle + ' \u00B7 THWS BI Lab';
+      document.documentElement.lang = lang;
+    }, [lang, c.pageTitle]);
+
     // Code strings as regular strings (safe, no ${} collision risk)
-    const codeDockerCompose = "# docker-compose.yml \u2013 Self-Hosted Metabase + PostgreSQL\n# Compose Spec (v2) \u2013 'version' key is deprecated\nservices:\n  metabase:\n    image: metabase/metabase:v0.50.29   # Version pinnen!\n    ports:\n      - \"3000:3000\"\n    environment:\n      MB_DB_TYPE: postgres\n      MB_DB_DBNAME: metabase\n      MB_DB_HOST: postgres\n      MB_DB_USER: metabase\n      MB_DB_PASS: ${MB_DB_PASS}          # .env-Datei nutzen!\n    depends_on:\n      postgres:\n        condition: service_healthy\n    restart: unless-stopped\n\n  postgres:\n    image: postgres:16-alpine\n    environment:\n      POSTGRES_USER: metabase\n      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # .env-Datei!\n      POSTGRES_DB: metabase\n    volumes:\n      - metabase_data:/var/lib/postgresql/data\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U metabase\"]\n      interval: 10s\n      timeout: 5s\n      retries: 5\n    restart: unless-stopped\n\nvolumes:\n  metabase_data:";
+    const codeDockerCompose = "# docker-compose.yml \u2013 Self-Hosted Metabase + PostgreSQL\n# Compose Spec (v2) \u2013 'version' key is deprecated\nservices:\n  metabase:\n    image: metabase/metabase:v0.63.13   # Version pinnen!\n    ports:\n      - \"3000:3000\"\n    environment:\n      MB_DB_TYPE: postgres\n      MB_DB_DBNAME: metabase\n      MB_DB_HOST: postgres\n      MB_DB_USER: metabase\n      MB_DB_PASS: ${POSTGRES_PASSWORD}   # eine einzige Variable fuer beide Container!\n    depends_on:\n      postgres:\n        condition: service_healthy\n    restart: unless-stopped\n\n  postgres:\n    image: postgres:17-alpine\n    environment:\n      POSTGRES_USER: metabase\n      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # .env-Datei!\n      POSTGRES_DB: metabase\n    volumes:\n      - metabase_data:/var/lib/postgresql/data\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U metabase\"]\n      interval: 10s\n      timeout: 5s\n      retries: 5\n    restart: unless-stopped\n\nvolumes:\n  metabase_data:";
 
-    const codeEnvFile = "# .env (im selben Verzeichnis wie docker-compose.yml)\nMB_DB_PASS=EinSicheresPasswort123!\nPOSTGRES_PASSWORD=EinSicheresPasswort123!";
+    const codeEnvFile = "# .env (im selben Verzeichnis wie docker-compose.yml)\n# Diese Datei NIE ins Git-Repo committen -> in .gitignore aufnehmen!\nPOSTGRES_PASSWORD=EinSicheresPasswort123!";
 
-    const codeBashDocker = "# .env-Datei erstellen (Passw\u00f6rter anpassen!):\ncp .env.example .env\n\n# Stack starten:\ndocker compose up -d\n\n# Status pr\u00fcfen:\ndocker compose ps\n\n# Logs anzeigen:\ndocker compose logs -f metabase\n\n# Zugriff: http://localhost:3000\n# Erster Start: Einrichtungsassistent \u00f6ffnet sich";
+    const codeBashDocker = "# .env-Datei aus dem Block oben anlegen (Passwort anpassen!):\nnano .env      # oder: notepad .env / code .env\n\n# Stack starten:\ndocker compose up -d\n\n# Status pr\u00fcfen:\ndocker compose ps\n\n# Logs anzeigen:\ndocker compose logs -f metabase\n\n# Zugriff: http://localhost:3000\n# Erster Start: Einrichtungsassistent \u00f6ffnet sich";
 
     const doneCount = checkedItems.filter(Boolean).length;
 
@@ -768,6 +796,17 @@
               {c.s6ChecklistItems.map((item, i) => (
                 <ChecklistItem key={i} text={item} checked={checkedItems[i]} onToggle={() => toggleCheck(i)} />
               ))}
+              {doneCount > 0 && (
+                <button
+                  onClick={resetChecklist}
+                  style={{
+                    marginTop: '0.9rem', background: 'transparent', border: '1px solid #D1D5DB',
+                    borderRadius: '6px', padding: '0.3rem 0.7rem', fontSize: '0.75rem',
+                    color: '#6B7280', cursor: 'pointer', fontFamily: 'inherit'
+                  }}>
+                  {c.s6Reset}
+                </button>
+              )}
             </div>
           </section>
 

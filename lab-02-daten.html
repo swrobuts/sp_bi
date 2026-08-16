@@ -6,9 +6,16 @@
   <title>Lab 02 &#8211; Daten: Quellen, Modelle, Qualit&auml;t &middot; THWS BI Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
+  <!-- React 18.3.1 (UMD). Bewusst NICHT React 19: React 19 liefert keine UMD-Builds mehr,
+       die dieses build-freie Setup (Transpilierung per text/babel im Browser) voraussetzt. -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"
+          integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"
+          integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1" crossorigin="anonymous"></script>
+  <!-- Babel bewusst auf 7.x gepinnt: Babel 8 stellt auf den automatic JSX runtime um
+       und bricht damit text/babel ohne Bundler. 7.29.8 = letzter 7.x-Stand. -->
+  <script src="https://unpkg.com/@babel/standalone@7.29.8/babel.min.js"
+          integrity="sha384-Ux6uBqExf/7ahsSNrA9VI7vuaw6sKjDoVdjdUxmIoL2qdlzFVZ157sTi6JK3Z9Q8" crossorigin="anonymous"></script>
   <style>
 
     :root {
@@ -204,7 +211,7 @@
     }
 
     // ─── QuizQuestion Component ───────────────────────────────────────────────
-    function QuizQuestion({ question, options, correctIndex, explanation }) {
+    function QuizQuestion({ question, options, correctIndex, explanation, lang }) {
       const [selected, setSelected] = React.useState(null);
       return (
         <div className="quiz-question-block">
@@ -223,7 +230,9 @@
           })}
           {selected !== null && (
             <div className={'quiz-explanation' + (selected !== correctIndex ? ' wrong-exp' : '')}>
-              {explanation}
+              {selected === correctIndex
+                ? (lang === 'en' ? '✓ Correct! ' : '✓ Richtig! ')
+                : (lang === 'en' ? '✗ Incorrect. ' : '✗ Falsch. ')}{explanation}
             </div>
           )}
         </div>
@@ -642,7 +651,7 @@
     // ─── App Component ────────────────────────────────────────────────────────
     function App() {
       const urlLang = new URLSearchParams(window.location.search).get('lang');
-      const [lang, setLang] = useState(() => localStorage.getItem('bi-lang') || urlLang || 'de');
+      const [lang, setLang] = useState(() => urlLang || localStorage.getItem('bi-lang') || 'de');
       const [activeSection, setActiveSection] = useState('datenquellen');
 
       const setLangAndStore = (l) => {
@@ -667,6 +676,12 @@
       }, []);
 
       const tx = translations[lang];
+
+      // Tab-Titel und html[lang] der gewaehlten Sprache folgen lassen
+      React.useEffect(() => {
+        document.title = 'Lab 02 \u2013 ' + tx.title + ' \u00B7 THWS BI Lab';
+        document.documentElement.lang = lang;
+      }, [lang, tx.title]);
 
       return (
         <div data-lang={lang}>
@@ -884,6 +899,7 @@
                   options={q.opts}
                   correctIndex={q.correct}
                   explanation={q.exp}
+                  lang={lang}
                 />
               ))}
             </section>

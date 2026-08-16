@@ -6,9 +6,16 @@
   <title>Lab 01 &#8211; Grundlagen BI &middot; THWS BI Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
+  <!-- React 18.3.1 (UMD). Bewusst NICHT React 19: React 19 liefert keine UMD-Builds mehr,
+       die dieses build-freie Setup (Transpilierung per text/babel im Browser) voraussetzt. -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"
+          integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"
+          integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1" crossorigin="anonymous"></script>
+  <!-- Babel bewusst auf 7.x gepinnt: Babel 8 stellt auf den automatic JSX runtime um
+       und bricht damit text/babel ohne Bundler. 7.29.8 = letzter 7.x-Stand. -->
+  <script src="https://unpkg.com/@babel/standalone@7.29.8/babel.min.js"
+          integrity="sha384-Ux6uBqExf/7ahsSNrA9VI7vuaw6sKjDoVdjdUxmIoL2qdlzFVZ157sTi6JK3Z9Q8" crossorigin="anonymous"></script>
   <style>
 
     :root {
@@ -204,7 +211,7 @@
     }
 
     // ─── QuizQuestion Component ───────────────────────────────────────────────
-    function QuizQuestion({ question, options, correctIndex, explanation }) {
+    function QuizQuestion({ question, options, correctIndex, explanation, lang }) {
       const [selected, setSelected] = useState(null);
       const answered = selected !== null;
       return (
@@ -229,7 +236,9 @@
           })}
           {answered && (
             <div className={'quiz-explanation' + (selected !== correctIndex ? ' wrong-exp' : '')}>
-              {selected === correctIndex ? '\u2713 Richtig! ' : '\u2717 Falsch. '}{explanation}
+              {selected === correctIndex
+                ? (lang === 'en' ? '\u2713 Correct! ' : '\u2713 Richtig! ')
+                : (lang === 'en' ? '\u2717 Incorrect. ' : '\u2717 Falsch. ')}{explanation}
             </div>
           )}
         </div>
@@ -271,7 +280,7 @@
           { era: '1990er', label: 'Data Warehouses', desc: 'Bill Inmon (1992) und Ralph Kimball (1996) begr\u00FCnden das Data Warehousing, OLAP-W\u00FCrfel, erste BI-Tools' },
           { era: '2000er', label: 'Fr\u00FChe Self-Service BI', desc: 'Tableau (gegr. 2003), QlikView \u2013 erste visuelle BI-Werkzeuge f\u00FCr Fachanwender' },
           { era: '2010er', label: 'Self-Service BI', desc: 'Power BI (Release 2015) \u2013 Analysen ohne IT-Abteilung, Cloud-DWH (BigQuery 2010, Snowflake 2014)' },
-          { era: 'Heute', label: 'KI-gest\u00FCtzte BI', desc: 'Copilot in Power BI, Tableau Pulse, AutoML, Natural Language Querying, Data Lakehouse (Databricks)' },
+          { era: 'Heute', label: 'Plattform-Konsolidierung & KI', desc: 'Microsoft Fabric (2023) b\u00FCndelt Power BI, Data Factory, Warehouse und Lakehouse auf OneLake; Copilot in Power BI, Tableau Pulse, AutoML, Natural Language Querying, Data Lakehouse (Databricks)' },
         ],
         s1AbgrTitle: 'Abgrenzung: BI vs. Data Science vs. Analytics',
         s1AbgrHeaders: ['Disziplin', 'Fokus', 'Typische Frage', 'Werkzeuge'],
@@ -331,7 +340,8 @@
         s4Desc: 'Der BI-Markt ist zweigeteilt: kommerzielle Closed-Source-L\u00F6sungen und freie Open-Source-Alternativen.',
         s4Headers: ['Tool', 'Typ', 'Kosten', 'Datenhoheit'],
         s4Rows: [
-          ['Power BI', 'Closed-Source', 'Freemium / Abo', 'Microsoft Cloud (SaaS) / On-Premises m\u00f6glich (Report Server)'],
+          ['Power BI', 'Closed-Source', 'Freemium / Abo (Pro 14 $, PPU 24 $ pro Nutzer/Monat)', 'Microsoft Cloud (SaaS) / On-Premises m\u00f6glich (Report Server)'],
+          ['Microsoft Fabric', 'Closed-Source', 'Kapazit\u00e4ts-Abo (F-SKU, ab F2)', 'Microsoft Cloud (OneLake)'],
           ['Tableau', 'Closed-Source', 'Abo', 'Salesforce Cloud'],
           ['Plotly Dash', 'Open-Source', 'Kostenlos', 'Selbst gehostet'],
           ['Apache Superset', 'Open-Source', 'Kostenlos', 'Selbst gehostet'],
@@ -340,8 +350,10 @@
           ['Qlik Sense', 'Closed-Source', 'Abo', 'Cloud / On-Premises'],
           ['DeltaMaster (Bissantz)', 'Closed-Source', 'Abo', 'On-Premises / Cloud'],
         ],
+        s4FabricTitle: 'Einordnung: Power BI und Microsoft Fabric',
+        s4FabricText: 'Seit 2023 ist Power BI Teil von Microsoft Fabric \u2013 einer SaaS-Plattform, die Datenintegration (Data Factory), Data Engineering (Spark), Data Warehouse, Real-Time Analytics und Power BI unter einem gemeinsamen Speicher namens OneLake zusammenfasst. F\u00FCr die Lehre wichtig: Power BI Desktop und Power BI Pro funktionieren unver\u00E4ndert weiter \u2013 alles in diesem Kurs bleibt g\u00FCltig. Ge\u00E4ndert hat sich das Kapazit\u00E4tsmodell: Die fr\u00FCheren Premium-Kapazit\u00E4ten (P1\u2013P5) werden zum Ende der jeweiligen Vertragslaufzeit durch Fabric-Kapazit\u00E4ten (F-SKUs) ersetzt (P1\u2192F64, P2\u2192F128 usw.). Die entscheidende Schwelle ist F64: erst ab dieser Gr\u00F6\u00DFe d\u00FCrfen Berichte von Nutzern mit kostenloser Lizenz gelesen werden \u2013 darunter braucht jeder Betrachter eine Pro- oder PPU-Lizenz. Aus Souver\u00E4nit\u00E4tssicht versch\u00E4rft Fabric das Lock-in: OneLake ist der gemeinsame Speicher aller Workloads, und je mehr Pipelines, Modelle und Notebooks dort liegen, desto teurer wird ein Ausstieg.',
         s4NoteTitle: 'Hinweis zur Datensouver\u00E4nit\u00E4t',
-        s4NoteText: 'Open-Source-Tools wie Apache Superset und Metabase erm\u00F6glichen self-hosted Betrieb und sind damit vollst\u00E4ndig DSGVO-konform. In Lab 06 vertiefen wir diesen Ansatz.',
+        s4NoteText: 'Open-Source-Tools wie Apache Superset und Metabase erm\u00F6glichen self-hosted Betrieb. Das ist eine wichtige Voraussetzung f\u00FCr Datensouver\u00E4nit\u00E4t \u2013 es entf\u00E4llt der Drittlandtransfer und der AVV mit einem Cloud-Anbieter. DSGVO-Konformit\u00E4t entsteht dadurch aber nicht automatisch: Rechtsgrundlage, Verarbeitungsverzeichnis (Art. 30), TOMs (Art. 32) und Betroffenenrechte sind unabh\u00E4ngig vom Hosting-Modell zu erf\u00FCllen. In Lab 06 vertiefen wir das.',
 
         // Section 5
         s5Title: 'Lernressourcen',
@@ -422,6 +434,17 @@
             correct: 2,
             exp: 'ETL/ELT (Extract, Transform, Load) ist für das Bereinigen, Harmonisieren und Laden der Rohdaten zuständig. Tools wie dbt, Airbyte oder Fivetran automatisieren diesen Prozess.',
           },
+          {
+            q: 'Ab welcher Fabric-Kapazität dürfen Nutzer mit kostenloser Lizenz Berichte ansehen?',
+            opts: [
+              'F2',
+              'F16',
+              'F64',
+              'Bei jeder Größe – Fabric braucht keine Nutzerlizenzen',
+            ],
+            correct: 2,
+            exp: 'F64 ist die entscheidende Schwelle: Erst ab dieser Kapazität können Berichte von Nutzern mit kostenloser Lizenz konsumiert werden. Darunter benötigt jeder Betrachter eine Pro- (14 $) oder PPU-Lizenz (24 $). Genau an dieser Grenze entscheidet sich in der Praxis, ob eine Kapazität oder Einzellizenzen günstiger sind.',
+          },
         ],
         // Zusammenfassung
         summaryTitle: 'Zusammenfassung',
@@ -432,6 +455,7 @@
           'Moderne Konzepte wie Data Lakehouse (Databricks) vereinen die Vorteile von Data Warehouse und Data Lake in einer Plattform.',
           'KPIs werden nach Typ (quantitativ/qualitativ, absolut/relativ) und Zeitrichtung (Lead = vorausschauend, Lag = rückblickend) klassifiziert. Gute KPIs folgen dem SMART-Prinzip.',
           'Der BI-Markt teilt sich in kommerzielle Lösungen (Power BI seit 2015, Tableau, Looker, Qlik) und Open-Source-Alternativen (Apache Superset, Metabase, Plotly Dash) mit voller Datenhoheit.',
+          'Power BI ist seit 2023 Teil von Microsoft Fabric: Die fr\u00FCheren Premium-Kapazit\u00E4ten (P1\u2013P5) weichen Fabric-F-SKUs, gemeinsamer Speicher ist OneLake. Ab F64 d\u00FCrfen Nutzer mit kostenloser Lizenz Berichte lesen \u2013 unterhalb braucht jeder Betrachter Pro oder PPU.',
           'Bill Inmon (1992) und Ralph Kimball (1996) begründeten das Data Warehousing – die Grundlage moderner BI-Architektur.',
         ],
         navNext: 'Lab 02: Daten \u2192',
@@ -470,7 +494,7 @@
           { era: '1990s', label: 'Data Warehouses', desc: 'Bill Inmon (1992) and Ralph Kimball (1996) establish data warehousing, OLAP cubes, first BI tools' },
           { era: '2000s', label: 'Early Self-Service BI', desc: 'Tableau (founded 2003), QlikView \u2013 first visual BI tools for business users' },
           { era: '2010s', label: 'Self-Service BI', desc: 'Power BI (released 2015) \u2013 analysis without IT, Cloud DWH (BigQuery 2010, Snowflake 2014)' },
-          { era: 'Today', label: 'AI-Powered BI', desc: 'Copilot in Power BI, Tableau Pulse, AutoML, Natural Language Querying, Data Lakehouse (Databricks)' },
+          { era: 'Today', label: 'Platform Consolidation & AI', desc: 'Microsoft Fabric (2023) bundles Power BI, Data Factory, Warehouse and Lakehouse on OneLake; Copilot in Power BI, Tableau Pulse, AutoML, Natural Language Querying, Data Lakehouse (Databricks)' },
         ],
         s1AbgrTitle: 'Distinguishing: BI vs. Data Science vs. Analytics',
         s1AbgrHeaders: ['Discipline', 'Focus', 'Typical Question', 'Tools'],
@@ -530,7 +554,8 @@
         s4Desc: 'The BI market is split: commercial closed-source solutions and free open-source alternatives.',
         s4Headers: ['Tool', 'Type', 'Cost', 'Data Sovereignty'],
         s4Rows: [
-          ['Power BI', 'Closed-Source', 'Freemium / Subscription', 'Microsoft Cloud (SaaS) / On-Premises possible (Report Server)'],
+          ['Power BI', 'Closed-Source', 'Freemium / subscription (Pro $14, PPU $24 per user/month)', 'Microsoft Cloud (SaaS) / On-Premises possible (Report Server)'],
+          ['Microsoft Fabric', 'Closed-Source', 'Capacity subscription (F-SKU, from F2)', 'Microsoft Cloud (OneLake)'],
           ['Tableau', 'Closed-Source', 'Subscription', 'Salesforce Cloud'],
           ['Plotly Dash', 'Open-Source', 'Free', 'Self-hosted'],
           ['Apache Superset', 'Open-Source', 'Free', 'Self-hosted'],
@@ -539,8 +564,10 @@
           ['Qlik Sense', 'Closed-Source', 'Subscription', 'Cloud / On-Premises'],
           ['DeltaMaster (Bissantz)', 'Closed-Source', 'Subscription', 'On-Premises / Cloud'],
         ],
+        s4FabricTitle: 'Context: Power BI and Microsoft Fabric',
+        s4FabricText: 'Since 2023 Power BI has been part of Microsoft Fabric, a SaaS platform that combines data integration (Data Factory), data engineering (Spark), data warehousing, real-time analytics and Power BI on top of a shared storage layer called OneLake. Important for this course: Power BI Desktop and Power BI Pro continue to work unchanged, so everything taught here remains valid. What changed is the capacity model: the former Premium capacities (P1-P5) are being replaced by Fabric capacities (F-SKUs) at the end of each contract term (P1 to F64, P2 to F128, and so on). The decisive threshold is F64: only from that size may reports be consumed by users holding a free licence; below it every viewer needs a Pro or PPU licence. From a sovereignty perspective Fabric deepens lock-in: OneLake is the shared store for all workloads, and the more pipelines, models and notebooks live there, the more expensive an exit becomes.',
         s4NoteTitle: 'Note on Data Sovereignty',
-        s4NoteText: 'Open-source tools like Apache Superset and Metabase allow self-hosted operation and are therefore fully GDPR-compliant. In Lab 06 we explore this approach in depth.',
+        s4NoteText: 'Open-source tools like Apache Superset and Metabase allow self-hosted operation. That is an important prerequisite for data sovereignty \u2013 it removes third-country transfers and the processing agreement with a cloud vendor. It does not by itself make you GDPR-compliant: a legal basis, records of processing (Art. 30), TOMs (Art. 32) and data subject rights apply regardless of the hosting model. Lab 06 explores this in depth.',
 
         // Section 5
         s5Title: 'Learning Resources',
@@ -621,6 +648,17 @@
             correct: 2,
             exp: 'ETL/ELT (Extract, Transform, Load) is responsible for cleansing, harmonising, and loading raw data. Tools like dbt, Airbyte, or Fivetran automate this process.',
           },
+          {
+            q: 'From which Fabric capacity size may users with a free licence view reports?',
+            opts: [
+              'F2',
+              'F16',
+              'F64',
+              'At any size – Fabric needs no user licences',
+            ],
+            correct: 2,
+            exp: 'F64 is the decisive threshold: only from this capacity onwards can reports be consumed by users holding a free licence. Below it, every viewer needs a Pro ($14) or PPU ($24) licence. In practice this boundary decides whether a capacity or per-user licensing is cheaper.',
+          },
         ],
         // Summary
         summaryTitle: 'Summary',
@@ -631,6 +669,7 @@
           'Modern concepts like Data Lakehouse (Databricks) combine the advantages of Data Warehouse and Data Lake into a single platform.',
           'KPIs are classified by type (quantitative/qualitative, absolute/relative) and time direction (Lead = forward-looking, Lag = backward-looking). Good KPIs follow the SMART principle.',
           'The BI market is split between commercial solutions (Power BI since 2015, Tableau, Looker, Qlik) and open-source alternatives (Apache Superset, Metabase, Plotly Dash) with full data sovereignty.',
+          'Power BI has been part of Microsoft Fabric since 2023: the former Premium capacities (P1-P5) give way to Fabric F-SKUs, with OneLake as the shared store. From F64 upwards users with a free licence may read reports; below that every viewer needs Pro or PPU.',
           'Bill Inmon (1992) and Ralph Kimball (1996) established data warehousing – the foundation of modern BI architecture.',
         ],
         navNext: 'Lab 02: Data \u2192',
@@ -640,7 +679,7 @@
     // ─── App Component ────────────────────────────────────────────────────────
     function App() {
       const urlLang = new URLSearchParams(window.location.search).get('lang');
-      const [lang, setLang] = useState(() => localStorage.getItem('bi-lang') || urlLang || 'de');
+      const [lang, setLang] = useState(() => urlLang || localStorage.getItem('bi-lang') || 'de');
       const [activeSection, setActiveSection] = useState('was-ist-bi');
 
       const setLangAndStore = (l) => {
@@ -665,6 +704,12 @@
       }, []);
 
       const tx = translations[lang];
+
+      // Tab-Titel und html[lang] der gewaehlten Sprache folgen lassen
+      React.useEffect(() => {
+        document.title = 'Lab 01 \u2013 ' + tx.title + ' \u00B7 THWS BI Lab';
+        document.documentElement.lang = lang;
+      }, [lang, tx.title]);
 
       return (
         <div data-lang={lang}>
@@ -849,6 +894,11 @@
                 </tbody>
               </table>
 
+              <div className="concept-box" style={{ marginTop: '1.5rem' }}>
+                <h4 style={{ margin: '0 0 0.5rem', color: 'var(--col-primary)' }}>{tx.s4FabricTitle}</h4>
+                <p style={{ margin: 0 }}>{tx.s4FabricText}</p>
+              </div>
+
               <div className="info-box" style={{ marginTop: '1.5rem' }}>
                 <h4 style={{ margin: '0 0 0.5rem', color: 'var(--col-primary)' }}>{tx.s4NoteTitle}</h4>
                 <p style={{ margin: 0 }}>{tx.s4NoteText}</p>
@@ -889,6 +939,7 @@
                   options={q.opts}
                   correctIndex={q.correct}
                   explanation={q.exp}
+                  lang={lang}
                 />
               ))}
             </section>

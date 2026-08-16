@@ -6,9 +6,16 @@
   <title>Lab 05 &#8211; Fallstudie: Retail Analytics &middot; THWS BI Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
+  <!-- React 18.3.1 (UMD). Bewusst NICHT React 19: React 19 liefert keine UMD-Builds mehr,
+       die dieses build-freie Setup (Transpilierung per text/babel im Browser) voraussetzt. -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"
+          integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"
+          integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1" crossorigin="anonymous"></script>
+  <!-- Babel bewusst auf 7.x gepinnt: Babel 8 stellt auf den automatic JSX runtime um
+       und bricht damit text/babel ohne Bundler. 7.29.8 = letzter 7.x-Stand. -->
+  <script src="https://unpkg.com/@babel/standalone@7.29.8/babel.min.js"
+          integrity="sha384-Ux6uBqExf/7ahsSNrA9VI7vuaw6sKjDoVdjdUxmIoL2qdlzFVZ157sTi6JK3Z9Q8" crossorigin="anonymous"></script>
   <style>
 
     :root {
@@ -197,6 +204,11 @@
               {isCorrect ? (lang === 'en' ? '\u2713 Correct!' : '\u2713 Richtig!') : (lang === 'en' ? '\u2717 Incorrect' : '\u2717 Falsch')}
             </p>
           )}
+          {selected !== null && question.explanation && (
+            <p style={{ marginTop: '0.35rem', fontSize: '0.85rem', lineHeight: 1.6, color: '#374151' }}>
+              {question.explanation}
+            </p>
+          )}
         </div>
       );
     }
@@ -294,12 +306,12 @@
 
         quizTitle: 'Quiz',
         quizQuestions: [
-          { q: 'Welche Ebene der KPI-Hierarchie zeigt Gesamtumsatz und Marge?', options: ['Operativ', 'Strategisch', 'Warnsignale', 'Taktisch'], correct: 1 },
-          { q: 'Was ist der erste Schritt im CRISP-DM-Zyklus?', options: ['Data Preparation', 'Business Understanding', 'Modeling', 'Evaluation'], correct: 1 },
-          { q: 'Wie viele Bestellungen enth\u00E4lt der Superstore-Datensatz?', options: ['5.000', '9.994', '15.000', '20.000'], correct: 1 },
-          { q: 'Welches Tool eignet sich besser f\u00FCr nicht-technische Nutzer?', options: ['Plotly Dash', 'Power BI', 'Jupyter Notebook', 'Streamlit'], correct: 1 },
-          { q: 'Was liefert df.describe() in pandas?', options: ['Nur Datentypen', 'Statistische \u00DCbersicht (count, mean, std, min, max)', 'Nur Nullwerte', 'Spaltenanzahl'], correct: 1 },
-          { q: 'Wie deployt man eine Dash-App produktiv?', options: ['Power BI Service', 'Gunicorn + Docker', 'Excel Online', 'Google Sheets'], correct: 1 },
+          { q: 'Welche Ebene der KPI-Hierarchie zeigt Gesamtumsatz und Marge?', options: ['Operativ', 'Strategisch', 'Warnsignale', 'Taktisch'], correct: 1, explanation: 'Die strategische Ebene richtet sich an die Gesch\u00E4ftsf\u00FChrung und zeigt hoch aggregierte Kennzahlen wie Gesamtumsatz und Marge. Die taktische Ebene bricht diese auf Region oder Kategorie herunter, die operative Ebene zeigt Einzelvorg\u00E4nge wie einzelne Bestellungen.' },
+          { q: 'Was ist der erste Schritt im CRISP-DM-Zyklus?', options: ['Data Preparation', 'Business Understanding', 'Modeling', 'Evaluation'], correct: 1, explanation: 'CRISP-DM beginnt mit Business Understanding: erst die fachliche Frage kl\u00E4ren, dann Daten anfassen. Die Reihenfolge lautet Business Understanding, Data Understanding, Data Preparation, Modeling, Evaluation, Deployment \u2013 wer mit den Daten startt, baut oft am Problem vorbei.' },
+          { q: 'Wie viele Bestellungen enth\u00E4lt der Superstore-Datensatz?', options: ['5.000', '9.994', '15.000', '20.000'], correct: 1, explanation: 'Der Sample-Superstore-Datensatz enth\u00E4lt 9.994 Zeilen (Bestellpositionen) \u00FCber vier Jahre, verteilt auf die drei Kategorien Furniture, Office Supplies und Technology. Pr\u00FCfen l\u00E4sst sich das direkt mit df.shape.' },
+          { q: 'Welches Tool eignet sich besser f\u00FCr nicht-technische Nutzer?', options: ['Plotly Dash', 'Power BI', 'Jupyter Notebook', 'Streamlit'], correct: 1, explanation: 'Power BI bietet Drag-and-drop, fertige Visuals und eine Oberfl\u00E4che, die Excel-Nutzern vertraut ist \u2013 ohne Programmierkenntnisse. Plotly Dash ist m\u00E4chtiger und voll anpassbar, setzt aber Python-Kenntnisse und eigenes Deployment voraus.' },
+          { q: 'Was liefert df.describe() in pandas?', options: ['Nur Datentypen', 'Statistische \u00DCbersicht (count, mean, std, min, max)', 'Nur Nullwerte', 'Spaltenanzahl'], correct: 1, explanation: 'df.describe() liefert eine statistische \u00DCbersicht der numerischen Spalten: count, mean, std, min, die Quartile 25/50/75 % und max. Ideal f\u00FCr den ersten Plausibilit\u00E4tscheck \u2013 auff\u00E4llige Minima oder Maxima decken Datenqualit\u00E4tsprobleme sofort auf.' },
+          { q: 'Wie deployt man eine Dash-App produktiv?', options: ['Power BI Service', 'Gunicorn + Docker', 'Excel Online', 'Google Sheets'], correct: 1, explanation: 'Produktiv l\u00E4uft eine Dash-App hinter Gunicorn als WSGI-Server, verpackt in einen Docker-Container \u2013 reproduzierbar, skalierbar \u00FCber Worker und unabh\u00E4ngig von der lokalen Python-Installation. In der Praxis kommt davor noch ein Reverse Proxy f\u00FCr HTTPS.' },
         ],
 
         summaryTitle: 'Zusammenfassung',
@@ -408,12 +420,12 @@
 
         quizTitle: 'Quiz',
         quizQuestions: [
-          { q: 'Which KPI hierarchy level shows total revenue and margin?', options: ['Operational', 'Strategic', 'Warning Signals', 'Tactical'], correct: 1 },
-          { q: 'What is the first step in the CRISP-DM cycle?', options: ['Data Preparation', 'Business Understanding', 'Modeling', 'Evaluation'], correct: 1 },
-          { q: 'How many orders does the Superstore dataset contain?', options: ['5,000', '9,994', '15,000', '20,000'], correct: 1 },
-          { q: 'Which tool is better suited for non-technical users?', options: ['Plotly Dash', 'Power BI', 'Jupyter Notebook', 'Streamlit'], correct: 1 },
-          { q: 'What does df.describe() return in pandas?', options: ['Only data types', 'Statistical summary (count, mean, std, min, max)', 'Only null values', 'Column count'], correct: 1 },
-          { q: 'How do you deploy a Dash app to production?', options: ['Power BI Service', 'Gunicorn + Docker', 'Excel Online', 'Google Sheets'], correct: 1 },
+          { q: 'Which KPI hierarchy level shows total revenue and margin?', options: ['Operational', 'Strategic', 'Warning Signals', 'Tactical'], correct: 1, explanation: 'The strategic level targets executive management and shows highly aggregated metrics such as total revenue and margin. The tactical level breaks these down by region or category; the operational level shows individual transactions such as single orders.' },
+          { q: 'What is the first step in the CRISP-DM cycle?', options: ['Data Preparation', 'Business Understanding', 'Modeling', 'Evaluation'], correct: 1, explanation: 'CRISP-DM starts with Business Understanding: clarify the business question before touching data. The order is Business Understanding, Data Understanding, Data Preparation, Modeling, Evaluation, Deployment - starting from the data often means solving the wrong problem.' },
+          { q: 'How many orders does the Superstore dataset contain?', options: ['5,000', '9,994', '15,000', '20,000'], correct: 1, explanation: 'The Sample Superstore dataset contains 9,994 rows (order line items) spanning four years across the three categories Furniture, Office Supplies and Technology. You can verify this directly with df.shape.' },
+          { q: 'Which tool is better suited for non-technical users?', options: ['Plotly Dash', 'Power BI', 'Jupyter Notebook', 'Streamlit'], correct: 1, explanation: 'Power BI offers drag-and-drop, ready-made visuals and an interface familiar to Excel users, with no programming required. Plotly Dash is more powerful and fully customisable but assumes Python skills and your own deployment.' },
+          { q: 'What does df.describe() return in pandas?', options: ['Only data types', 'Statistical summary (count, mean, std, min, max)', 'Only null values', 'Column count'], correct: 1, explanation: 'df.describe() returns a statistical summary of the numeric columns: count, mean, std, min, the 25/50/75% quartiles and max. Ideal for a first plausibility check - implausible minima or maxima expose data quality problems immediately.' },
+          { q: 'How do you deploy a Dash app to production?', options: ['Power BI Service', 'Gunicorn + Docker', 'Excel Online', 'Google Sheets'], correct: 1, explanation: 'In production a Dash app runs behind Gunicorn as the WSGI server, packaged in a Docker container - reproducible, scalable via workers and independent of the local Python installation. In practice a reverse proxy for HTTPS sits in front of it.' },
         ],
 
         summaryTitle: 'Summary',
@@ -442,7 +454,7 @@
     // ─── App Component ────────────────────────────────────────────────────────
     function App() {
       const urlLang = new URLSearchParams(window.location.search).get('lang');
-      const [lang, setLang] = useState(() => localStorage.getItem('bi-lang') || urlLang || 'de');
+      const [lang, setLang] = useState(() => urlLang || localStorage.getItem('bi-lang') || 'de');
       const [activeSection, setActiveSection] = useState('ueberblick');
 
       const setLangAndStore = (l) => {
@@ -467,6 +479,12 @@
       }, []);
 
       const tx = translations[lang];
+
+      // Tab-Titel und html[lang] der gewaehlten Sprache folgen lassen
+      React.useEffect(() => {
+        document.title = 'Lab 05 \u2013 ' + tx.title + ' \u00B7 THWS BI Lab';
+        document.documentElement.lang = lang;
+      }, [lang, tx.title]);
 
       return (
         <div data-lang={lang}>

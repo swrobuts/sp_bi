@@ -6,9 +6,16 @@
   <title>Lab 03 &#8211; KPIs mit DAX &amp; Python &middot; THWS BI Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
+  <!-- React 18.3.1 (UMD). Bewusst NICHT React 19: React 19 liefert keine UMD-Builds mehr,
+       die dieses build-freie Setup (Transpilierung per text/babel im Browser) voraussetzt. -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"
+          integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"
+          integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1" crossorigin="anonymous"></script>
+  <!-- Babel bewusst auf 7.x gepinnt: Babel 8 stellt auf den automatic JSX runtime um
+       und bricht damit text/babel ohne Bundler. 7.29.8 = letzter 7.x-Stand. -->
+  <script src="https://unpkg.com/@babel/standalone@7.29.8/babel.min.js"
+          integrity="sha384-Ux6uBqExf/7ahsSNrA9VI7vuaw6sKjDoVdjdUxmIoL2qdlzFVZ157sTi6JK3Z9Q8" crossorigin="anonymous"></script>
   <style>
 
     :root {
@@ -228,6 +235,11 @@
               {isCorrect ? (lang === 'en' ? '\u2713 Correct!' : '\u2713 Richtig!') : (lang === 'en' ? '\u2717 Incorrect' : '\u2717 Falsch')}
             </p>
           )}
+          {selected !== null && question.explanation && (
+            <p style={{ marginTop: '0.35rem', fontSize: '0.85rem', lineHeight: 1.6, color: '#374151' }}>
+              {question.explanation}
+            </p>
+          )}
         </div>
       );
     }
@@ -284,7 +296,7 @@
         ],
         s1GoldenRule: 'Goldene Regel',
         s1GoldenRuleText: 'Fast immer Measures verwenden! Measures sind flexibler, verbrauchen weniger Speicher und reagieren korrekt auf Filter. Calculated Columns nur verwenden, wenn Sie den Wert in Slicern oder als Filterbedingung ben\u00F6tigen.',
-        s1CodeDax: '-- Einfache Aggregation\nGesamtumsatz = SUM(Umsatz[Betrag])\n\n-- Mit Bedingung (CALCULATE)\nUmsatz_DE = CALCULATE(SUM(Umsatz[Betrag]), Umsatz[Land] = "Deutschland")\n\n-- Division mit Null-Absicherung\nMarge_% = DIVIDE([Bruttogewinn], [Umsatz], 0) * 100\n\n-- Zeitintelligenz\nUmsatz_VJ = CALCULATE([Gesamtumsatz], SAMEPERIODLASTYEAR(Datum[Datum]))\nWachstum_% = DIVIDE([Gesamtumsatz] - [Umsatz_VJ], [Umsatz_VJ], 0)\n\n-- Ranking\nTop_Produkte = RANKX(ALL(Produkt[Name]), [Gesamtumsatz], , DESC, Dense)',
+        s1CodeDax: '-- Einfache Aggregation\nGesamtumsatz = SUM(Umsatz[Betrag])\n\n-- Mit Bedingung (CALCULATE)\nUmsatz_DE = CALCULATE(SUM(Umsatz[Betrag]), Umsatz[Land] = "Deutschland")\n\n-- Division mit Null-Absicherung\n-- Hinweis: [Bruttogewinn] muss als eigenes Measure existieren, z.B.\n-- Bruttogewinn = SUM(Umsatz[Gewinn])\nMarge_% = DIVIDE([Bruttogewinn], [Gesamtumsatz], 0) * 100\n\n-- Zeitintelligenz\nUmsatz_VJ = CALCULATE([Gesamtumsatz], SAMEPERIODLASTYEAR(Datum[Datum]))\nWachstum_% = DIVIDE([Gesamtumsatz] - [Umsatz_VJ], [Umsatz_VJ], 0) * 100\n\n-- Ranking\nTop_Produkte = RANKX(ALL(Produkt[Name]), [Gesamtumsatz], , DESC, Dense)',
 
         s2Title: 'Python \u00C4quivalente',
         s2Desc: 'Die gleichen KPIs, die Sie in DAX berechnen, k\u00F6nnen in Python mit der pandas-Bibliothek umgesetzt werden. Hier sehen Sie die direkten \u00C4quivalente:',
@@ -311,7 +323,7 @@
         s4FilterText: 'Der Filter Context ist die Menge aller aktiven Filter, wenn ein Measure ausgewertet wird. Diese Filter entstehen durch Slicers, Report-Filter, Zeilen/Spalten in einer Matrix oder durch CALCULATE()-Aufrufe im DAX-Code selbst.',
         s4WhyCalcTitle: 'Warum CALCULATE() so m\u00E4chtig ist',
         s4WhyCalcText: 'CALCULATE() ist die einzige Funktion in DAX, die den Filter Context ver\u00E4ndern kann. Damit k\u00F6nnen Sie Filter hinzuf\u00FCgen, entfernen oder \u00FCberschreiben \u2013 direkt in einer Formel. Ohne CALCULATE k\u00F6nnen Sie nicht filtern innerhalb eines Measures.',
-        s4CodeCalc: '-- Ohne CALCULATE: bestehende Filter gelten, aber\n-- man kann keine NEUEN Filter hinzuf\u00FCgen\nUmsatz_einfach = SUM(Umsatz[Betrag])  -- respektiert aktive Slicer/Filter\n\n-- Mit CALCULATE: Filter-Kontext gezielt \u00E4ndern\nUmsatz_DE = CALCULATE(\n    SUM(Umsatz[Betrag]),\n    Umsatz[Land] = "Deutschland"   -- neuer Filter wird hinzugef\u00FCgt\n)\n\n-- Filter entfernen mit ALL()\nUmsatz_Gesamt_Immer = CALCULATE(\n    SUM(Umsatz[Betrag]),\n    ALL(Umsatz)                    -- ALLE Filter auf Umsatz entfernt\n)\n\n-- Anteil am Gesamtumsatz\nAnteil_% = DIVIDE(\n    [Gesamtumsatz],\n    CALCULATE([Gesamtumsatz], ALL(Umsatz[Land])),\n    0\n)\n\n-- VAR / RETURN (modernes DAX-Pattern)\nGewinnmarge =\n    VAR _umsatz = [Gesamtumsatz]\n    VAR _kosten = [Gesamtkosten]\n    RETURN\n        DIVIDE(_umsatz - _kosten, _umsatz, 0)',
+        s4CodeCalc: '-- Ohne CALCULATE: bestehende Filter gelten, aber\n-- man kann keine NEUEN Filter hinzuf\u00FCgen\nUmsatz_einfach = SUM(Umsatz[Betrag])  -- respektiert aktive Slicer/Filter\n\n-- Mit CALCULATE: Filter-Kontext gezielt \u00E4ndern\nUmsatz_DE = CALCULATE(\n    SUM(Umsatz[Betrag]),\n    Umsatz[Land] = "Deutschland"   -- neuer Filter wird hinzugef\u00FCgt\n)\n\n-- Filter entfernen mit ALL()\nUmsatz_Gesamt_Immer = CALCULATE(\n    SUM(Umsatz[Betrag]),\n    ALL(Umsatz)                    -- ALLE Filter auf Umsatz entfernt\n)\n\n-- Anteil am Gesamtumsatz\nAnteil_% = DIVIDE(\n    [Gesamtumsatz],\n    CALCULATE([Gesamtumsatz], ALL(Umsatz[Land])),\n    0\n)\n\n-- VAR / RETURN (modernes DAX-Pattern)\n-- Setzt voraus: Gesamtkosten = SUM(Umsatz[Kosten])\nGewinnmarge =\n    VAR _umsatz = [Gesamtumsatz]\n    VAR _kosten = [Gesamtkosten]\n    RETURN\n        DIVIDE(_umsatz - _kosten, _umsatz, 0)',
 
         s5Title: 'Lernressourcen',
         s5Desc: 'Erg\u00E4nzende YouTube-Kanalempfehlungen f\u00FCr DAX und Python-Analysen:',
@@ -356,31 +368,37 @@
             q: 'Wof\u00FCr steht das M in SMART-KPIs?',
             options: ['Modular', 'Measurable', 'Mandatory', 'Manual'],
             correct: 1,
+            explanation: 'SMART steht f\u00FCr Specific, Measurable, Achievable, Relevant, Time-bound. \u201EMeasurable" verlangt, dass die Kennzahl numerisch erfassbar ist \u2013 \u201EKundenzufriedenheit verbessern" ist kein KPI, \u201ENPS von 32 auf 40 steigern" schon.',
           },
           {
             q: 'Welches Konzept ver\u00E4ndert den Filter-Kontext in DAX?',
             options: ['SUM()', 'CALCULATE()', 'VAR', 'ALL()'],
             correct: 1,
+            explanation: 'Nur CALCULATE() kann den Filter-Kontext aktiv ver\u00E4ndern. SUM() aggregiert lediglich im bestehenden Kontext, VAR speichert Zwischenergebnisse, und ALL() ist ein Filter-Modifikator, der seine Wirkung erst als Argument innerhalb von CALCULATE() entfaltet.',
           },
           {
             q: 'Was ist ein Leading Indicator?',
             options: ['Quartals-Umsatz', 'Website-Traffic', 'Jahresgewinn', 'Churn Rate'],
             correct: 1,
+            explanation: 'Website-Traffic ist vorlaufend: er ver\u00E4ndert sich, bevor sich der Umsatz ver\u00E4ndert, und l\u00E4sst daher Steuerung zu. Umsatz, Gewinn oder Quartalsergebnis sind Lagging Indicators \u2013 sie messen, was bereits geschehen ist.',
           },
           {
             q: 'Wo werden Calculated Columns gespeichert?',
             options: ['Im Measure-Bereich', 'Im Filter-Kontext', 'In der Tabelle (Row Context)', 'Nur zur Laufzeit'],
             correct: 2,
+            explanation: 'Calculated Columns werden beim Daten-Refresh berechnet und materialisiert in der Tabelle gespeichert \u2013 sie belegen also Arbeitsspeicher und arbeiten im Row Context. Measures dagegen werden zur Abfragezeit im Filter Context berechnet und speichern nichts. Faustregel: Measures bevorzugen, Calculated Columns nur wenn man den Wert zum Filtern oder Gruppieren braucht.',
           },
           {
             q: 'Was liefert SAMEPERIODLASTYEAR() zur\u00FCck?',
             options: ['Die Vorwoche', 'Den gleichen Zeitraum im Vorjahr', 'Den Monatsdurchschnitt', 'Den kumulierten Wert'],
             correct: 1,
+            explanation: 'SAMEPERIODLASTYEAR() gibt eine Tabelle mit denselben Datumswerten, um ein Jahr zur\u00FCckversetzt, zur\u00FCck \u2013 typisch f\u00FCr Vorjahresvergleiche. Voraussetzung: eine als Datumstabelle markierte, l\u00FCckenlose Kalendertabelle im Modell, sonst liefert die Funktion falsche oder leere Ergebnisse.',
           },
           {
             q: 'Was bewirkt ALL() in CALCULATE()?',
             options: ['F\u00FCgt neue Filter hinzu', 'Entfernt bestehende Filter', 'Sortiert die Tabelle', 'Erstellt eine Calculated Column'],
             correct: 1,
+            explanation: 'ALL() entfernt bestehende Filter von einer Tabelle oder Spalte und ist damit die Grundlage f\u00FCr Anteilsberechnungen: der Z\u00E4hler respektiert den Slicer, der Nenner (mit ALL()) nicht \u2013 so entsteht \u201EAnteil am Gesamtumsatz".',
           },
         ],
         // Zusammenfassung
@@ -449,7 +467,7 @@
         ],
         s1GoldenRule: 'Golden Rule',
         s1GoldenRuleText: 'Almost always use Measures! Measures are more flexible, consume less memory and respond correctly to filters. Use Calculated Columns only when you need the value in slicers or as a filter condition.',
-        s1CodeDax: '-- Simple aggregation\nTotalRevenue = SUM(Sales[Amount])\n\n-- With condition (CALCULATE)\nRevenue_DE = CALCULATE(SUM(Sales[Amount]), Sales[Country] = "Germany")\n\n-- Division with zero protection\nMargin_% = DIVIDE([GrossProfit], [Revenue], 0) * 100\n\n-- Time intelligence\nRevenue_PY = CALCULATE([TotalRevenue], SAMEPERIODLASTYEAR(Date[Date]))\nGrowth_% = DIVIDE([TotalRevenue] - [Revenue_PY], [Revenue_PY], 0)\n\n-- Ranking\nTop_Products = RANKX(ALL(Product[Name]), [TotalRevenue], , DESC, Dense)',
+        s1CodeDax: '-- Simple aggregation\nTotalRevenue = SUM(Sales[Amount])\n\n-- With condition (CALCULATE)\nRevenue_DE = CALCULATE(SUM(Sales[Amount]), Sales[Country] = "Germany")\n\n-- Division with zero protection\n-- Note: [GrossProfit] must exist as its own measure, e.g.\n-- GrossProfit = SUM(Sales[Profit])\nMargin_% = DIVIDE([GrossProfit], [TotalRevenue], 0) * 100\n\n-- Time intelligence\nRevenue_PY = CALCULATE([TotalRevenue], SAMEPERIODLASTYEAR(Date[Date]))\nGrowth_% = DIVIDE([TotalRevenue] - [Revenue_PY], [Revenue_PY], 0) * 100\n\n-- Ranking\nTop_Products = RANKX(ALL(Product[Name]), [TotalRevenue], , DESC, Dense)',
 
         s2Title: 'Python Equivalents',
         s2Desc: 'The same KPIs you calculate in DAX can be implemented in Python using the pandas library. Here are the direct equivalents:',
@@ -476,7 +494,7 @@
         s4FilterText: 'The Filter Context is the set of all active filters when a Measure is evaluated. These filters are created by slicers, report filters, rows/columns in a matrix or by CALCULATE() calls in the DAX code itself.',
         s4WhyCalcTitle: 'Why CALCULATE() is so powerful',
         s4WhyCalcText: 'CALCULATE() is the only function in DAX that can modify the Filter Context. This allows you to add, remove or override filters \u2013 directly in a formula. Without CALCULATE you cannot filter inside a measure.',
-        s4CodeCalc: '-- Without CALCULATE: existing filters apply, but\n-- you cannot ADD new filters\nRevenue_simple = SUM(Sales[Amount])  -- respects active slicers/filters\n\n-- With CALCULATE: modify filter context explicitly\nRevenue_DE = CALCULATE(\n    SUM(Sales[Amount]),\n    Sales[Country] = "Germany"     -- new filter is added\n)\n\n-- Remove filter with ALL()\nRevenue_Always_Total = CALCULATE(\n    SUM(Sales[Amount]),\n    ALL(Sales)                     -- ALL filters on Sales removed\n)\n\n-- Share of total revenue\nShare_% = DIVIDE(\n    [TotalRevenue],\n    CALCULATE([TotalRevenue], ALL(Sales[Country])),\n    0\n)\n\n-- VAR / RETURN (modern DAX pattern)\nProfitMargin =\n    VAR _revenue = [TotalRevenue]\n    VAR _cost    = [TotalCost]\n    RETURN\n        DIVIDE(_revenue - _cost, _revenue, 0)',
+        s4CodeCalc: '-- Without CALCULATE: existing filters apply, but\n-- you cannot ADD new filters\nRevenue_simple = SUM(Sales[Amount])  -- respects active slicers/filters\n\n-- With CALCULATE: modify filter context explicitly\nRevenue_DE = CALCULATE(\n    SUM(Sales[Amount]),\n    Sales[Country] = "Germany"     -- new filter is added\n)\n\n-- Remove filter with ALL()\nRevenue_Always_Total = CALCULATE(\n    SUM(Sales[Amount]),\n    ALL(Sales)                     -- ALL filters on Sales removed\n)\n\n-- Share of total revenue\nShare_% = DIVIDE(\n    [TotalRevenue],\n    CALCULATE([TotalRevenue], ALL(Sales[Country])),\n    0\n)\n\n-- VAR / RETURN (modern DAX pattern)\n-- Requires: TotalCost = SUM(Sales[Cost])\nProfitMargin =\n    VAR _revenue = [TotalRevenue]\n    VAR _cost    = [TotalCost]\n    RETURN\n        DIVIDE(_revenue - _cost, _revenue, 0)',
 
         s5Title: 'Learning Resources',
         s5Desc: 'Recommended YouTube channels for DAX and Python analytics:',
@@ -521,31 +539,37 @@
             q: 'What does the M in SMART KPIs stand for?',
             options: ['Modular', 'Measurable', 'Mandatory', 'Manual'],
             correct: 1,
+            explanation: 'SMART stands for Specific, Measurable, Achievable, Relevant, Time-bound. "Measurable" requires the metric to be numerically captured: "improve customer satisfaction" is not a KPI, "raise NPS from 32 to 40" is.',
           },
           {
             q: 'Which concept modifies the filter context in DAX?',
             options: ['SUM()', 'CALCULATE()', 'VAR', 'ALL()'],
             correct: 1,
+            explanation: 'Only CALCULATE() actively modifies the filter context. SUM() merely aggregates within the existing context, VAR stores intermediate results, and ALL() is a filter modifier that only takes effect as an argument inside CALCULATE().',
           },
           {
             q: 'What is a leading indicator?',
             options: ['Quarterly revenue', 'Website traffic', 'Annual profit', 'Churn rate'],
             correct: 1,
+            explanation: 'Website traffic is leading: it moves before revenue moves, so it can still be acted upon. Revenue, profit or quarterly results are lagging indicators - they measure what has already happened.',
           },
           {
             q: 'Where are Calculated Columns stored?',
             options: ['In the Measure area', 'In the filter context', 'In the table (Row Context)', 'Only at runtime'],
             correct: 2,
+            explanation: 'Calculated Columns are computed at data refresh and materialised in the table, so they consume memory and work in the row context. Measures, by contrast, are evaluated at query time in the filter context and store nothing. Rule of thumb: prefer measures; use calculated columns only when you need the value for filtering or grouping.',
           },
           {
             q: 'What does SAMEPERIODLASTYEAR() return?',
             options: ['The previous week', 'The same period in the prior year', 'The monthly average', 'The cumulative value'],
             correct: 1,
+            explanation: 'SAMEPERIODLASTYEAR() returns a table of the same dates shifted back by one year - the standard building block for year-over-year comparisons. It requires a contiguous calendar table marked as a date table in the model, otherwise it returns wrong or empty results.',
           },
           {
             q: 'What does ALL() do inside CALCULATE()?',
             options: ['Adds new filters', 'Removes existing filters', 'Sorts the table', 'Creates a Calculated Column'],
             correct: 1,
+            explanation: 'ALL() removes existing filters from a table or column, which is the basis for share-of-total calculations: the numerator respects the slicer, the denominator (wrapped in ALL()) does not - giving you "share of total revenue".',
           },
         ],
         // Summary
@@ -568,7 +592,7 @@
     // ─── App Component ────────────────────────────────────────────────────────
     function App() {
       const urlLang = new URLSearchParams(window.location.search).get('lang');
-      const [lang, setLang] = useState(() => localStorage.getItem('bi-lang') || urlLang || 'de');
+      const [lang, setLang] = useState(() => urlLang || localStorage.getItem('bi-lang') || 'de');
       const [activeSection, setActiveSection] = useState('dax-grundlagen');
 
       const setLangAndStore = (l) => {
@@ -593,6 +617,12 @@
       }, []);
 
       const tx = translations[lang];
+
+      // Tab-Titel und html[lang] der gewaehlten Sprache folgen lassen
+      React.useEffect(() => {
+        document.title = 'Lab 03 \u2013 ' + tx.title + ' \u00B7 THWS BI Lab';
+        document.documentElement.lang = lang;
+      }, [lang, tx.title]);
 
       return (
         <div data-lang={lang}>

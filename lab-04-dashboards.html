@@ -6,9 +6,16 @@
   <title>Lab 04 – Dashboard-Design &amp; Plotly Dash · THWS BI Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
+  <!-- React 18.3.1 (UMD). Bewusst NICHT React 19: React 19 liefert keine UMD-Builds mehr,
+       die dieses build-freie Setup (Transpilierung per text/babel im Browser) voraussetzt. -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"
+          integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"
+          integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1" crossorigin="anonymous"></script>
+  <!-- Babel bewusst auf 7.x gepinnt: Babel 8 stellt auf den automatic JSX runtime um
+       und bricht damit text/babel ohne Bundler. 7.29.8 = letzter 7.x-Stand. -->
+  <script src="https://unpkg.com/@babel/standalone@7.29.8/babel.min.js"
+          integrity="sha384-Ux6uBqExf/7ahsSNrA9VI7vuaw6sKjDoVdjdUxmIoL2qdlzFVZ157sTi6JK3Z9Q8" crossorigin="anonymous"></script>
   <style>
 
     :root {
@@ -229,6 +236,11 @@
               {isCorrect ? (lang === 'en' ? '\u2713 Correct!' : '\u2713 Richtig!') : (lang === 'en' ? '\u2717 Incorrect' : '\u2717 Falsch')}
             </p>
           )}
+          {selected !== null && question.explanation && (
+            <p style={{ marginTop: '0.35rem', fontSize: '0.85rem', lineHeight: 1.6, color: '#374151' }}>
+              {question.explanation}
+            </p>
+          )}
         </div>
       );
     }
@@ -341,17 +353,26 @@ def update_scatter(category):
 if __name__ == '__main__':
     app.run(debug=True)`;
 
-    const CODE_INSTALL = `pip install dash plotly pandas
+    const CODE_INSTALL = `pip install dash plotly pandas gunicorn
 python app.py
 # Öffne http://localhost:8050`;
 
     const CODE_GUNICORN = `# Starten mit Gunicorn (Production)
+# gunicorn bedient app:server - das ist die Flask-Instanz
+# aus "server = app.server" in app.py.
 gunicorn app:server -b 0.0.0.0:8050 --workers 2`;
 
-    const CODE_DOCKERFILE = `FROM python:3.11-slim
+    // Wird vom Dockerfile mit "COPY requirements.txt ." erwartet - muss also existieren.
+    const CODE_REQUIREMENTS = `# requirements.txt
+dash>=3.0
+plotly>=6.0
+pandas>=2.2
+gunicorn>=23.0`;
+
+    const CODE_DOCKERFILE = `FROM python:3.13-slim
 WORKDIR /app
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 EXPOSE 8050
 CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
@@ -458,6 +479,7 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
         s3GunicornDesc: 'Production-WSGI-Server f\u00FCr Python/Dash (ersetzt den eingebauten Dev-Server).',
         s3DockerTitle: 'Docker',
         s3DockerDesc: 'Container-Image mit requirements.txt + app.py + Dockerfile.',
+        s3ReqDesc: 'Legen Sie zuerst die requirements.txt neben app.py an – das Dockerfile kopiert sie im nächsten Schritt und bricht ohne sie ab:',
         s3TraefikTitle: 'Traefik',
         s3TraefikDesc: 'Automatisches HTTPS + Routing \u2013 kein manuelles nginx n\u00F6tig. Genau dieser Stack l\u00E4uft auf den Live-Dashboards der Kurs-Seite.',
         s3ColabNote: 'Google Colab: Den vollst\u00E4ndigen Code kannst du direkt in Google Colab ausf\u00FChren \u2013 ohne lokale Installation, kostenlos im Browser. Notebooks werden in K\u00FCrze verf\u00FCgbar.',
@@ -492,31 +514,37 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
             q: 'Was beschreibt das Data-Ink-Ratio-Prinzip (Tufte)?',
             options: ['M\u00F6glichst viele Farben verwenden', 'Nur n\u00F6tige visuelle Elemente \u2013 jede Tinte muss Daten repr\u00E4sentieren', 'Alle Achsen entfernen', 'Immer 3D-Charts verwenden'],
             correct: 1,
+            explanation: 'Edward Tufte definiert Data-Ink-Ratio als Verh\u00E4ltnis von datentragender zu gesamter \u201ETinte". Ziel ist ein m\u00F6glichst hoher Wert: Gitternetze, 3D-Effekte, Schatten und Rahmen weg, damit die Daten selbst dominieren. Nicht gemeint ist, alle Achsen zu entfernen \u2013 Achsen tragen Information.',
           },
           {
             q: 'Warum sind Tortendiagramme bei > 4 Kategorien problematisch?',
             options: ['Sie laden langsamer', 'Das menschliche Auge vergleicht Winkel schlecht', 'Plotly unterst\u00FCtzt sie nicht', 'Sie ben\u00F6tigen zu viel Speicher'],
             correct: 1,
+            explanation: 'Menschen vergleichen L\u00E4ngen deutlich zuverl\u00E4ssiger als Winkel und Fl\u00E4chen (Cleveland/McGill). Ab etwa f\u00FCnf Segmenten lassen sich \u00E4hnlich gro\u00DFe Anteile kaum noch unterscheiden \u2013 ein sortiertes Balkendiagramm ist fast immer die bessere Wahl.',
           },
           {
             q: 'Was ist ein Callback in Plotly Dash?',
             options: ['Ein CSS-Selektor', 'Eine Datenbankabfrage', 'Eine reaktive Funktion: Input \u2192 Python \u2192 Output', 'Ein Plotly-Chart-Typ'],
             correct: 2,
+            explanation: 'Ein Callback ist eine mit @app.callback dekorierte Python-Funktion: \u00C4ndert sich ein Input (z. B. ein Dropdown-Wert), f\u00FChrt Dash die Funktion serverseitig aus und schreibt den R\u00FCckgabewert in den Output (z. B. eine Figure). Genau das macht ein Dash-Dashboard interaktiv.',
           },
           {
             q: 'Welches Gestalt-Prinzip empfiehlt, zusammengeh\u00F6rige KPIs r\u00E4umlich nah zu platzieren?',
             options: ['Kontinuit\u00E4t', 'N\u00E4he (Proximity)', '\u00C4hnlichkeit', 'Geschlossenheit'],
             correct: 1,
+            explanation: 'Das Prinzip der N\u00E4he (Proximity): Elemente, die r\u00E4umlich nah beieinanderstehen, werden automatisch als zusammengeh\u00F6rig wahrgenommen \u2013 st\u00E4rker noch als durch Rahmen oder Farbe. Deshalb gruppiert man verwandte KPIs eng und trennt Gruppen durch Wei\u00DFraum.',
           },
           {
             q: 'Welcher Production-Server ersetzt den Dash-Dev-Server?',
             options: ['nginx', 'Apache', 'Gunicorn', 'Traefik'],
             correct: 2,
+            explanation: 'Gunicorn ist ein WSGI-Server f\u00FCr den Produktivbetrieb. Der eingebaute Dash-/Flask-Dev-Server ist ausdr\u00FCcklich nicht f\u00FCr Produktion gedacht (single-threaded, keine Lastverteilung, debug=True erlaubt Codeausf\u00FChrung). Deshalb existiert in app.py die Zeile server = app.server \u2013 genau dieses Objekt bedient gunicorn app:server.',
           },
           {
             q: 'Ca. wie viel Prozent der M\u00E4nner haben eine Rot-Gr\u00FCn-Schw\u00E4che?',
             options: ['1 %', '4 %', '8 %', '15 %'],
             correct: 2,
+            explanation: 'Rund 8 % der M\u00E4nner (etwa jeder Zw\u00F6lfte) und ca. 0,5 % der Frauen haben eine Rot-Gr\u00FCn-Sehschw\u00E4che. Deshalb darf Farbe nie der einzige Bedeutungstr\u00E4ger sein: Rot/Gr\u00FCn-Ampeln zus\u00E4tzlich durch Form, Symbol oder Beschriftung erg\u00E4nzen.',
           },
         ],
         // Zusammenfassung
@@ -635,6 +663,7 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
         s3GunicornDesc: 'Production WSGI server for Python/Dash (replaces the built-in dev server).',
         s3DockerTitle: 'Docker',
         s3DockerDesc: 'Container image with requirements.txt + app.py + Dockerfile.',
+        s3ReqDesc: 'Create requirements.txt next to app.py first – the Dockerfile copies it in the next step and fails without it:',
         s3TraefikTitle: 'Traefik',
         s3TraefikDesc: 'Automatic HTTPS + routing \u2013 no manual nginx required. This exact stack powers the live dashboards on the course page.',
         s3ColabNote: 'Google Colab: Run the complete code directly in Google Colab \u2013 no local installation, free in the browser. Notebooks will be available shortly.',
@@ -669,31 +698,37 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
             q: 'What does Tufte\'s Data-Ink Ratio principle describe?',
             options: ['Use as many colours as possible', 'Only necessary visual elements \u2013 every drop of ink must represent data', 'Remove all axes', 'Always use 3D charts'],
             correct: 1,
+            explanation: 'Edward Tufte defines the data-ink ratio as data-carrying ink divided by total ink. The goal is to maximise it: drop gridlines, 3D effects, shadows and frames so the data itself dominates. It does not mean removing all axes - axes carry information.',
           },
           {
             q: 'Why are pie charts problematic with > 4 categories?',
             options: ['They load more slowly', 'The human eye is poor at comparing angles', 'Plotly doesn\'t support them', 'They require too much memory'],
             correct: 1,
+            explanation: 'People compare lengths far more reliably than angles and areas (Cleveland/McGill). From about five slices onward, similarly sized shares become nearly indistinguishable - a sorted bar chart is almost always the better choice.',
           },
           {
             q: 'What is a Callback in Plotly Dash?',
             options: ['A CSS selector', 'A database query', 'A reactive function: Input \u2192 Python \u2192 Output', 'A Plotly chart type'],
             correct: 2,
+            explanation: 'A callback is a Python function decorated with @app.callback: when an input changes (e.g. a dropdown value), Dash runs the function server-side and writes the return value into the output (e.g. a figure). This is exactly what makes a Dash dashboard interactive.',
           },
           {
             q: 'Which Gestalt principle recommends placing related KPIs close together?',
             options: ['Continuity', 'Proximity', 'Similarity', 'Closure'],
             correct: 1,
+            explanation: 'Proximity: elements placed near each other are automatically perceived as belonging together - more strongly than grouping by frame or colour. Hence related KPIs are grouped tightly and separated from other groups by whitespace.',
           },
           {
             q: 'Which production server replaces the Dash dev server?',
             options: ['nginx', 'Apache', 'Gunicorn', 'Traefik'],
             correct: 2,
+            explanation: 'Gunicorn is a WSGI server for production use. The built-in Dash/Flask dev server is explicitly not production-grade (single-threaded, no load distribution, debug=True allows code execution). That is why app.py contains server = app.server - that object is what gunicorn app:server serves.',
           },
           {
             q: 'Approximately what percentage of men have a red-green colour deficiency?',
             options: ['1%', '4%', '8%', '15%'],
             correct: 2,
+            explanation: 'Around 8% of men (roughly one in twelve) and about 0.5% of women have a red-green colour vision deficiency. Colour must therefore never be the only carrier of meaning: supplement red/green status with shape, icon or label.',
           },
         ],
         // Summary
@@ -716,7 +751,7 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
     // ─── App Component ────────────────────────────────────────────────────────
     function App() {
       const urlLang = new URLSearchParams(window.location.search).get('lang');
-      const [lang, setLang] = useState(() => localStorage.getItem('bi-lang') || urlLang || 'de');
+      const [lang, setLang] = useState(() => urlLang || localStorage.getItem('bi-lang') || 'de');
       const [activeSection, setActiveSection] = useState('design-prinzipien');
 
       const setLangAndStore = (l) => {
@@ -741,6 +776,12 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
       }, []);
 
       const tx = translations[lang];
+
+      // Tab-Titel und html[lang] der gewaehlten Sprache folgen lassen
+      React.useEffect(() => {
+        document.title = 'Lab 04 \u2013 ' + tx.title + ' \u00B7 THWS BI Lab';
+        document.documentElement.lang = lang;
+      }, [lang, tx.title]);
 
       return (
         <div data-lang={lang}>
@@ -909,6 +950,8 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
 
               <h4 style={{ marginTop: '1.5rem', color: 'var(--col-primary)' }}>{tx.s3DockerTitle}</h4>
               <p style={{ margin: '0.25rem 0 0.5rem', fontSize: '0.9rem', color: '#374151' }}>{tx.s3DockerDesc}</p>
+              <p style={{ margin: '0.25rem 0 0.5rem', fontSize: '0.9rem', color: '#374151' }}>{tx.s3ReqDesc}</p>
+              <CodeBlock code={CODE_REQUIREMENTS} lang={lang} />
               <CodeBlock code={CODE_DOCKERFILE} lang={lang} />
 
               <div className="tip-box" style={{ marginTop: '1rem' }}>
