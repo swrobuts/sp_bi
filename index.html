@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BI Lab - Modul "Business Intelligence" im Schwerpunkt "Wirtschaftsinformatik und Digital Business" · THWS Business School</title>
+  <title>BI Lab · Modul Business Intelligence · THWS Business School</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=EB+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
   <!-- Tailwind CSS 2 wurde entfernt: keine einzige Tailwind-Utility-Klasse wurde benutzt
@@ -772,14 +772,13 @@
 
     const translations = {
       de: {
-        navSub: 'Modul "Business Intelligence" • Schwerpunkt "Wirtschaftsinformatik und Digital Business"',
+        navSub: 'Modul Business Intelligence',
         heroTag: 'THWS BUSINESS SCHOOL',
         heroTitle: 'BI Lab',
         heroEyebrow: '',
         heroSubtitle: 'Power BI \u00B7 Python \u00B7 Plotly Dash',
         heroDesc: 'Die Companion-Site zum Kurs \u201CBusiness Intelligence\u201D',
         badge1: 'Sommersemester 2026',
-        badge2: 'Schwerpunkt Wirtschaftsinformatik & Digital Business',
         badge3: 'Prof. Dr. Robert Butscher',
         ctaLabs: 'Zu den Labs \u2192',
         ctaGithub: 'GitHub \u2192',
@@ -853,14 +852,13 @@
         ],
       },
       en: {
-        navSub: 'Module “Business Intelligence” • Track “Wirtschaftsinformatik und Digital Business”',
+        navSub: 'Module Business Intelligence',
         heroTag: 'THWS BUSINESS SCHOOL',
         heroTitle: 'BI Lab',
         heroEyebrow: '',
         heroSubtitle: 'Power BI \u00B7 Python \u00B7 Plotly Dash',
         heroDesc: 'Companion site for the course \u201CBusiness Intelligence\u201D',
         badge1: 'Summer Semester 2026',
-        badge2: 'Schwerpunkt Wirtschaftsinformatik & Digital Business',
         badge3: 'Prof. Dr. Robert Butscher',
         ctaLabs: 'To the Labs \u2192',
         ctaGithub: 'GitHub \u2192',
@@ -967,7 +965,7 @@
 
       // Tab-Titel und html[lang] der gewaehlten Sprache folgen lassen
       useEffect(() => {
-        document.title = lang === 'en' ? 'BI Lab \u00B7 Module "Business Intelligence" \u00B7 THWS Business School' : 'BI Lab \u00B7 Modul "Business Intelligence" \u00B7 THWS Business School';
+        document.title = lang === 'en' ? 'BI Lab \u00B7 Module Business Intelligence \u00B7 THWS Business School' : 'BI Lab \u00B7 Modul Business Intelligence \u00B7 THWS Business School';
         document.documentElement.lang = lang;
       }, [lang]);
       const heroColor = lang === 'en' ? '#0D9488' : '#1E3A8A';
@@ -1046,7 +1044,6 @@
                 </p>
                 <div className="course-badges">
                   <span className="course-badge">{t.badge1}</span>
-                  <span className="course-badge">{t.badge2}</span>
                   <span className="course-badge">{t.badge3}</span>
                 </div>
                 <div className="cta-row">
