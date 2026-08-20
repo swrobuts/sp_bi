@@ -194,6 +194,78 @@
 <body>
   <div id="root"></div>
 
+  <!-- Ausfallsicherung fuer die CDN-Abhaengigkeiten.
+       React, ReactDOM und Babel kommen von unpkg.com. Faellt der Dienst aus
+       oder sperrt ein Hochschulnetz die Domain, blieb die Seite bisher weiss
+       und der Lernende sah keinen Hinweis, woran es liegt. Dieses Skript
+       laeuft nach den drei Script-Tags und prueft, was tatsaechlich geladen
+       wurde; ausserdem prueft es nach fuenf Sekunden, ob die App gemountet
+       hat (faengt Transpilierungsfehler ab). -->
+  <script>
+  (function () {
+    var isEn = new URLSearchParams(location.search).get('lang') === 'en'
+            || (localStorage.getItem('bi-lang') || '') === 'en';
+    var T = isEn ? {
+      head: 'This page could not load',
+      miss: 'The following libraries were not delivered:',
+      why: 'The page loads React and Babel from unpkg.com at runtime. If your network blocks that host, or the service is unavailable, nothing can be rendered.',
+      what: 'What you can do:',
+      s1: 'Reload the page - the CDN is often only briefly unavailable.',
+      s2: 'Try a different network (mobile hotspot instead of campus Wi-Fi).',
+      s3: 'Check whether a proxy, VPN or content blocker is blocking unpkg.com.',
+      s4: 'If it persists, report it - the lab content itself is fine, only the delivery failed.',
+      slow: 'The libraries loaded, but the page did not render. That points to a script error rather than the network. Please report it with the browser console output.'
+    } : {
+      head: 'Diese Seite konnte nicht geladen werden',
+      miss: 'Folgende Bibliotheken wurden nicht ausgeliefert:',
+      why: 'Die Seite laedt React und Babel zur Laufzeit von unpkg.com. Sperrt das Netz diesen Host oder ist der Dienst gestoert, kann nichts dargestellt werden.',
+      what: 'Was du tun kannst:',
+      s1: 'Seite neu laden - das CDN ist oft nur kurz nicht erreichbar.',
+      s2: 'Ein anderes Netz probieren (Mobilfunk statt Campus-WLAN).',
+      s3: 'Pruefen, ob ein Proxy, VPN oder Contentblocker unpkg.com blockiert.',
+      s4: 'Bleibt es dabei: melden - die Lab-Inhalte sind in Ordnung, nur die Auslieferung ist gescheitert.',
+      slow: 'Die Bibliotheken sind geladen, die Seite hat aber nicht gerendert. Das deutet auf einen Skriptfehler hin, nicht auf das Netz. Bitte mit der Ausgabe der Browser-Konsole melden.'
+    };
+
+    function panel(title, body) {
+      var root = document.getElementById('root') || document.body;
+      root.innerHTML =
+        '<div style="max-width:44rem;margin:4rem auto;padding:1.75rem;font-family:' +
+        "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" +
+        ';line-height:1.65;color:#1A1A1A;background:#fff;border:1px solid #E5E7EB;' +
+        'border-left:5px solid #DC2626;border-radius:0 10px 10px 0">' +
+        '<h1 style="margin:0 0 .75rem;font-size:1.3rem;color:#991B1B">' + title + '</h1>' +
+        body +
+        '<p style="margin-top:1.25rem;font-size:.85rem;color:#6B7280">' +
+        '<a href="index.html" style="color:#1E3A8A">BI Lab</a> &middot; THWS Business School</p>' +
+        '</div>';
+    }
+
+    var missing = [];
+    if (typeof window.React === 'undefined') missing.push('React');
+    if (typeof window.ReactDOM === 'undefined') missing.push('ReactDOM');
+    if (typeof window.Babel === 'undefined') missing.push('Babel');
+
+    if (missing.length) {
+      panel(T.head,
+        '<p><strong>' + T.miss + '</strong> ' + missing.join(', ') + '</p>' +
+        '<p>' + T.why + '</p>' +
+        '<p><strong>' + T.what + '</strong></p>' +
+        '<ol style="padding-left:1.25rem"><li>' + T.s1 + '</li><li>' + T.s2 +
+        '</li><li>' + T.s3 + '</li><li>' + T.s4 + '</li></ol>');
+      return;
+    }
+
+    // Bibliotheken da, aber die App mountet nicht -> Skriptfehler.
+    setTimeout(function () {
+      var root = document.getElementById('root');
+      if (root && root.children.length === 0) {
+        panel(T.head, '<p>' + T.slow + '</p>');
+      }
+    }, 5000);
+  })();
+  </script>
+
   <script type="text/babel">
     const { useState, useEffect } = React;
 

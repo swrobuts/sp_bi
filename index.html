@@ -379,6 +379,25 @@
       .stat-item + .stat-item::before { display: none; }
     }
 
+    /* ── Fortschritt und Lab-Metadaten ───────────────────────────────────────
+       Der Usability-Test bemaengelte, dass die Startseite weder Gesamtfortschritt
+       noch Zeit- und Voraussetzungsuebersicht zeigt. Gespeichert wird nur lokal. */
+    .progress-panel { background: #fff; border: 1px solid #E5E7EB; border-left: 5px solid var(--col-primary, #1E3A8A); border-radius: 0 10px 10px 0; padding: 1.25rem 1.5rem; margin-bottom: 2rem; }
+    .progress-head { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: baseline; justify-content: space-between; }
+    .progress-count { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.9rem; color: var(--col-primary, #1E3A8A); }
+    .progress-track { height: 8px; background: #E5E7EB; border-radius: 4px; margin: 0.85rem 0 0.6rem; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--col-primary, #1E3A8A); border-radius: 4px; transition: width 0.25s ease; }
+    .progress-note { margin: 0; font-size: 0.82rem; line-height: 1.6; color: #4B5563; }
+    .progress-reset { margin-top: 0.75rem; font-family: inherit; font-size: 0.8rem; font-weight: 600; padding: 0.35rem 0.8rem; border-radius: 6px; border: 1.5px solid #9CA3AF; background: #fff; color: #4B5563; cursor: pointer; }
+    .progress-reset:hover { background: #F3F4F6; }
+
+    .lab-meta { display: grid; grid-template-columns: auto 1fr; gap: 0.15rem 0.6rem; margin: 0.75rem 0 1rem; font-size: 0.78rem; line-height: 1.5; }
+    .lab-meta dt { font-weight: 700; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.68rem; align-self: center; }
+    .lab-meta dd { margin: 0; color: #374151; }
+    .lab-done-btn { margin-top: 0.6rem; width: 100%; font-family: inherit; font-size: 0.8rem; font-weight: 600; padding: 0.4rem 0.8rem; border-radius: 6px; border: 1.5px solid #D1D5DB; background: #fff; color: #4B5563; cursor: pointer; }
+    .lab-done-btn:hover { border-color: var(--col-primary, #1E3A8A); color: var(--col-primary, #1E3A8A); }
+    .lab-done-btn.is-done { background: #F0FDF4; border-color: #059669; color: #065F46; }
+    .lab-card-done .lab-num-badge { background: #059669; }
     .lab-card {
       border: 2px solid #1A1A1A;
       border-left: 4px solid #2563EB;
@@ -767,6 +786,78 @@
 <body>
   <div id="root"></div>
 
+  <!-- Ausfallsicherung fuer die CDN-Abhaengigkeiten.
+       React, ReactDOM und Babel kommen von unpkg.com. Faellt der Dienst aus
+       oder sperrt ein Hochschulnetz die Domain, blieb die Seite bisher weiss
+       und der Lernende sah keinen Hinweis, woran es liegt. Dieses Skript
+       laeuft nach den drei Script-Tags und prueft, was tatsaechlich geladen
+       wurde; ausserdem prueft es nach fuenf Sekunden, ob die App gemountet
+       hat (faengt Transpilierungsfehler ab). -->
+  <script>
+  (function () {
+    var isEn = new URLSearchParams(location.search).get('lang') === 'en'
+            || (localStorage.getItem('bi-lang') || '') === 'en';
+    var T = isEn ? {
+      head: 'This page could not load',
+      miss: 'The following libraries were not delivered:',
+      why: 'The page loads React and Babel from unpkg.com at runtime. If your network blocks that host, or the service is unavailable, nothing can be rendered.',
+      what: 'What you can do:',
+      s1: 'Reload the page - the CDN is often only briefly unavailable.',
+      s2: 'Try a different network (mobile hotspot instead of campus Wi-Fi).',
+      s3: 'Check whether a proxy, VPN or content blocker is blocking unpkg.com.',
+      s4: 'If it persists, report it - the lab content itself is fine, only the delivery failed.',
+      slow: 'The libraries loaded, but the page did not render. That points to a script error rather than the network. Please report it with the browser console output.'
+    } : {
+      head: 'Diese Seite konnte nicht geladen werden',
+      miss: 'Folgende Bibliotheken wurden nicht ausgeliefert:',
+      why: 'Die Seite laedt React und Babel zur Laufzeit von unpkg.com. Sperrt das Netz diesen Host oder ist der Dienst gestoert, kann nichts dargestellt werden.',
+      what: 'Was du tun kannst:',
+      s1: 'Seite neu laden - das CDN ist oft nur kurz nicht erreichbar.',
+      s2: 'Ein anderes Netz probieren (Mobilfunk statt Campus-WLAN).',
+      s3: 'Pruefen, ob ein Proxy, VPN oder Contentblocker unpkg.com blockiert.',
+      s4: 'Bleibt es dabei: melden - die Lab-Inhalte sind in Ordnung, nur die Auslieferung ist gescheitert.',
+      slow: 'Die Bibliotheken sind geladen, die Seite hat aber nicht gerendert. Das deutet auf einen Skriptfehler hin, nicht auf das Netz. Bitte mit der Ausgabe der Browser-Konsole melden.'
+    };
+
+    function panel(title, body) {
+      var root = document.getElementById('root') || document.body;
+      root.innerHTML =
+        '<div style="max-width:44rem;margin:4rem auto;padding:1.75rem;font-family:' +
+        "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" +
+        ';line-height:1.65;color:#1A1A1A;background:#fff;border:1px solid #E5E7EB;' +
+        'border-left:5px solid #DC2626;border-radius:0 10px 10px 0">' +
+        '<h1 style="margin:0 0 .75rem;font-size:1.3rem;color:#991B1B">' + title + '</h1>' +
+        body +
+        '<p style="margin-top:1.25rem;font-size:.85rem;color:#6B7280">' +
+        '<a href="index.html" style="color:#1E3A8A">BI Lab</a> &middot; THWS Business School</p>' +
+        '</div>';
+    }
+
+    var missing = [];
+    if (typeof window.React === 'undefined') missing.push('React');
+    if (typeof window.ReactDOM === 'undefined') missing.push('ReactDOM');
+    if (typeof window.Babel === 'undefined') missing.push('Babel');
+
+    if (missing.length) {
+      panel(T.head,
+        '<p><strong>' + T.miss + '</strong> ' + missing.join(', ') + '</p>' +
+        '<p>' + T.why + '</p>' +
+        '<p><strong>' + T.what + '</strong></p>' +
+        '<ol style="padding-left:1.25rem"><li>' + T.s1 + '</li><li>' + T.s2 +
+        '</li><li>' + T.s3 + '</li><li>' + T.s4 + '</li></ol>');
+      return;
+    }
+
+    // Bibliotheken da, aber die App mountet nicht -> Skriptfehler.
+    setTimeout(function () {
+      var root = document.getElementById('root');
+      if (root && root.children.length === 0) {
+        panel(T.head, '<p>' + T.slow + '</p>');
+      }
+    }, 5000);
+  })();
+  </script>
+
   <script type="text/babel">
     const { useState, useEffect } = React;
 
@@ -793,9 +884,21 @@
         footerTagline: 'Business Intelligence \u00B7 THWS',
         footerNavLabel: 'Labs',
         footerText: 'THWS Business School \u00B7 BI Lab \u00B7 Prof. Dr. Robert Butscher \u00B7 2026',
+        labTime: 'Zeitbedarf',
+        labPrereq: 'Voraussetzung',
+        progressTitle: 'Dein Fortschritt',
+        progressText: 'Als erledigt markierte Labs werden lokal in diesem Browser gespeichert – kein Konto, kein Server, keine personenbezogenen Daten.',
+        progressDone: 'erledigt',
+        progressOf: 'von',
+        progressReset: 'Fortschritt zurücksetzen',
+        progressMark: 'Als erledigt markieren',
+        progressMarked: 'Erledigt',
+        progressTotal: 'Gesamtaufwand aller sechs Labs: rund 9–13 Stunden.',
         labs: [
           {
             num: '01',
+            time: '45–60 Min.',
+            prereq: 'keine',
             title: 'Grundlagen Business Intelligence',
             subtitle: 'BI Foundations',
             desc: 'Was ist BI? Architektur, KPIs, Tool-\u00DCberblick.',
@@ -803,6 +906,8 @@
           },
           {
             num: '02',
+            time: '60–75 Min.',
+            prereq: 'Lab 01',
             title: 'Daten: Quellen, Modelle, Qualit\u00E4t',
             subtitle: 'Data: Sources, Models, Quality',
             desc: 'Star Schema, Power Query, Pandas Datentransformation.',
@@ -810,6 +915,8 @@
           },
           {
             num: '03',
+            time: '60–90 Min.',
+            prereq: 'Lab 02, Python mit pandas',
             title: 'KPIs mit DAX & Python',
             subtitle: 'KPIs with DAX & Python',
             desc: 'DAX Measures, Calculated Columns, Filter-Kontext.',
@@ -817,6 +924,8 @@
           },
           {
             num: '04',
+            time: '90–120 Min.',
+            prereq: 'Lab 03, pip install dash plotly pandas',
             title: 'Dashboard-Design & Plotly Dash',
             subtitle: 'Dashboard Design & Plotly Dash',
             desc: 'Design-Prinzipien, Plotly Express, Dash Callbacks.',
@@ -824,6 +933,8 @@
           },
           {
             num: '05',
+            time: '150–210 Min.',
+            prereq: 'Lab 04, Power BI Desktop',
             title: 'Fallstudie: Retail Analytics',
             subtitle: 'Case Study: Retail Analytics',
             desc: 'Superstore Dataset \u2013 Power BI & Dash im Vergleich.',
@@ -831,6 +942,8 @@
           },
           {
             num: '06',
+            time: '120–180 Min.',
+            prereq: 'Lab 05, Docker Desktop',
             title: 'Digitale Souver\u00E4nit\u00E4t & Open-Source BI',
             subtitle: 'Digital Sovereignty & Open-Source BI',
             desc: 'Apache Superset, Metabase, Docker, DSGVO.',
@@ -873,9 +986,21 @@
         footerTagline: 'Business Intelligence \u00B7 THWS',
         footerNavLabel: 'Labs',
         footerText: 'THWS Business School \u00B7 BI Lab \u00B7 Prof. Dr. Robert Butscher \u00B7 2026',
+        labTime: 'Time needed',
+        labPrereq: 'Prerequisite',
+        progressTitle: 'Your progress',
+        progressText: 'Labs you mark as done are stored locally in this browser – no account, no server, no personal data.',
+        progressDone: 'done',
+        progressOf: 'of',
+        progressReset: 'Reset progress',
+        progressMark: 'Mark as done',
+        progressMarked: 'Done',
+        progressTotal: 'Total effort across all six labs: roughly 9–13 hours.',
         labs: [
           {
             num: '01',
+            time: '45–60 min',
+            prereq: 'none',
             title: 'BI Foundations',
             subtitle: 'Grundlagen Business Intelligence',
             desc: 'What is BI? Architecture, KPIs, tool overview.',
@@ -883,6 +1008,8 @@
           },
           {
             num: '02',
+            time: '60–75 min',
+            prereq: 'Lab 01',
             title: 'Data: Sources, Models, Quality',
             subtitle: 'Daten: Quellen, Modelle, Qualit\u00E4t',
             desc: 'Star Schema, Power Query, Pandas data transformation.',
@@ -890,6 +1017,8 @@
           },
           {
             num: '03',
+            time: '60–90 min',
+            prereq: 'Lab 02, Python with pandas',
             title: 'KPIs with DAX & Python',
             subtitle: 'KPIs mit DAX & Python',
             desc: 'DAX Measures, Calculated Columns, Filter Context.',
@@ -897,6 +1026,8 @@
           },
           {
             num: '04',
+            time: '90–120 min',
+            prereq: 'Lab 03, pip install dash plotly pandas',
             title: 'Dashboard Design & Plotly Dash',
             subtitle: 'Dashboard-Design & Plotly Dash',
             desc: 'Design principles, Plotly Express, Dash Callbacks.',
@@ -904,6 +1035,8 @@
           },
           {
             num: '05',
+            time: '150–210 min',
+            prereq: 'Lab 04, Power BI Desktop',
             title: 'Case Study: Retail Analytics',
             subtitle: 'Fallstudie: Retail Analytics',
             desc: 'Superstore Dataset \u2013 Power BI & Dash compared.',
@@ -911,6 +1044,8 @@
           },
           {
             num: '06',
+            time: '120–180 min',
+            prereq: 'Lab 05, Docker Desktop',
             title: 'Digital Sovereignty & Open-Source BI',
             subtitle: 'Digitale Souver\u00E4nit\u00E4t & Open-Source BI',
             desc: 'Apache Superset, Metabase, Docker, GDPR.',
@@ -945,6 +1080,21 @@
       const urlLang = new URLSearchParams(window.location.search).get('lang');
       const [lang, setLang] = useState(() => urlLang || localStorage.getItem('bi-lang') || 'de');
       const toggleLang = (l) => { setLang(l); localStorage.setItem('bi-lang', l); };
+
+      // Fortschritt je Lab. Bewusst nur localStorage: kein Konto, kein Server,
+      // keine personenbezogenen Daten - fuer eine Hochschule die unkomplizierteste
+      // Variante. Ein defekter Eintrag setzt sauber zurueck statt zu werfen.
+      const [done, setDone] = useState(() => {
+        try {
+          const saved = JSON.parse(localStorage.getItem('bi-lab-progress') || '[]');
+          return Array.isArray(saved) ? saved.filter((x) => typeof x === 'string') : [];
+        } catch (e) { return []; }
+      });
+      useEffect(() => {
+        try { localStorage.setItem('bi-lab-progress', JSON.stringify(done)); } catch (e) { /* Speicher voll oder gesperrt */ }
+      }, [done]);
+      const toggleDone = (num) =>
+        setDone((prev) => (prev.includes(num) ? prev.filter((n) => n !== num) : [...prev, num]));
 
       useEffect(() => {
         const textBlock = document.querySelector('.quote-text-block');
@@ -1126,21 +1276,53 @@
               <h2 style={{ fontSize: '2.25rem', marginBottom: '0.75rem' }}>{t.sectionLabs}</h2>
               <div className="bauhaus-accent-line"></div>
             </div>
+            <div className="progress-panel">
+              <div className="progress-head">
+                <h3 style={{ margin: 0, fontSize: '1.05rem' }}>{t.progressTitle}</h3>
+                <span className="progress-count">
+                  {done.length} {t.progressOf} {t.labs.length} {t.progressDone}
+                </span>
+              </div>
+              <div className="progress-track" role="progressbar"
+                   aria-valuenow={done.length} aria-valuemin={0} aria-valuemax={t.labs.length}>
+                <div className="progress-fill"
+                     style={{ width: (done.length / t.labs.length * 100) + '%' }} />
+              </div>
+              <p className="progress-note">{t.progressTotal} {t.progressText}</p>
+              {done.length > 0 && (
+                <button type="button" className="progress-reset" onClick={() => setDone([])}>
+                  {t.progressReset}
+                </button>
+              )}
+            </div>
+
             <div className="labs-grid">
               {t.labs.map((lab) => (
-                <div key={lab.num} className="lab-card">
+                <div key={lab.num} className={'lab-card' + (done.includes(lab.num) ? ' lab-card-done' : '')}>
                   <span className="lab-num-badge">{lab.num}</span>
                   <div>
                     <div className="lab-title">{lab.title}</div>
                     <div className="lab-subtitle">{lab.subtitle}</div>
                   </div>
                   <p className="lab-desc">{lab.desc}</p>
+                  <dl className="lab-meta">
+                    <dt>{t.labTime}</dt><dd>{lab.time}</dd>
+                    <dt>{t.labPrereq}</dt><dd>{lab.prereq}</dd>
+                  </dl>
                   <a
                     href={`${lab.link}${lang === 'en' ? '?lang=en' : ''}`}
                     className="btn-lab-link"
                   >
                     {t.labLink}
                   </a>
+                  <button
+                    type="button"
+                    className={'lab-done-btn' + (done.includes(lab.num) ? ' is-done' : '')}
+                    aria-pressed={done.includes(lab.num)}
+                    onClick={() => toggleDone(lab.num)}
+                  >
+                    {done.includes(lab.num) ? '\u2713 ' + t.progressMarked : t.progressMark}
+                  </button>
                 </div>
               ))}
 
