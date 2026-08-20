@@ -94,6 +94,32 @@
 
     /* Tables */
     table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+    /* ── Quiz: zweiter Versuch statt Einmal-Sperre ───────────────────────────
+       Eine falsche Antwort sperrt die Frage nicht mehr. Die Loesung wird erst
+       gezeigt, wenn sie getroffen oder ausdruecklich angefordert wurde. */
+    .quiz-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+    .quiz-retry-btn { font-family: inherit; font-size: 0.82rem; font-weight: 600; padding: 0.4rem 0.9rem; border-radius: 6px; border: 1.5px solid var(--col-primary, #1E3A8A); background: white; color: var(--col-primary, #1E3A8A); cursor: pointer; }
+    .quiz-retry-btn:hover { background: rgba(30,58,138,0.06); }
+    .quiz-retry-btn.secondary { border-color: #9CA3AF; color: #4B5563; }
+    .quiz-retry-btn.secondary:hover { background: #F3F4F6; }
+    .quiz-hint { margin-top: 0.6rem; font-size: 0.85rem; line-height: 1.6; color: #92400E; background: #FFFBEB; border-left: 3px solid #F59E0B; padding: 0.55rem 0.9rem; border-radius: 0 6px 6px 0; }
+    .quiz-attempts { font-size: 0.78rem; color: #6B7280; align-self: center; }
+    /* ── Responsive Guards (Mobilnutzung) ────────────────────────────────────
+       Tabellen und Codebloecke duerfen breiter sein als der Viewport, aber sie
+       scrollen dann in ihrem eigenen Container. Die Seite selbst scrollt nie
+       horizontal. Pruefwert: document.scrollWidth <= window.innerWidth bei
+       320 / 390 / 768 / 1024 / 1440 px. */
+    .table-wrap { width: 100%; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    .table-wrap > table { margin: 0; }
+    /* Flex- und Grid-Kinder duerfen unter ihre Inhaltsbreite schrumpfen,
+       sonst sprengt ein <pre> den Elternteil (min-width:auto ist der Default). */
+    .step-content, .step-block > * { min-width: 0; }
+    .section-block, .content, main { min-width: 0; }
+    .code-block { max-width: 100%; }
+    /* Lange Bezeichner ohne Leerzeichen (Spaltennamen, URLs) umbrechen lassen. */
+    p, li, td, th, h1, h2, h3, h4 { overflow-wrap: break-word; }
+    code { overflow-wrap: anywhere; word-break: break-word; }
+    .tip-box, .info-box, .concept-box, .challenge-box, .youtube-box { max-width: 100%; overflow-wrap: break-word; }
     th { background: #1E3A8A; color: white; padding: 0.65rem 1rem; text-align: left; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.82rem; letter-spacing: 0.05em; }
     td { padding: 0.6rem 1rem; border-bottom: 1px solid #e5e7eb; }
     tr:nth-child(even) td { background: #f9fafb; }
@@ -202,8 +228,20 @@
 
     // ─── QuizQuestion Component ──────────────────────────────────────────────
     function QuizQuestion({ question, index, lang }) {
+      // Mastery statt One-shot: falsche Antwort sperrt die Frage nicht mehr.
       const [selected, setSelected] = React.useState(null);
-      const isCorrect = selected === question.correct;
+      const [revealed, setRevealed] = React.useState(false);
+      const [attempts, setAttempts] = React.useState(0);
+      const solved = selected === question.correct;
+      const wrongPick = selected !== null && !solved;
+
+      const pick = (oi) => {
+        if (revealed) return;
+        setSelected(oi);
+        setAttempts((n) => n + 1);
+        if (oi === question.correct) setRevealed(true);
+      };
+
       return (
         <div style={{ marginBottom: '1.5rem', padding: '1.25rem', background: 'white', border: '1px solid #E5E7EB', borderRadius: '10px' }}>
           <p style={{ fontWeight: 700, fontFamily: "'Space Grotesk', sans-serif", margin: '0 0 0.75rem', color: '#1A1A1A' }}>
@@ -212,17 +250,15 @@
           <div style={{ display: 'grid', gap: '0.5rem' }}>
             {question.options.map((opt, oi) => {
               let bg = 'white'; let border = '#D1D5DB'; let color = '#374151';
-              if (selected !== null) {
-                if (oi === question.correct) { bg = '#D1FAE5'; border = '#059669'; color = '#065F46'; }
-                else if (oi === selected) { bg = '#FEE2E2'; border = '#DC2626'; color = '#991B1B'; }
-              }
+              if (revealed && oi === question.correct) { bg = '#D1FAE5'; border = '#059669'; color = '#065F46'; }
+              else if (oi === selected && oi !== question.correct) { bg = '#FEE2E2'; border = '#DC2626'; color = '#991B1B'; }
               return (
-                <button key={oi} disabled={selected !== null} onClick={() => setSelected(oi)}
+                <button key={oi} disabled={revealed} onClick={() => pick(oi)}
                   className="quiz-option"
                   style={{
                     textAlign: 'left', padding: '0.6rem 1rem', fontSize: '0.88rem',
                     background: bg, border: '1.5px solid ' + border, borderRadius: '6px',
-                    color, cursor: selected !== null ? 'default' : 'pointer',
+                    color, cursor: revealed ? 'default' : 'pointer',
                     fontFamily: 'inherit', transition: 'border-color 0.15s, background 0.15s'
                   }}>
                   {opt}
@@ -230,15 +266,49 @@
               );
             })}
           </div>
-          {selected !== null && (
-            <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: isCorrect ? '#059669' : '#DC2626' }}>
-              {isCorrect ? (lang === 'en' ? '\u2713 Correct!' : '\u2713 Richtig!') : (lang === 'en' ? '\u2717 Incorrect' : '\u2717 Falsch')}
+
+          {wrongPick && !revealed && (
+            <div className="quiz-hint">
+              {lang === 'en'
+                ? '\u2717 Not quite. Re-read the question and try again \u2013 or reveal the answer.'
+                : '\u2717 Noch nicht richtig. Lies die Frage noch einmal und versuche es erneut \u2013 oder lass dir die L\u00F6sung zeigen.'}
+            </div>
+          )}
+
+          {wrongPick && !revealed && (
+            <div className="quiz-actions">
+              <button type="button" className="quiz-retry-btn" onClick={() => setSelected(null)}>
+                {lang === 'en' ? 'Try again' : 'Nochmal versuchen'}
+              </button>
+              <button type="button" className="quiz-retry-btn secondary" onClick={() => setRevealed(true)}>
+                {lang === 'en' ? 'Show answer' : 'L\u00F6sung anzeigen'}
+              </button>
+              <span className="quiz-attempts">{(lang === 'en' ? 'Attempts: ' : 'Versuche: ') + attempts}</span>
+            </div>
+          )}
+
+          {revealed && (
+            <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: solved ? '#059669' : '#B45309' }}>
+              {solved
+                ? (lang === 'en' ? '\u2713 Correct!' : '\u2713 Richtig!')
+                : (lang === 'en' ? 'Answer shown' : 'L\u00F6sung eingeblendet')}
             </p>
           )}
-          {selected !== null && question.explanation && (
+          {revealed && question.explanation && (
             <p style={{ marginTop: '0.35rem', fontSize: '0.85rem', lineHeight: 1.6, color: '#374151' }}>
               {question.explanation}
             </p>
+          )}
+          {revealed && (
+            <div className="quiz-actions">
+              <button type="button" className="quiz-retry-btn secondary"
+                onClick={() => { setSelected(null); setRevealed(false); setAttempts(0); }}>
+                {lang === 'en' ? 'Reset question' : 'Frage zur\u00FCcksetzen'}
+              </button>
+              {attempts > 1 && (
+                <span className="quiz-attempts">{(lang === 'en' ? 'Attempts: ' : 'Versuche: ') + attempts}</span>
+              )}
+            </div>
           )}
         </div>
       );
@@ -322,7 +392,7 @@
         s4FilterTitle: 'Filter Context (Filter-Kontext)',
         s4FilterText: 'Der Filter Context ist die Menge aller aktiven Filter, wenn ein Measure ausgewertet wird. Diese Filter entstehen durch Slicers, Report-Filter, Zeilen/Spalten in einer Matrix oder durch CALCULATE()-Aufrufe im DAX-Code selbst.',
         s4WhyCalcTitle: 'Warum CALCULATE() so m\u00E4chtig ist',
-        s4WhyCalcText: 'CALCULATE() ist die einzige Funktion in DAX, die den Filter Context ver\u00E4ndern kann. Damit k\u00F6nnen Sie Filter hinzuf\u00FCgen, entfernen oder \u00FCberschreiben \u2013 direkt in einer Formel. Ohne CALCULATE k\u00F6nnen Sie nicht filtern innerhalb eines Measures.',
+        s4WhyCalcText: 'CALCULATE() ist die zentrale Funktion, um einen skalaren Ausdruck in einem ge\u00E4nderten Filterkontext auszuwerten: Filter hinzuf\u00FCgen, entfernen oder \u00FCberschreiben \u2013 direkt in einer Formel. Das Gegenst\u00FCck f\u00FCr Tabellenausdr\u00FCcke ist CALCULATETABLE(); daneben wirken Filtermodifikatoren wie ALL(), REMOVEFILTERS() oder KEEPFILTERS() auf den Kontext. In einem Measure f\u00FChrt der Weg zu eigenen Filtern aber praktisch immer \u00FCber CALCULATE.',
         s4CodeCalc: '-- Ohne CALCULATE: bestehende Filter gelten, aber\n-- man kann keine NEUEN Filter hinzuf\u00FCgen\nUmsatz_einfach = SUM(Umsatz[Betrag])  -- respektiert aktive Slicer/Filter\n\n-- Mit CALCULATE: Filter-Kontext gezielt \u00E4ndern\nUmsatz_DE = CALCULATE(\n    SUM(Umsatz[Betrag]),\n    Umsatz[Land] = "Deutschland"   -- neuer Filter wird hinzugef\u00FCgt\n)\n\n-- Filter entfernen mit ALL()\nUmsatz_Gesamt_Immer = CALCULATE(\n    SUM(Umsatz[Betrag]),\n    ALL(Umsatz)                    -- ALLE Filter auf Umsatz entfernt\n)\n\n-- Anteil am Gesamtumsatz\nAnteil_% = DIVIDE(\n    [Gesamtumsatz],\n    CALCULATE([Gesamtumsatz], ALL(Umsatz[Land])),\n    0\n)\n\n-- VAR / RETURN (modernes DAX-Pattern)\n-- Setzt voraus: Gesamtkosten = SUM(Umsatz[Kosten])\nGewinnmarge =\n    VAR _umsatz = [Gesamtumsatz]\n    VAR _kosten = [Gesamtkosten]\n    RETURN\n        DIVIDE(_umsatz - _kosten, _umsatz, 0)',
 
         s5Title: 'Lernressourcen',
@@ -493,7 +563,7 @@
         s4FilterTitle: 'Filter Context',
         s4FilterText: 'The Filter Context is the set of all active filters when a Measure is evaluated. These filters are created by slicers, report filters, rows/columns in a matrix or by CALCULATE() calls in the DAX code itself.',
         s4WhyCalcTitle: 'Why CALCULATE() is so powerful',
-        s4WhyCalcText: 'CALCULATE() is the only function in DAX that can modify the Filter Context. This allows you to add, remove or override filters \u2013 directly in a formula. Without CALCULATE you cannot filter inside a measure.',
+        s4WhyCalcText: 'CALCULATE() is the central function for evaluating a scalar expression in a modified filter context: add, remove or override filters \u2013 directly in a formula. Its counterpart for table expressions is CALCULATETABLE(); filter modifiers such as ALL(), REMOVEFILTERS() and KEEPFILTERS() also act on the context. Inside a measure, however, the route to your own filters is practically always CALCULATE.',
         s4CodeCalc: '-- Without CALCULATE: existing filters apply, but\n-- you cannot ADD new filters\nRevenue_simple = SUM(Sales[Amount])  -- respects active slicers/filters\n\n-- With CALCULATE: modify filter context explicitly\nRevenue_DE = CALCULATE(\n    SUM(Sales[Amount]),\n    Sales[Country] = "Germany"     -- new filter is added\n)\n\n-- Remove filter with ALL()\nRevenue_Always_Total = CALCULATE(\n    SUM(Sales[Amount]),\n    ALL(Sales)                     -- ALL filters on Sales removed\n)\n\n-- Share of total revenue\nShare_% = DIVIDE(\n    [TotalRevenue],\n    CALCULATE([TotalRevenue], ALL(Sales[Country])),\n    0\n)\n\n-- VAR / RETURN (modern DAX pattern)\n-- Requires: TotalCost = SUM(Sales[Cost])\nProfitMargin =\n    VAR _revenue = [TotalRevenue]\n    VAR _cost    = [TotalCost]\n    RETURN\n        DIVIDE(_revenue - _cost, _revenue, 0)',
 
         s5Title: 'Learning Resources',
@@ -722,7 +792,8 @@
               <h2>{tx.s3Title}</h2>
               <div className="bauhaus-accent-line"></div>
               <p>{tx.s3Desc}</p>
-              <table>
+              <div className="table-wrap">
+                <table>
                 <thead>
                   <tr>{tx.s3Headers.map((h, i) => <th key={i}>{h}</th>)}</tr>
                 </thead>
@@ -736,7 +807,8 @@
                     </tr>
                   ))}
                 </tbody>
-              </table>
+                </table>
+              </div>
               {/* SMART KPI Framework */}
               <div className="concept-box" style={{ marginTop: '1.5rem' }}>
                 <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.s3SmartTitle}</h4>

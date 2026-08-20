@@ -67,6 +67,32 @@
     .lernziele-heading { color: #1E3A8A; margin: 0 0 0.75rem; font-family: 'Space Grotesk', sans-serif; font-weight: 700; }
     .lernziel-chip { display: inline-block; background: rgba(30,58,138,0.08); color: #1E3A8A; border: 1px solid rgba(30,58,138,0.2); padding: 0.3rem 0.7rem; border-radius: 999px; font-size: 0.82rem; font-weight: 500; margin: 0.2rem; }
     table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+    /* ── Quiz: zweiter Versuch statt Einmal-Sperre ───────────────────────────
+       Eine falsche Antwort sperrt die Frage nicht mehr. Die Loesung wird erst
+       gezeigt, wenn sie getroffen oder ausdruecklich angefordert wurde. */
+    .quiz-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+    .quiz-retry-btn { font-family: inherit; font-size: 0.82rem; font-weight: 600; padding: 0.4rem 0.9rem; border-radius: 6px; border: 1.5px solid var(--col-primary, #1E3A8A); background: white; color: var(--col-primary, #1E3A8A); cursor: pointer; }
+    .quiz-retry-btn:hover { background: rgba(30,58,138,0.06); }
+    .quiz-retry-btn.secondary { border-color: #9CA3AF; color: #4B5563; }
+    .quiz-retry-btn.secondary:hover { background: #F3F4F6; }
+    .quiz-hint { margin-top: 0.6rem; font-size: 0.85rem; line-height: 1.6; color: #92400E; background: #FFFBEB; border-left: 3px solid #F59E0B; padding: 0.55rem 0.9rem; border-radius: 0 6px 6px 0; }
+    .quiz-attempts { font-size: 0.78rem; color: #6B7280; align-self: center; }
+    /* ── Responsive Guards (Mobilnutzung) ────────────────────────────────────
+       Tabellen und Codebloecke duerfen breiter sein als der Viewport, aber sie
+       scrollen dann in ihrem eigenen Container. Die Seite selbst scrollt nie
+       horizontal. Pruefwert: document.scrollWidth <= window.innerWidth bei
+       320 / 390 / 768 / 1024 / 1440 px. */
+    .table-wrap { width: 100%; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    .table-wrap > table { margin: 0; }
+    /* Flex- und Grid-Kinder duerfen unter ihre Inhaltsbreite schrumpfen,
+       sonst sprengt ein <pre> den Elternteil (min-width:auto ist der Default). */
+    .step-content, .step-block > * { min-width: 0; }
+    .section-block, .content, main { min-width: 0; }
+    .code-block { max-width: 100%; }
+    /* Lange Bezeichner ohne Leerzeichen (Spaltennamen, URLs) umbrechen lassen. */
+    p, li, td, th, h1, h2, h3, h4 { overflow-wrap: break-word; }
+    code { overflow-wrap: anywhere; word-break: break-word; }
+    .tip-box, .info-box, .concept-box, .challenge-box, .youtube-box { max-width: 100%; overflow-wrap: break-word; }
     th { background: #1E3A8A; color: white; padding: 0.65rem 1rem; text-align: left; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.82rem; letter-spacing: 0.05em; }
     td { padding: 0.6rem 1rem; border-bottom: 1px solid #e5e7eb; }
     tr:nth-child(even) td { background: #f9fafb; }
@@ -163,26 +189,68 @@
   }
 
   function QuizQuestion({ question, index, lang }) {
+    // Mastery statt One-shot: falsche Antwort sperrt die Frage nicht mehr.
     const [selected, setSelected] = React.useState(null);
-    const handleClick = (i) => { if (selected === null) setSelected(i); };
+    const [revealed, setRevealed] = React.useState(false);
+    const [attempts, setAttempts] = React.useState(0);
+    const solved = selected === question.correct;
+    const wrongPick = selected !== null && !solved;
+
+    const handleClick = (i) => {
+      if (revealed) return;
+      setSelected(i);
+      setAttempts((n) => n + 1);
+      if (i === question.correct) setRevealed(true);
+    };
+
     return (
       <div style={{ marginBottom: '1.75rem' }}>
         <p style={{ fontWeight: 600, marginBottom: '0.5rem' }}>{index}. {question.q}</p>
         {question.options.map((opt, i) => {
           let style = {};
-          if (selected !== null) {
-            if (i === question.correct) style = { borderColor: '#059669', background: '#F0FDF4', color: '#065F46' };
-            else if (i === selected) style = { borderColor: '#DC2626', background: '#FEF2F2', color: '#991B1B' };
-          }
+          if (revealed && i === question.correct) style = { borderColor: '#059669', background: '#F0FDF4', color: '#065F46' };
+          else if (i === selected && i !== question.correct) style = { borderColor: '#DC2626', background: '#FEF2F2', color: '#991B1B' };
           return (
-            <button key={i} className="quiz-option" disabled={selected !== null} onClick={() => handleClick(i)} style={style}>
+            <button key={i} className="quiz-option" disabled={revealed} onClick={() => handleClick(i)} style={style}>
               {String.fromCharCode(65 + i)}) {opt}
             </button>
           );
         })}
-        {selected !== null && (
-          <div style={{ marginTop: '0.5rem', padding: '0.75rem 1rem', background: selected === question.correct ? '#F0FDF4' : '#FEF2F2', borderRadius: '8px', fontSize: '0.88rem', color: selected === question.correct ? '#065F46' : '#991B1B' }}>
-            {question.explanation}
+
+        {wrongPick && !revealed && (
+          <div className="quiz-hint">
+            {lang === 'en'
+              ? '\u2717 Not quite. Re-read the question and try again \u2013 or reveal the answer.'
+              : '\u2717 Noch nicht richtig. Lies die Frage noch einmal und versuche es erneut \u2013 oder lass dir die L\u00F6sung zeigen.'}
+          </div>
+        )}
+
+        {wrongPick && !revealed && (
+          <div className="quiz-actions">
+            <button type="button" className="quiz-retry-btn" onClick={() => setSelected(null)}>
+              {lang === 'en' ? 'Try again' : 'Nochmal versuchen'}
+            </button>
+            <button type="button" className="quiz-retry-btn secondary" onClick={() => setRevealed(true)}>
+              {lang === 'en' ? 'Show answer' : 'L\u00F6sung anzeigen'}
+            </button>
+            <span className="quiz-attempts">{(lang === 'en' ? 'Attempts: ' : 'Versuche: ') + attempts}</span>
+          </div>
+        )}
+
+        {revealed && (
+          <div style={{ marginTop: '0.5rem', padding: '0.75rem 1rem', background: solved ? '#F0FDF4' : '#FFFBEB', borderRadius: '8px', fontSize: '0.88rem', color: solved ? '#065F46' : '#92400E' }}>
+            {!solved && (lang === 'en' ? 'Answer shown. ' : 'L\u00F6sung eingeblendet. ')}{question.explanation}
+          </div>
+        )}
+        {revealed && (
+          <div className="quiz-actions">
+            <button type="button" className="quiz-retry-btn secondary"
+              onClick={() => { setSelected(null); setRevealed(false); setAttempts(0); }}>
+              {lang === 'en' ? 'Reset question' : 'Frage zur\u00FCcksetzen'}
+            </button>
+            {attempts > 1 && (
+              <span className="quiz-attempts">{(lang === 'en' ? 'Attempts: ' : 'Versuche: ') + attempts}</span>
+            )}
           </div>
         )}
       </div>
@@ -298,6 +366,7 @@
           'Risikokosten: Preiserh\u00f6hungen, Service-Einstellungen, regulatorische Konflikte (CLOUD Act)',
           'Betriebskosten Self-Hosted: Server, Wartung, Updates, Monitoring \u2013 personelle Kapazit\u00e4t erforderlich',
         ],
+        s3LockInTitle: 'Lock-in-Risiken:',
         s3LockInItems: [
           'Plattform-Gravitation: Microsoft Fabric b\u00fcndelt Data Factory, Warehouse, Spark und Power BI auf OneLake \u2013 ein Wechsel bedeutet dann nicht mehr nur Dashboards, sondern die gesamte Datenplattform zu migrieren',
           'Daten liegen beim Anbieter \u2013 US-Server bei Microsoft (Power BI), Google (Looker), Salesforce (Tableau)',
@@ -306,7 +375,7 @@
           'On-Premises-Optionen existieren: Power BI Report Server, Tableau Server, Qlik Sense Enterprise',
         ],
         s4Title: 'Open-Source BI im \u00dcberblick',
-        s4P1: 'Open-Source BI-Tools bieten volle Kontrolle \u00fcber Daten und Infrastruktur. Entscheidend ist dabei das Lizenzmodell: Apache 2.0 erlaubt kommerzielle Nutzung ohne Einschr\u00e4nkungen, AGPL erfordert die Ver\u00f6ffentlichung von Modifikationen bei Server-Deployment, und MIT ist \u00e4hnlich permissiv wie Apache.',
+        s4P1: 'Open-Source BI-Tools bieten volle Kontrolle \u00fcber Daten und Infrastruktur. Entscheidend ist dabei das Lizenzmodell: Apache 2.0 erlaubt kommerzielle Nutzung ohne Einschr\u00e4nkungen, AGPL verlangt, den korrespondierenden Quellcode einer \u00e4nderten Anwendung ihren Netzwerk-Nutzern zug\u00e4nglich zu machen, und MIT ist \u00e4hnlich permissiv wie Apache.',
         s4TableTitle: 'Open-Source Alternativen im Vergleich',
         s4ThTool: 'Tool',
         s4ThLicense: 'Lizenz',
@@ -323,7 +392,7 @@
           { tool: 'Redash', license: 'BSD', docker: '\u2713', strengths: 'SQL-fokussiert, API-Zugriff, leichtgewichtig', status: '\u26a0\ufe0f Wartung' },
         ],
         s4RedashNote: 'Hinweis: Redash wurde 2020 von Databricks \u00fcbernommen. Die gehostete Version wurde eingestellt; das Open-Source-Projekt wird von der Community weiter gepflegt, aber die Entwicklung hat sich deutlich verlangsamt.',
-        s4LicenseTip: 'Lizenz-Tipp: AGPL-3.0 (Metabase, Grafana) erfordert, dass Modifikationen am Quellcode bei Server-Deployment ver\u00f6ffentlicht werden m\u00fcssen. F\u00fcr Unternehmen, die Anpassungen intern halten wollen, sind Apache-2.0- oder MIT-lizenzierte Tools oft vorzuziehen.',
+        s4LicenseTip: 'Lizenz-Tipp: Der unver\u00e4nderte Betrieb einer AGPL-3.0-Anwendung (Metabase, Grafana) l\u00f6st keine Pflicht aus. Wer die Anwendung \u00e4ndert und \u00fcber ein Netzwerk anbietet, muss deren Nutzern den korrespondierenden Quellcode zug\u00e4nglich machen \u2013 das ist keine allgemeine Ver\u00f6ffentlichungspflicht gegen\u00fcber der \u00d6ffentlichkeit. Wer Anpassungen intern halten will, f\u00e4hrt mit Apache-2.0 oder MIT oft einfacher. Im Zweifel die Lizenz juristisch pr\u00fcfen lassen.',
         s5Title: 'Docker Setup: Self-Hosted Metabase',
         s5Intro: 'Mit Docker Compose l\u00e4sst sich ein vollst\u00e4ndiger Self-Hosted BI-Stack in wenigen Minuten aufsetzen. Das folgende Beispiel zeigt Metabase mit PostgreSQL als Metadatenbank.',
         s5TipText: 'Voraussetzungen: Docker Desktop installiert. Download: https://www.docker.com/products/docker-desktop',
@@ -332,7 +401,7 @@
         s5SecurityItems: [
           'HTTPS via Reverse Proxy (Traefik, Caddy oder nginx) \u2013 niemals Metabase direkt ohne TLS exponieren',
           'Starke Passw\u00f6rter und .env-Dateien statt Klartext in docker-compose.yml',
-          'Regelm\u00e4\u00dfige Updates: Metabase-Image pinnen (z.B. v0.50.x), aber Security-Patches zeitnah einspielen',
+          'Regelm\u00e4\u00dfige Updates: Metabase-Image auf dieselbe Version pinnen wie im Compose-Beispiel (v0.63.13), aber Security-Patches zeitnah einspielen',
           'Backup-Strategie: PostgreSQL-Daten regelm\u00e4\u00dfig sichern (pg_dump)',
           'Netzwerk-Isolation: Docker-Netzwerke nutzen, nur Port 443 (HTTPS) nach au\u00dfen \u00f6ffnen',
         ],
@@ -357,11 +426,11 @@
         s7ThReason: 'Begr\u00fcndung',
         s7Rows: [
           { scenario: 'Kleines Team, keine IT-Abteilung', rec: 'SaaS (Power BI, Tableau Cloud)', reason: 'Geringster Betriebsaufwand, schnell produktiv' },
-          { scenario: 'Personenbezogene Daten (HR, Kunden)', rec: 'Metabase / Superset self-hosted', reason: 'DSGVO: Daten m\u00fcssen in EU bleiben, volle Kontrolle' },
+          { scenario: 'Personenbezogene Daten (HR, Kunden)', rec: 'Metabase / Superset self-hosted', reason: 'EU/EWR-Hosting vereinfacht die Risikolage; Drittlandtransfer nur mit zul\u00e4ssigem Transfermechanismus' },
           { scenario: 'Komplexe Custom-Dashboards', rec: 'Plotly Dash', reason: 'Python-native, volle Kontrolle \u00fcber Design und Logik' },
-          { scenario: '\u00d6ffentlicher Sektor / Beh\u00f6rden', rec: 'Open Source (bevorzugt)', reason: 'EU-Richtlinien fordern Open-Source-Bevorzugung' },
+          { scenario: '\u00d6ffentlicher Sektor / Beh\u00f6rden', rec: 'Open Source (h\u00e4ufig bevorzugt)', reason: 'Interoperable Europe Act: bei objektiver Gleichwertigkeit offene L\u00f6sungen priorisieren \u2013 keine pauschale Pflicht' },
           { scenario: 'Moderner dbt-basierter Data Stack', rec: 'Lightdash / Evidence', reason: 'Nahtlose dbt-Integration, Metrics Layer, Git-Workflows' },
-          { scenario: 'Startup, schnelles Deployment', rec: 'Metabase + Docker', reason: 'Setup in unter 5 Minuten, gro\u00dfe Community' },
+          { scenario: 'Startup, schnelles Deployment', rec: 'Metabase + Docker', reason: 'Stack l\u00e4uft in 5\u201315 Min. bei vorbereiteter Umgebung, gro\u00dfe Community' },
           { scenario: 'Konzern mit Microsoft-\u00d6kosystem', rec: 'Power BI (+ Report Server)', reason: 'Beste Integration, Copilot, Enterprise-Support' },
           { scenario: 'Monitoring & DevOps-Metriken', rec: 'Grafana', reason: 'Standard f\u00fcr Infrastruktur-Monitoring, Alerting' },
         ],
@@ -373,7 +442,7 @@
           'docker-compose.yml f\u00fcr Metabase + PostgreSQL erstellen',
           'Stack starten und Metabase-Einrichtungsassistenten durchlaufen',
           'Superstore-Daten (train.csv aus Lab\u00A005) als CSV in PostgreSQL importieren (z.B. via pgAdmin oder psql)',
-          '3 aussagekr\u00e4ftige Dashboards in Metabase erstellen (Umsatz, Gewinn, Kategorien)',
+          '3 aussagekr\u00e4ftige Dashboards in Metabase erstellen (Umsatzentwicklung, Kategorien/Sub-Kategorien, Regionen) \u2013 der Datensatz enth\u00e4lt keine Gewinnspalte, Kennzahl ist Sales',
           'DSGVO-Checkliste f\u00fcr das Setup ausf\u00fcllen und dokumentieren',
           'Ergebnis: Screenshot + kurze Reflexion zu Vor-/Nachteilen vs. Power BI',
         ],
@@ -411,7 +480,7 @@
         quizQuestions: [
           { q: 'Was ist der Haupttreiber f\u00fcr Cloud Lock-in bei BI-Tools?', options: ['Zu hohe Lizenzkosten', 'Propriet\u00e4re Datenformate und API-Abh\u00e4ngigkeiten', 'Fehlende Internet-Anbindung', 'Zu viele Nutzer im Team'], correct: 1, explanation: 'Lock-in entsteht prim\u00e4r durch propriet\u00e4re Formate (DAX, VizQL, LookML) und API-Abh\u00e4ngigkeiten, die einen Wechsel technisch aufwendig machen.' },
           { q: 'Welches EU-Gesetz regelt den Zugang zu und die Nutzung von Daten (anwendbar seit 12.09.2025)?', options: ['DSGVO', 'EU AI Act', 'EU Data Act', 'ePrivacy-Verordnung'], correct: 2, explanation: 'Der EU Data Act (Verordnung (EU) 2023/2854) trat im Januar 2024 in Kraft und gilt seit dem 12. September 2025. Er regelt den fairen Zugang zu und die Nutzung von Daten, insbesondere IoT-Daten und Cloud-Wechsel-Rechte.' },
-          { q: 'Welche Lizenz erfordert die Ver\u00f6ffentlichung von Modifikationen bei Server-Deployment?', options: ['MIT', 'Apache 2.0', 'AGPL 3.0', 'BSD'], correct: 2, explanation: 'Die AGPL 3.0 (z.B. Metabase, Grafana) verlangt, dass \u00c4nderungen am Quellcode auch bei reinem Server-Betrieb ver\u00f6ffentlicht werden m\u00fcssen.' },
+          { q: 'Welche Lizenz verlangt, den Quellcode einer ge\u00e4nderten Anwendung auch dann herauszugeben, wenn sie nur \u00fcber das Netzwerk angeboten wird?', options: ['MIT', 'Apache 2.0', 'AGPL 3.0', 'BSD'], correct: 2, explanation: 'Die AGPL 3.0 (z.B. Metabase, Grafana) schliesst die \u201eASP-L\u00fccke\u201c: Wer eine ge\u00e4nderte Fassung \u00fcber ein Netzwerk bereitstellt, muss deren Nutzern den korrespondierenden Quellcode anbieten. Der unver\u00e4nderte Betrieb l\u00f6st diese Pflicht nicht aus, und eine Ver\u00f6ffentlichung gegen\u00fcber der Allgemeinheit verlangt die Lizenz nicht.' },
           { q: 'Welches Tool eignet sich am besten f\u00fcr einen dbt-basierten Modern Data Stack?', options: ['Power BI', 'Metabase', 'Lightdash', 'Grafana'], correct: 2, explanation: 'Lightdash ist speziell f\u00fcr dbt-Workflows konzipiert und bietet native Metrics-Layer-Integration.' },
           { q: 'Was fordert Art. 32 DSGVO von Verantwortlichen?', options: ['Einwilligung der Nutzer', 'Technische und organisatorische Ma\u00dfnahmen (TOMs)', 'Datenschutzfolgenabsch\u00e4tzung', 'Verbot von Cloud-Nutzung'], correct: 1, explanation: 'Art. 32 DSGVO verpflichtet zur Umsetzung geeigneter technischer und organisatorischer Ma\u00dfnahmen (TOMs) zur Sicherheit der Datenverarbeitung.' },
           { q: 'Warum ist HTTPS via Reverse Proxy f\u00fcr Self-Hosted BI essentiell?', options: ['Schnellere Datenbank-Abfragen', 'Sch\u00f6nere Dashboard-URLs', 'Verschl\u00fcsselter Datenverkehr und Schutz vor Man-in-the-Middle-Angriffen', 'Bessere Kompatibilit\u00e4t mit Docker'], correct: 2, explanation: 'HTTPS verschl\u00fcsselt den gesamten Datenverkehr zwischen Browser und Server und sch\u00fctzt vor Abh\u00f6ren und Manipulation (Man-in-the-Middle).' },
@@ -489,6 +558,7 @@
           'Risk costs: Price increases, service discontinuation, regulatory conflicts (CLOUD Act)',
           'Self-hosted operations costs: Servers, maintenance, updates, monitoring \u2013 requires personnel capacity',
         ],
+        s3LockInTitle: 'Lock-in risks:',
         s3LockInItems: [
           'Platform gravity: Microsoft Fabric bundles Data Factory, Warehouse, Spark and Power BI on OneLake \u2013 switching then means migrating an entire data platform, not just dashboards',
           'Data stored with the provider \u2013 US servers at Microsoft (Power BI), Google (Looker), Salesforce (Tableau)',
@@ -497,7 +567,7 @@
           'On-premises options exist: Power BI Report Server, Tableau Server, Qlik Sense Enterprise',
         ],
         s4Title: 'Open-Source BI Overview',
-        s4P1: 'Open-source BI tools offer full control over data and infrastructure. The license model is decisive: Apache 2.0 allows commercial use without restrictions, AGPL requires publication of modifications for server deployment, and MIT is similarly permissive to Apache.',
+        s4P1: 'Open-source BI tools offer full control over data and infrastructure. The license model is decisive: Apache 2.0 allows commercial use without restrictions, AGPL requires making the corresponding source of a modified application available to its network users, and MIT is similarly permissive to Apache.',
         s4TableTitle: 'Open-Source Alternatives Compared',
         s4ThTool: 'Tool',
         s4ThLicense: 'License',
@@ -514,7 +584,7 @@
           { tool: 'Redash', license: 'BSD', docker: '\u2713', strengths: 'SQL-focused, API access, lightweight', status: '\u26a0\ufe0f Maintenance' },
         ],
         s4RedashNote: 'Note: Redash was acquired by Databricks in 2020. The hosted version was discontinued; the open-source project is community-maintained, but development has slowed significantly.',
-        s4LicenseTip: 'License tip: AGPL-3.0 (Metabase, Grafana) requires that modifications to source code must be published when deployed as a server. For companies wanting to keep customizations internal, Apache-2.0 or MIT-licensed tools are often preferable.',
+        s4LicenseTip: 'License tip: running an unmodified AGPL-3.0 application (Metabase, Grafana) triggers no obligation. If you modify it and offer it over a network, you must make the corresponding source available to those users \u2013 this is not a general duty to publish to the world. If you want to keep customisations internal, Apache-2.0 or MIT is usually simpler. When in doubt, have the licence reviewed.',
         s5Title: 'Docker Setup: Self-Hosted Metabase',
         s5Intro: 'With Docker Compose, a complete self-hosted BI stack can be set up in minutes. The following example shows Metabase with PostgreSQL as the metadata database.',
         s5TipText: 'Prerequisites: Docker Desktop installed. Download: https://www.docker.com/products/docker-desktop',
@@ -523,7 +593,7 @@
         s5SecurityItems: [
           'HTTPS via reverse proxy (Traefik, Caddy, or nginx) \u2013 never expose Metabase directly without TLS',
           'Strong passwords and .env files instead of plaintext in docker-compose.yml',
-          'Regular updates: Pin Metabase image (e.g., v0.50.x) but apply security patches promptly',
+          'Regular updates: pin the Metabase image to the same version as the compose example (v0.63.13), but apply security patches promptly',
           'Backup strategy: Regularly back up PostgreSQL data (pg_dump)',
           'Network isolation: Use Docker networks, only expose port 443 (HTTPS) externally',
         ],
@@ -548,11 +618,11 @@
         s7ThReason: 'Rationale',
         s7Rows: [
           { scenario: 'Small team, no IT department', rec: 'SaaS (Power BI, Tableau Cloud)', reason: 'Lowest operational overhead, quickly productive' },
-          { scenario: 'Personal data (HR, customers)', rec: 'Metabase / Superset self-hosted', reason: 'GDPR: Data must stay in EU, full control' },
+          { scenario: 'Personal data (HR, customers)', rec: 'Metabase / Superset self-hosted', reason: 'EU/EEA hosting simplifies the risk picture; third-country transfer only with a valid transfer mechanism' },
           { scenario: 'Complex custom dashboards', rec: 'Plotly Dash', reason: 'Python-native, full control over design and logic' },
-          { scenario: 'Public sector / government', rec: 'Open Source (preferred)', reason: 'EU guidelines mandate open-source preference' },
+          { scenario: 'Public sector / government', rec: 'Open Source (often preferred)', reason: 'Interoperable Europe Act: prioritise open solutions where objectively equivalent \u2013 not a blanket obligation' },
           { scenario: 'Modern dbt-based data stack', rec: 'Lightdash / Evidence', reason: 'Seamless dbt integration, metrics layer, Git workflows' },
-          { scenario: 'Startup, fast deployment', rec: 'Metabase + Docker', reason: 'Setup in under 5 minutes, large community' },
+          { scenario: 'Startup, fast deployment', rec: 'Metabase + Docker', reason: 'Stack runs in 5\u201315 min. with a prepared environment, large community' },
           { scenario: 'Enterprise with Microsoft ecosystem', rec: 'Power BI (+ Report Server)', reason: 'Best integration, Copilot, enterprise support' },
           { scenario: 'Monitoring & DevOps metrics', rec: 'Grafana', reason: 'Standard for infrastructure monitoring, alerting' },
         ],
@@ -564,7 +634,7 @@
           'Create docker-compose.yml for Metabase + PostgreSQL',
           'Start the stack and complete the Metabase setup wizard',
           'Import Superstore data (train.csv from Lab\u00A005) as CSV into PostgreSQL (e.g., via pgAdmin or psql)',
-          'Create 3 meaningful dashboards in Metabase (Revenue, Profit, Categories)',
+          'Create 3 meaningful dashboards in Metabase (revenue over time, categories/sub-categories, regions) \u2013 the dataset has no profit column, the measure is Sales',
           'Complete the GDPR checklist for your setup and document it',
           'Deliverable: Screenshot + brief reflection on pros/cons vs. Power BI',
         ],
@@ -602,7 +672,7 @@
         quizQuestions: [
           { q: 'What is the main driver of cloud lock-in for BI tools?', options: ['License costs too high', 'Proprietary data formats and API dependencies', 'Lack of internet connectivity', 'Too many users on the team'], correct: 1, explanation: 'Lock-in primarily arises from proprietary formats (DAX, VizQL, LookML) and API dependencies that make switching technically complex.' },
           { q: 'Which EU law regulates access to and use of data (applicable since 12 Sep 2025)?', options: ['GDPR', 'EU AI Act', 'EU Data Act', 'ePrivacy Regulation'], correct: 2, explanation: 'The EU Data Act (Regulation (EU) 2023/2854) entered into force in January 2024 and has applied since 12 September 2025. It regulates fair access to and use of data, particularly IoT data and cloud switching rights.' },
-          { q: 'Which license requires publication of modifications for server deployment?', options: ['MIT', 'Apache 2.0', 'AGPL 3.0', 'BSD'], correct: 2, explanation: 'AGPL 3.0 (e.g., Metabase, Grafana) requires that source code changes must be published even for server-only deployment.' },
+          { q: 'Which license requires releasing the source of a modified application even when it is only offered over a network?', options: ['MIT', 'Apache 2.0', 'AGPL 3.0', 'BSD'], correct: 2, explanation: 'AGPL 3.0 (e.g., Metabase, Grafana) closes the \u201cASP loophole\u201d: whoever offers a modified version over a network must provide its users with the corresponding source. Running it unmodified does not trigger this, and the licence does not require publishing to the general public.' },
           { q: 'Which tool is best suited for a dbt-based modern data stack?', options: ['Power BI', 'Metabase', 'Lightdash', 'Grafana'], correct: 2, explanation: 'Lightdash is specifically designed for dbt workflows and offers native metrics layer integration.' },
           { q: 'What does Art. 32 GDPR require from data controllers?', options: ['User consent', 'Technical and organizational measures (TOMs)', 'Data protection impact assessment', 'Prohibition of cloud use'], correct: 1, explanation: 'Art. 32 GDPR requires the implementation of appropriate technical and organizational measures (TOMs) for data processing security.' },
           { q: 'Why is HTTPS via reverse proxy essential for self-hosted BI?', options: ['Faster database queries', 'Better-looking dashboard URLs', 'Encrypted traffic and protection against man-in-the-middle attacks', 'Better Docker compatibility'], correct: 2, explanation: 'HTTPS encrypts all traffic between browser and server, protecting against eavesdropping and manipulation (man-in-the-middle).' },
@@ -715,7 +785,7 @@
               </ul>
             </div>
             <div className="tip-box" style={{ marginTop: '1.25rem' }}>
-              <strong>Lock-in-Risiken:</strong>
+              <strong>{c.s3LockInTitle}</strong>
               <ul style={{ margin: '0.5rem 0 0', paddingLeft: '1.25rem', lineHeight: '2' }}>
                 {c.s3LockInItems.map((item, i) => <li key={i}>{item}</li>)}
               </ul>
@@ -728,7 +798,8 @@
             <div className="bauhaus-accent-line"></div>
             <p>{c.s4P1}</p>
             <h3 style={{ marginTop: '2rem', marginBottom: '0.5rem' }}>{c.s4TableTitle}</h3>
-            <table>
+            <div className="table-wrap">
+              <table>
               <thead>
                 <tr>
                   <th>{c.s4ThTool}</th>
@@ -749,7 +820,8 @@
                   </tr>
                 ))}
               </tbody>
-            </table>
+              </table>
+            </div>
             <div className="info-box" style={{ marginTop: '1rem' }}>
               <p style={{ margin: 0, fontSize: '0.875rem' }}>{c.s4RedashNote}</p>
             </div>
@@ -814,7 +886,8 @@
           <section id="entscheidung" className="section-block">
             <h2>{c.s7Title}</h2>
             <div className="bauhaus-accent-line"></div>
-            <table>
+            <div className="table-wrap">
+              <table>
               <thead>
                 <tr>
                   <th>{c.s7ThScenario}</th>
@@ -831,7 +904,8 @@
                   </tr>
                 ))}
               </tbody>
-            </table>
+              </table>
+            </div>
           </section>
 
           {/* 8 – Abschlussprojekt */}

@@ -102,6 +102,32 @@
 
     /* Tables */
     table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+    /* ── Quiz: zweiter Versuch statt Einmal-Sperre ───────────────────────────
+       Eine falsche Antwort sperrt die Frage nicht mehr. Die Loesung wird erst
+       gezeigt, wenn sie getroffen oder ausdruecklich angefordert wurde. */
+    .quiz-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+    .quiz-retry-btn { font-family: inherit; font-size: 0.82rem; font-weight: 600; padding: 0.4rem 0.9rem; border-radius: 6px; border: 1.5px solid var(--col-primary, #1E3A8A); background: white; color: var(--col-primary, #1E3A8A); cursor: pointer; }
+    .quiz-retry-btn:hover { background: rgba(30,58,138,0.06); }
+    .quiz-retry-btn.secondary { border-color: #9CA3AF; color: #4B5563; }
+    .quiz-retry-btn.secondary:hover { background: #F3F4F6; }
+    .quiz-hint { margin-top: 0.6rem; font-size: 0.85rem; line-height: 1.6; color: #92400E; background: #FFFBEB; border-left: 3px solid #F59E0B; padding: 0.55rem 0.9rem; border-radius: 0 6px 6px 0; }
+    .quiz-attempts { font-size: 0.78rem; color: #6B7280; align-self: center; }
+    /* ── Responsive Guards (Mobilnutzung) ────────────────────────────────────
+       Tabellen und Codebloecke duerfen breiter sein als der Viewport, aber sie
+       scrollen dann in ihrem eigenen Container. Die Seite selbst scrollt nie
+       horizontal. Pruefwert: document.scrollWidth <= window.innerWidth bei
+       320 / 390 / 768 / 1024 / 1440 px. */
+    .table-wrap { width: 100%; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    .table-wrap > table { margin: 0; }
+    /* Flex- und Grid-Kinder duerfen unter ihre Inhaltsbreite schrumpfen,
+       sonst sprengt ein <pre> den Elternteil (min-width:auto ist der Default). */
+    .step-content, .step-block > * { min-width: 0; }
+    .section-block, .content, main { min-width: 0; }
+    .code-block { max-width: 100%; }
+    /* Lange Bezeichner ohne Leerzeichen (Spaltennamen, URLs) umbrechen lassen. */
+    p, li, td, th, h1, h2, h3, h4 { overflow-wrap: break-word; }
+    code { overflow-wrap: anywhere; word-break: break-word; }
+    .tip-box, .info-box, .concept-box, .challenge-box, .youtube-box { max-width: 100%; overflow-wrap: break-word; }
     th { background: #1E3A8A; color: white; padding: 0.65rem 1rem; text-align: left; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.82rem; letter-spacing: 0.05em; }
     td { padding: 0.6rem 1rem; border-bottom: 1px solid #e5e7eb; }
     tr:nth-child(even) td { background: #f9fafb; }
@@ -212,33 +238,81 @@
 
     // ─── QuizQuestion Component ───────────────────────────────────────────────
     function QuizQuestion({ question, options, correctIndex, explanation, lang }) {
+      // Mastery statt One-shot: eine falsche Antwort sperrt die Frage nicht.
+      // "revealed" entscheidet, ob die Loesung sichtbar ist - getroffen oder angefordert.
       const [selected, setSelected] = useState(null);
-      const answered = selected !== null;
+      const [revealed, setRevealed] = useState(false);
+      const [attempts, setAttempts] = useState(0);
+      const wrongPick = selected !== null && selected !== correctIndex;
+      const solved = selected === correctIndex;
+
+      const pick = (i) => {
+        if (revealed) return;
+        setSelected(i);
+        setAttempts((n) => n + 1);
+        if (i === correctIndex) setRevealed(true);
+      };
+
       return (
         <div className="quiz-question-block">
           <h4>{question}</h4>
           {options.map((opt, i) => {
             let cls = 'quiz-option';
-            if (answered) {
-              if (i === correctIndex) cls += ' correct';
-              else if (i === selected) cls += ' wrong';
-            }
+            if (revealed && i === correctIndex) cls += ' correct';
+            else if (i === selected && i !== correctIndex) cls += ' wrong';
             return (
               <button
                 key={i}
                 className={cls}
-                disabled={answered}
-                onClick={() => setSelected(i)}
+                disabled={revealed}
+                onClick={() => pick(i)}
               >
                 {opt}
               </button>
             );
           })}
-          {answered && (
-            <div className={'quiz-explanation' + (selected !== correctIndex ? ' wrong-exp' : '')}>
-              {selected === correctIndex
+
+          {wrongPick && !revealed && (
+            <div className="quiz-hint">
+              {lang === 'en'
+                ? '\u2717 Not quite. Re-read the question and try again \u2013 or reveal the answer.'
+                : '\u2717 Noch nicht richtig. Lies die Frage noch einmal und versuche es erneut \u2013 oder lass dir die L\u00F6sung zeigen.'}
+            </div>
+          )}
+
+          {(wrongPick && !revealed) && (
+            <div className="quiz-actions">
+              <button type="button" className="quiz-retry-btn" onClick={() => setSelected(null)}>
+                {lang === 'en' ? 'Try again' : 'Nochmal versuchen'}
+              </button>
+              <button type="button" className="quiz-retry-btn secondary" onClick={() => setRevealed(true)}>
+                {lang === 'en' ? 'Show answer' : 'L\u00F6sung anzeigen'}
+              </button>
+              <span className="quiz-attempts">
+                {(lang === 'en' ? 'Attempts: ' : 'Versuche: ') + attempts}
+              </span>
+            </div>
+          )}
+
+          {revealed && (
+            <div className={'quiz-explanation' + (!solved ? ' wrong-exp' : '')}>
+              {solved
                 ? (lang === 'en' ? '\u2713 Correct! ' : '\u2713 Richtig! ')
-                : (lang === 'en' ? '\u2717 Incorrect. ' : '\u2717 Falsch. ')}{explanation}
+                : (lang === 'en' ? 'Answer shown. ' : 'L\u00F6sung eingeblendet. ')}{explanation}
+            </div>
+          )}
+
+          {revealed && (
+            <div className="quiz-actions">
+              <button type="button" className="quiz-retry-btn secondary"
+                onClick={() => { setSelected(null); setRevealed(false); setAttempts(0); }}>
+                {lang === 'en' ? 'Reset question' : 'Frage zur\u00FCcksetzen'}
+              </button>
+              {attempts > 1 && (
+                <span className="quiz-attempts">
+                  {(lang === 'en' ? 'Attempts: ' : 'Versuche: ') + attempts}
+                </span>
+              )}
             </div>
           )}
         </div>
@@ -781,7 +855,8 @@
               </div>
 
               <h3 style={{ marginTop: '2rem' }}>{tx.s1AbgrTitle}</h3>
-              <table>
+              <div className="table-wrap">
+                <table>
                 <thead>
                   <tr>{tx.s1AbgrHeaders.map((h, i) => <th key={i}>{h}</th>)}</tr>
                 </thead>
@@ -790,7 +865,8 @@
                     <tr key={i}>{row.map((cell, j) => <td key={j}>{cell}</td>)}</tr>
                   ))}
                 </tbody>
-              </table>
+                </table>
+              </div>
             </section>
 
             {/* ── Section 2: BI-Architektur ── */}
@@ -865,7 +941,8 @@
               </div>
 
               <h3 style={{ marginTop: '2rem' }}>{tx.s3ExamplesTitle}</h3>
-              <table>
+              <div className="table-wrap">
+                <table>
                 <thead>
                   <tr>{tx.s3ExamplesHeaders.map((h, i) => <th key={i}>{h}</th>)}</tr>
                 </thead>
@@ -874,7 +951,8 @@
                     <tr key={i}>{row.map((cell, j) => <td key={j}>{cell}</td>)}</tr>
                   ))}
                 </tbody>
-              </table>
+                </table>
+              </div>
             </section>
 
             {/* ── Section 4: Tool-Überblick ── */}
@@ -883,7 +961,8 @@
               <div className="bauhaus-accent-line"></div>
               <p>{tx.s4Desc}</p>
 
-              <table>
+              <div className="table-wrap">
+                <table>
                 <thead>
                   <tr>{tx.s4Headers.map((h, i) => <th key={i}>{h}</th>)}</tr>
                 </thead>
@@ -892,7 +971,8 @@
                     <tr key={i}>{row.map((cell, j) => <td key={j}>{cell}</td>)}</tr>
                   ))}
                 </tbody>
-              </table>
+                </table>
+              </div>
 
               <div className="concept-box" style={{ marginTop: '1.5rem' }}>
                 <h4 style={{ margin: '0 0 0.5rem', color: 'var(--col-primary)' }}>{tx.s4FabricTitle}</h4>

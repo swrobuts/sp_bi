@@ -94,6 +94,32 @@
 
     /* Tables */
     table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+    /* ── Quiz: zweiter Versuch statt Einmal-Sperre ───────────────────────────
+       Eine falsche Antwort sperrt die Frage nicht mehr. Die Loesung wird erst
+       gezeigt, wenn sie getroffen oder ausdruecklich angefordert wurde. */
+    .quiz-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+    .quiz-retry-btn { font-family: inherit; font-size: 0.82rem; font-weight: 600; padding: 0.4rem 0.9rem; border-radius: 6px; border: 1.5px solid var(--col-primary, #1E3A8A); background: white; color: var(--col-primary, #1E3A8A); cursor: pointer; }
+    .quiz-retry-btn:hover { background: rgba(30,58,138,0.06); }
+    .quiz-retry-btn.secondary { border-color: #9CA3AF; color: #4B5563; }
+    .quiz-retry-btn.secondary:hover { background: #F3F4F6; }
+    .quiz-hint { margin-top: 0.6rem; font-size: 0.85rem; line-height: 1.6; color: #92400E; background: #FFFBEB; border-left: 3px solid #F59E0B; padding: 0.55rem 0.9rem; border-radius: 0 6px 6px 0; }
+    .quiz-attempts { font-size: 0.78rem; color: #6B7280; align-self: center; }
+    /* ── Responsive Guards (Mobilnutzung) ────────────────────────────────────
+       Tabellen und Codebloecke duerfen breiter sein als der Viewport, aber sie
+       scrollen dann in ihrem eigenen Container. Die Seite selbst scrollt nie
+       horizontal. Pruefwert: document.scrollWidth <= window.innerWidth bei
+       320 / 390 / 768 / 1024 / 1440 px. */
+    .table-wrap { width: 100%; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    .table-wrap > table { margin: 0; }
+    /* Flex- und Grid-Kinder duerfen unter ihre Inhaltsbreite schrumpfen,
+       sonst sprengt ein <pre> den Elternteil (min-width:auto ist der Default). */
+    .step-content, .step-block > * { min-width: 0; }
+    .section-block, .content, main { min-width: 0; }
+    .code-block { max-width: 100%; }
+    /* Lange Bezeichner ohne Leerzeichen (Spaltennamen, URLs) umbrechen lassen. */
+    p, li, td, th, h1, h2, h3, h4 { overflow-wrap: break-word; }
+    code { overflow-wrap: anywhere; word-break: break-word; }
+    .tip-box, .info-box, .concept-box, .challenge-box, .youtube-box { max-width: 100%; overflow-wrap: break-word; }
     th { background: #1E3A8A; color: white; padding: 0.65rem 1rem; text-align: left; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.82rem; letter-spacing: 0.05em; }
     td { padding: 0.6rem 1rem; border-bottom: 1px solid #e5e7eb; }
     tr:nth-child(even) td { background: #f9fafb; }
@@ -212,27 +238,81 @@
 
     // ─── QuizQuestion Component ───────────────────────────────────────────────
     function QuizQuestion({ question, options, correctIndex, explanation, lang }) {
-      const [selected, setSelected] = React.useState(null);
+      // Mastery statt One-shot: eine falsche Antwort sperrt die Frage nicht.
+      // "revealed" entscheidet, ob die Loesung sichtbar ist - getroffen oder angefordert.
+      const [selected, setSelected] = useState(null);
+      const [revealed, setRevealed] = useState(false);
+      const [attempts, setAttempts] = useState(0);
+      const wrongPick = selected !== null && selected !== correctIndex;
+      const solved = selected === correctIndex;
+
+      const pick = (i) => {
+        if (revealed) return;
+        setSelected(i);
+        setAttempts((n) => n + 1);
+        if (i === correctIndex) setRevealed(true);
+      };
+
       return (
         <div className="quiz-question-block">
           <h4>{question}</h4>
           {options.map((opt, i) => {
             let cls = 'quiz-option';
-            if (selected !== null) {
-              if (i === correctIndex) cls += ' correct';
-              else if (i === selected) cls += ' wrong';
-            }
+            if (revealed && i === correctIndex) cls += ' correct';
+            else if (i === selected && i !== correctIndex) cls += ' wrong';
             return (
-              <button key={i} className={cls} disabled={selected !== null} onClick={() => setSelected(i)}>
+              <button
+                key={i}
+                className={cls}
+                disabled={revealed}
+                onClick={() => pick(i)}
+              >
                 {opt}
               </button>
             );
           })}
-          {selected !== null && (
-            <div className={'quiz-explanation' + (selected !== correctIndex ? ' wrong-exp' : '')}>
-              {selected === correctIndex
-                ? (lang === 'en' ? '✓ Correct! ' : '✓ Richtig! ')
-                : (lang === 'en' ? '✗ Incorrect. ' : '✗ Falsch. ')}{explanation}
+
+          {wrongPick && !revealed && (
+            <div className="quiz-hint">
+              {lang === 'en'
+                ? '\u2717 Not quite. Re-read the question and try again \u2013 or reveal the answer.'
+                : '\u2717 Noch nicht richtig. Lies die Frage noch einmal und versuche es erneut \u2013 oder lass dir die L\u00F6sung zeigen.'}
+            </div>
+          )}
+
+          {(wrongPick && !revealed) && (
+            <div className="quiz-actions">
+              <button type="button" className="quiz-retry-btn" onClick={() => setSelected(null)}>
+                {lang === 'en' ? 'Try again' : 'Nochmal versuchen'}
+              </button>
+              <button type="button" className="quiz-retry-btn secondary" onClick={() => setRevealed(true)}>
+                {lang === 'en' ? 'Show answer' : 'L\u00F6sung anzeigen'}
+              </button>
+              <span className="quiz-attempts">
+                {(lang === 'en' ? 'Attempts: ' : 'Versuche: ') + attempts}
+              </span>
+            </div>
+          )}
+
+          {revealed && (
+            <div className={'quiz-explanation' + (!solved ? ' wrong-exp' : '')}>
+              {solved
+                ? (lang === 'en' ? '\u2713 Correct! ' : '\u2713 Richtig! ')
+                : (lang === 'en' ? 'Answer shown. ' : 'L\u00F6sung eingeblendet. ')}{explanation}
+            </div>
+          )}
+
+          {revealed && (
+            <div className="quiz-actions">
+              <button type="button" className="quiz-retry-btn secondary"
+                onClick={() => { setSelected(null); setRevealed(false); setAttempts(0); }}>
+                {lang === 'en' ? 'Reset question' : 'Frage zur\u00FCcksetzen'}
+              </button>
+              {attempts > 1 && (
+                <span className="quiz-attempts">
+                  {(lang === 'en' ? 'Attempts: ' : 'Versuche: ') + attempts}
+                </span>
+              )}
             </div>
           )}
         </div>
@@ -274,13 +354,13 @@
           {
             label: 'Semi-strukturiert',
             color: 'var(--col-accent)',
-            examples: ['JSON', 'XML', 'REST-APIs', 'GraphQL (API-Abfrageparadigma, Antwort: JSON)'],
+            examples: ['JSON', 'XML', 'REST-APIs', 'GraphQL (API-Abfrageparadigma, Antwort: JSON)', 'Log-Dateien (JSON-Lines, Syslog)'],
             desc: 'Flexibles Schema, hierarchische oder verschachtelte Strukturen.',
           },
           {
             label: 'Unstrukturiert',
             color: '#7C3AED',
-            examples: ['PDF-Dokumente', 'E-Mails', 'Bilder', 'Log-Dateien', 'Audio/Video'],
+            examples: ['PDF-Dokumente', 'E-Mails', 'Bilder', 'Audio/Video', 'Freitext-Notizen'],
             desc: 'Kein festes Schema. Aufbereitung durch NLP, OCR oder KI nötig. Wachsende Relevanz durch LLMs.',
           },
           {
@@ -432,7 +512,7 @@
         // Zusammenfassung
         summaryTitle: 'Zusammenfassung',
         summaryItems: [
-          'Datenquellen werden nach Struktur klassifiziert: strukturiert (CSV, SQL), semi-strukturiert (JSON, XML, APIs), unstrukturiert (PDFs, Bilder, Logs) und Cloud-Quellen (Snowflake, BigQuery, Azure).',
+          'Datenquellen werden nach Struktur klassifiziert: strukturiert (CSV, SQL), semi-strukturiert (JSON, XML, APIs, die meisten modernen Logformate), unstrukturiert (PDFs, Bilder, Freitext) und Cloud-Quellen (Snowflake, BigQuery, Azure). Die Grenzen sind flie\u00DFend \u2013 ein Logfile kann je nach Format in beide Kategorien fallen.',
           'Das Star Schema (Kimball, 1996) ist das verbreitetste Modell im Data Warehousing: eine zentrale Faktentabelle mit Kennzahlen, umgeben von denormalisierten Dimensionstabellen.',
           'Das Snowflake Schema normalisiert Dimensionen in mehrere Tabellen – spart Speicher, erfordert aber mehr JOINs. Kimball (Bottom-Up) und Inmon (Top-Down, 1992) beschreiben die zwei grundlegenden DWH-Architekturschulen.',
           'Slowly Changing Dimensions (SCD) behandeln zeitliche Änderungen in Dimensionsdaten: Typ\u00A01 (Überschreiben), Typ\u00A02 (neue Zeile mit Gültigkeitszeitraum) und Typ\u00A03 (zusätzliche Spalte).',
@@ -477,13 +557,13 @@
           {
             label: 'Semi-structured',
             color: 'var(--col-accent)',
-            examples: ['JSON', 'XML', 'REST APIs', 'GraphQL (API query paradigm, response: JSON)'],
+            examples: ['JSON', 'XML', 'REST APIs', 'GraphQL (API query paradigm, response: JSON)', 'Log files (JSON lines, syslog)'],
             desc: 'Flexible schema, hierarchical or nested structures.',
           },
           {
             label: 'Unstructured',
             color: '#7C3AED',
-            examples: ['PDF documents', 'Emails', 'Images', 'Log files', 'Audio/Video'],
+            examples: ['PDF documents', 'Emails', 'Images', 'Audio/Video', 'Free-text notes'],
             desc: 'No fixed schema. Requires NLP, OCR or AI processing. Growing relevance through LLMs.',
           },
           {
@@ -635,7 +715,7 @@
         // Summary
         summaryTitle: 'Summary',
         summaryItems: [
-          'Data sources are classified by structure: structured (CSV, SQL), semi-structured (JSON, XML, APIs), unstructured (PDFs, images, logs) and cloud sources (Snowflake, BigQuery, Azure).',
+          'Data sources are classified by structure: structured (CSV, SQL), semi-structured (JSON, XML, APIs, most modern log formats), unstructured (PDFs, images, free text) and cloud sources (Snowflake, BigQuery, Azure). The boundaries are fluid \u2013 a log file can fall into either category depending on its format.',
           'The Star Schema (Kimball, 1996) is the most common model in data warehousing: a central fact table with measures, surrounded by denormalised dimension tables.',
           'The Snowflake Schema normalises dimensions into multiple tables – saves storage but requires more JOINs. Kimball (Bottom-Up) and Inmon (Top-Down, 1992) describe the two fundamental DWH architecture schools.',
           'Slowly Changing Dimensions (SCD) handle temporal changes in dimension data: Type\u00A01 (overwrite), Type\u00A02 (new row with validity period) and Type\u00A03 (additional column).',
@@ -776,7 +856,7 @@
 
               <CodeBlock code={tx.s2DiagramCode} lang={lang} />
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', margin: '1.5rem 0' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', margin: '1.5rem 0' }}>
                 <div className="concept-box" style={{ margin: 0 }}>
                   <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.s2FactTitle}</h4>
                   <p style={{ margin: 0, fontSize: '0.875rem', color: '#374151', lineHeight: 1.6 }}>{tx.s2FactText}</p>
@@ -788,7 +868,8 @@
               </div>
 
               <h3 style={{ marginTop: '2rem' }}>{tx.s2CompareTitle}</h3>
-              <table>
+              <div className="table-wrap">
+                <table>
                 <thead>
                   <tr>{tx.s2CompareHeaders.map((h, i) => <th key={i}>{h}</th>)}</tr>
                 </thead>
@@ -797,7 +878,8 @@
                     <tr key={i}>{row.map((cell, j) => <td key={j}>{cell}</td>)}</tr>
                   ))}
                 </tbody>
-              </table>
+                </table>
+              </div>
 
               <h3 style={{ marginTop: '2rem' }}>{tx.s2KimballInmonTitle}</h3>
               <div className="concept-box">
