@@ -466,6 +466,14 @@
         s2RunTitle: 'Dieselben KPIs, lauff\u00E4hig mit train.csv',
         s2CodePythonRun: "# Dieselben KPIs wie oben, aber auf dem Kursdatensatz train.csv\n# (echte Spaltennamen statt Betrag / Bruttogewinn / Land).\nimport pandas as pd\n\ndf = pd.read_csv('train.csv', encoding='latin-1')\ndf['Order Date'] = pd.to_datetime(df['Order Date'], dayfirst=True)\n\n# Gesamtumsatz  ->  DAX: Umsatz = SUM(Orders[Sales])\numsatz_gesamt = df['Sales'].sum()\nprint(f\"Gesamtumsatz: {umsatz_gesamt:,.2f}\")        # 2,261,536.78\n\n# Gefilterte Aggregation  ->  DAX: CALCULATE(..., Orders[Region] = \"West\")\numsatz_west = df.loc[df['Region'] == 'West', 'Sales'].sum()\nprint(f\"Umsatz West:  {umsatz_west:,.2f}\")           # 710,219.68\n\n# Anteil am Gesamtumsatz  ->  DAX: DIVIDE(..., CALCULATE(..., ALL(...)))\nprint(f\"Anteil West:  {umsatz_west / umsatz_gesamt * 100:.1f} %\")  # 31.4 %\n\n# Jahresvergleich  ->  DAX: SAMEPERIODLASTYEAR(Datum[Datum])\njahr = df.groupby(df['Order Date'].dt.year)['Sales'].sum()\nprint(jahr.round(2))       # 2015 479856.21 | 2016 459436.01\n                           # 2017 600192.55 | 2018 722052.02\nprint((jahr.pct_change() * 100).round(1))   # 2018: 20.3\n\n# Ranking  ->  DAX: RANKX(ALL(...), [Umsatz], , DESC, Dense)\ntop = df.groupby('Sub-Category')['Sales'].sum().sort_values(ascending=False)\nprint(top.head(3).round(2))  # Phones 327782.45 | Chairs 322822.73\n                             # Storage 219343.39",
         s2RunNote: 'Voraussetzung: pandas installiert, train.csv im selben Verzeichnis (Download in Lab\u00A004). Die Sollwerte stehen als Kommentar hinter jeder Zeile \u2013 stimmt eine Zahl nicht, liegt es fast immer am Datumsformat oder am encoding.',
+        selfCheckTitle: 'Selbstcheck (1 Minute)',
+        selfCheckItems: [
+          'Gesamtumsatz 2.261.536,78 \u2013 dieselbe Zahl liefert das DAX-Measure Umsatz in Lab 05.',
+          'Umsatz West 710.219,68, Anteil 31,4 % \u2013 das ist die Probe auf CALCULATE mit Filterargument.',
+          'Wachstum 2018 gegen\u00FCber 2017 rund 20,3 % \u2013 die Probe auf SAMEPERIODLASTYEAR.',
+          'Im Ranking stehen Phones, Chairs und Storage vorn.',
+          'Typischer Fehler: 2016 zeigt ein Minus (\u22124,3 %). Das ist korrekt, kein Rechenfehler.',
+        ],
 
         s3Title: 'KPI-Tabelle',
         s3Desc: 'Die wichtigsten Business-KPIs auf einen Blick \u2013 mit Formel, DAX-Funktion und Python-\u00C4quivalent.',
@@ -643,6 +651,14 @@
         s2RunTitle: 'The same KPIs, runnable with train.csv',
         s2CodePythonRun: "# The same KPIs as above, but on the course dataset train.csv\n# (real column names instead of Amount / GrossProfit / Country).\nimport pandas as pd\n\ndf = pd.read_csv('train.csv', encoding='latin-1')\ndf['Order Date'] = pd.to_datetime(df['Order Date'], dayfirst=True)\n\n# Total revenue  ->  DAX: Revenue = SUM(Orders[Sales])\ntotal_sales = df['Sales'].sum()\nprint(f\"Total revenue: {total_sales:,.2f}\")       # 2,261,536.78\n\n# Filtered aggregation  ->  DAX: CALCULATE(..., Orders[Region] = \"West\")\nsales_west = df.loc[df['Region'] == 'West', 'Sales'].sum()\nprint(f\"Revenue West:  {sales_west:,.2f}\")         # 710,219.68\n\n# Share of total  ->  DAX: DIVIDE(..., CALCULATE(..., ALL(...)))\nprint(f\"Share West:    {sales_west / total_sales * 100:.1f} %\")  # 31.4 %\n\n# Year-over-year  ->  DAX: SAMEPERIODLASTYEAR(Date[Date])\nyearly = df.groupby(df['Order Date'].dt.year)['Sales'].sum()\nprint(yearly.round(2))     # 2015 479856.21 | 2016 459436.01\n                           # 2017 600192.55 | 2018 722052.02\nprint((yearly.pct_change() * 100).round(1))  # 2018: 20.3\n\n# Ranking  ->  DAX: RANKX(ALL(...), [Revenue], , DESC, Dense)\ntop = df.groupby('Sub-Category')['Sales'].sum().sort_values(ascending=False)\nprint(top.head(3).round(2))  # Phones 327782.45 | Chairs 322822.73\n                             # Storage 219343.39",
         s2RunNote: 'Prerequisites: pandas installed, train.csv in the same directory (download in Lab\u00A004). The expected values are in the comment after each line \u2013 if a number is off, it is nearly always the date format or the encoding.',
+        selfCheckTitle: 'Self-check (1 minute)',
+        selfCheckItems: [
+          'Total revenue 2,261,536.78 \u2013 the DAX measure Revenue in Lab 05 returns the same number.',
+          'Revenue West 710,219.68, share 31.4% \u2013 this is the check on CALCULATE with a filter argument.',
+          'Growth 2018 over 2017 about 20.3% \u2013 the check on SAMEPERIODLASTYEAR.',
+          'The ranking is led by Phones, Chairs and Storage.',
+          'Common error: 2016 shows a minus (\u22124.3%). That is correct, not a miscalculation.',
+        ],
 
         s3Title: 'KPI Table',
         s3Desc: 'The most important business KPIs at a glance \u2013 with formula, DAX function and Python equivalent.',
@@ -889,6 +905,12 @@
               <CodeBlock code={tx.s2CodePython} lang={lang} kind="concept" note={tx.s2CodeNote} />
               <h4 style={{ marginTop: '1.5rem' }}>{tx.s2RunTitle}</h4>
               <CodeBlock code={tx.s2CodePythonRun} lang={lang} kind="run" note={tx.s2RunNote} />
+              <div className="challenge-box">
+                <h4 style={{ marginTop: 0 }}>{tx.selfCheckTitle}</h4>
+                <ul style={{ margin: 0, paddingLeft: '1.15rem', lineHeight: 1.8, fontSize: '0.88rem' }}>
+                  {tx.selfCheckItems.map((item, i) => <li key={i}>{item}</li>)}
+                </ul>
+              </div>
             </section>
 
             {/* ── Section 3: KPI-Tabelle ── */}

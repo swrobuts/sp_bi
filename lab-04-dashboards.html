@@ -799,6 +799,15 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
         starterBtn: 'lab-04-dash.zip',
         runNoteCsv: 'Voraussetzung: pip install plotly pandas, train.csv im selben Verzeichnis. Der Block \u00F6ffnet eine Figur im Browser \u2013 kommt keine, fehlt meist der Aufruf fig.show() in einer nicht-interaktiven Umgebung.',
         runNoteApp: 'Voraussetzung: pip install dash plotly pandas, train.csv im selben Verzeichnis. Als app.py speichern und mit python app.py starten. Sollzustand: Konsole meldet Running on http://127.0.0.1:8050, die Seite zeigt vier KPI-Karten mit Gesamtumsatz 2.261.536,78 und 4.922 Bestellungen.',
+        selfCheckTitle: 'Selbstcheck (1 Minute)',
+        selfCheckItems: [
+          'Die Konsole meldet Running on http://127.0.0.1:8050.',
+          'Die Seite zeigt ein Kategorie-Dropdown und zwei Diagramme.',
+          'Beim Umschalten der Kategorie \u00E4ndern sich beide Diagramme \u2013 sonst ist der Callback nicht verdrahtet.',
+          'Technology, Furniture und Office Supplies stehen im Dropdown.',
+          'Typischer Fehler: Port 8050 belegt \u2013 dann app.run(debug=True, port=8051) verwenden.',
+          'Aufr\u00E4umen: Strg+C im Terminal beendet den Entwicklungsserver.',
+        ],
         dataDirect: '\u2193 train.csv herunterladen',
         dataKaggle: 'Quelle auf Kaggle \u2197',
         s2Code1Title: 'Balkendiagramm: Umsatz nach Kategorie',
@@ -992,6 +1001,15 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
         starterBtn: 'lab-04-dash.zip',
         runNoteCsv: 'Prerequisites: pip install plotly pandas, train.csv in the same directory. The block opens a figure in the browser \u2013 if none appears, fig.show() is usually missing in a non-interactive environment.',
         runNoteApp: 'Prerequisites: pip install dash plotly pandas, train.csv in the same directory. Save as app.py and run python app.py. Expected state: the console reports Running on http://127.0.0.1:8050 and the page shows four KPI cards with total revenue 2,261,536.78 and 4,922 orders.',
+        selfCheckTitle: 'Self-check (1 minute)',
+        selfCheckItems: [
+          'The console reports Running on http://127.0.0.1:8050.',
+          'The page shows a category dropdown and two charts.',
+          'Switching category updates both charts \u2013 otherwise the callback is not wired up.',
+          'Technology, Furniture and Office Supplies appear in the dropdown.',
+          'Common error: port 8050 in use \u2013 then use app.run(debug=True, port=8051).',
+          'Cleanup: Ctrl+C in the terminal stops the development server.',
+        ],
         dataDirect: '\u2193 Download train.csv',
         dataKaggle: 'Source on Kaggle \u2197',
         s2Code1Title: 'Bar Chart: Revenue by Category',
@@ -1322,6 +1340,12 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
 
               <h3 style={{ marginTop: '2rem' }}>{tx.s3AppTitle}</h3>
               <CodeBlock code={CODE_DASH_APP[lang]} lang={lang} kind="run" note={tx.runNoteApp} />
+              <div className="challenge-box">
+                <h4 style={{ marginTop: 0 }}>{tx.selfCheckTitle}</h4>
+                <ul style={{ margin: 0, paddingLeft: '1.15rem', lineHeight: 1.8, fontSize: '0.88rem' }}>
+                  {tx.selfCheckItems.map((item, i) => <li key={i}>{item}</li>)}
+                </ul>
+              </div>
 
               <h3 style={{ marginTop: '1.5rem' }}>{tx.s3InstallTitle}</h3>
               <div className="install-box">

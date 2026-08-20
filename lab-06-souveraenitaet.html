@@ -506,6 +506,16 @@
         s5ImportMbTitle: 'Datenbank in Metabase eintragen',
         s5ImportMbText: 'Einstellungen -> Datenbanken -> Datenbank hinzufuegen: Typ PostgreSQL, Host warehouse, Port 5432, Datenbank superstore, Benutzer superstore, Passwort aus der .env. Host ist warehouse, nicht localhost: Metabase laeuft in einem eigenen Container, dort waere localhost Metabase selbst. Im Compose-Netzwerk erreichen sich die Dienste ueber ihren Dienstnamen und den Container-Port 5432 - nicht ueber den nach aussen veroeffentlichten Port 5433. Vom eigenen Rechner aus gilt umgekehrt localhost:5433.',
         s5ImportTimeNote: 'Zeitbedarf: 10-20 Minuten, bis der Stack steht (davon der groesste Teil Image-Download), danach 45-90 Minuten fuer Onboarding und Dashboards. Zuletzt vollstaendig durchgespielt am 20.08.2026.',
+        selfCheckTitle: 'Selbstcheck (1 Minute)',
+        selfCheckItems: [
+          'docker compose ps zeigt metabase, postgres und warehouse als running.',
+          'postgres und warehouse stehen auf healthy \u2013 sonst startet Metabase gar nicht erst.',
+          'Die Logs von warehouse enthalten \u201EImport ok: 9800 Zeilen\u201C.',
+          'verify.sql liefert 9800 Zeilen, 4922 Bestellungen und Gesamtumsatz 2261536.78.',
+          'http://localhost:3000 zeigt den Einrichtungsassistenten.',
+          'Typischer Fehler: in Metabase localhost statt warehouse als Host \u2013 damit sucht Metabase in sich selbst.',
+          'Aufr\u00E4umen: docker compose down beendet den Stack, down -v entfernt auch die Daten.',
+        ],
         s5SecurityTitle: 'Sicherheit im Self-Hosted Setup',
         s5SecurityItems: [
           'HTTPS via Reverse Proxy (Traefik, Caddy oder nginx) \u2013 niemals Metabase direkt ohne TLS exponieren',
@@ -717,6 +727,16 @@
         s5ImportMbTitle: 'Register the database in Metabase',
         s5ImportMbText: 'Settings -> Databases -> Add database: type PostgreSQL, host warehouse, port 5432, database superstore, user superstore, password from .env. The host is warehouse, not localhost: Metabase runs in its own container, where localhost would be Metabase itself. Inside the compose network the services reach each other by service name and container port 5432 - not via the published port 5433. From your own machine it is the other way round: localhost:5433.',
         s5ImportTimeNote: 'Time needed: 10-20 minutes until the stack is up (mostly image download), then 45-90 minutes for onboarding and dashboards. Last fully rehearsed on 20 August 2026.',
+        selfCheckTitle: 'Self-check (1 minute)',
+        selfCheckItems: [
+          'docker compose ps shows metabase, postgres and warehouse as running.',
+          'postgres and warehouse are healthy \u2013 otherwise Metabase will not start at all.',
+          'The warehouse logs contain \u201CImport ok: 9800 rows\u201D.',
+          'verify.sql returns 9800 rows, 4922 orders and total revenue 2261536.78.',
+          'http://localhost:3000 shows the setup wizard.',
+          'Common error: using localhost instead of warehouse as the host in Metabase \u2013 it then looks inside itself.',
+          'Cleanup: docker compose down stops the stack, down -v also removes the data.',
+        ],
         s5SecurityTitle: 'Security for Self-Hosted Setups',
         s5SecurityItems: [
           'HTTPS via reverse proxy (Traefik, Caddy, or nginx) \u2013 never expose Metabase directly without TLS',
@@ -1042,6 +1062,12 @@
               <strong>{c.s5ImportMbTitle}:</strong> {c.s5ImportMbText}
             </div>
             <p style={{ fontSize: '0.82rem', color: '#4B5563' }}>{c.s5ImportTimeNote}</p>
+            <div className="challenge-box">
+              <h4 style={{ marginTop: 0 }}>{c.selfCheckTitle}</h4>
+              <ul style={{ margin: 0, paddingLeft: '1.15rem', lineHeight: 1.8, fontSize: '0.88rem' }}>
+                {c.selfCheckItems.map((item, i) => <li key={i}>{item}</li>)}
+              </ul>
+            </div>
 
             <div className="concept-box" style={{ marginTop: '1.5rem' }}>
               <h4 style={{ marginTop: 0 }}>{c.s5SecurityTitle}</h4>

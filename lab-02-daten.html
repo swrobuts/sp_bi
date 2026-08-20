@@ -469,6 +469,14 @@
         s1RunTitle: 'Dasselbe Muster, lauff\u00E4hig mit train.csv',
         s1CodePythonRun: "# Dieselben drei Quellen, aber mit dem Kursdatensatz statt Platzhaltern.\n# train.csv liegt im selben Verzeichnis wie dieses Skript.\nimport pandas as pd\n\n# 1. CSV laden\ndf = pd.read_csv('train.csv', encoding='latin-1')\n\n# 2. Datum: die Datei nutzt TT/MM/JJJJ -> dayfirst=True ist Pflicht,\n#    sonst bricht das Parsen ab, sobald der Tag groesser als 12 ist.\ndf['Order Date'] = pd.to_datetime(df['Order Date'], dayfirst=True)\n\n# 3. Struktur und Qualitaet pruefen\nprint(df.shape)                            # (9800, 18)\nprint(round(df['Sales'].sum(), 2))         # 2261536.78\nprint(df['Order ID'].nunique())            # 4922\nprint(df.isnull().sum()[lambda s: s > 0])  # Postal Code    11",
         s1RunNote: 'Voraussetzung: pandas installiert, train.csv im selben Verzeichnis (Download in Lab\u00A004). Sollausgabe: (9800, 18) \u00B7 2261536.78 \u00B7 4922 \u00B7 Postal Code 11. Weichen die Zahlen ab, wurde meist dayfirst=True vergessen.',
+        selfCheckTitle: 'Selbstcheck (1 Minute)',
+        selfCheckItems: [
+          'df.shape liefert (9800, 18) \u2013 sonst wurde die falsche Datei geladen.',
+          'Die Umsatzsumme ist 2261536.78 \u2013 weicht sie ab, stimmt das encoding nicht.',
+          '4922 verschiedene Order ID \u2013 nicht zu verwechseln mit den 9800 Positionen.',
+          'Genau elf fehlende Postal Code und sonst keine Nullwerte.',
+          'Typischer Fehler: ohne dayfirst=True bricht das Parsen ab, sobald der Tag gr\u00F6\u00DFer als 12 ist.',
+        ],
 
         s2Title: 'Datenmodellierung',
         s2Desc: 'Ein gutes Datenmodell ist entscheidend f\u00FCr die Performance und Verst\u00E4ndlichkeit eines BI-Systems. Das Star Schema ist das verbreitetste Modell im Data Warehousing.',
@@ -677,6 +685,14 @@
         s1RunTitle: 'The same pattern, runnable with train.csv',
         s1CodePythonRun: "# The same three sources, but with the course dataset instead of placeholders.\n# train.csv sits in the same directory as this script.\nimport pandas as pd\n\n# 1. Load CSV\ndf = pd.read_csv('train.csv', encoding='latin-1')\n\n# 2. Dates: the file uses DD/MM/YYYY -> dayfirst=True is mandatory,\n#    otherwise parsing breaks as soon as the day exceeds 12.\ndf['Order Date'] = pd.to_datetime(df['Order Date'], dayfirst=True)\n\n# 3. Check structure and quality\nprint(df.shape)                            # (9800, 18)\nprint(round(df['Sales'].sum(), 2))         # 2261536.78\nprint(df['Order ID'].nunique())            # 4922\nprint(df.isnull().sum()[lambda s: s > 0])  # Postal Code    11",
         s1RunNote: 'Prerequisites: pandas installed, train.csv in the same directory (download in Lab\u00A004). Expected output: (9800, 18) \u00B7 2261536.78 \u00B7 4922 \u00B7 Postal Code 11. If the numbers differ, dayfirst=True was usually forgotten.',
+        selfCheckTitle: 'Self-check (1 minute)',
+        selfCheckItems: [
+          'df.shape returns (9800, 18) \u2013 otherwise the wrong file was loaded.',
+          'The revenue total is 2261536.78 \u2013 if it differs, the encoding is wrong.',
+          '4922 distinct Order ID values \u2013 not to be confused with the 9800 line items.',
+          'Exactly eleven missing Postal Code values and no other nulls.',
+          'Common error: without dayfirst=True parsing breaks as soon as the day exceeds 12.',
+        ],
 
         s2Title: 'Data Modelling',
         s2Desc: 'A good data model is crucial for the performance and comprehensibility of a BI system. The star schema is the most common model in data warehousing.',
@@ -945,6 +961,12 @@
               <CodeBlock code={tx.s1CodePython} lang={lang} kind="concept" note={tx.s1CodeNote} />
               <h4 style={{ marginTop: '1.5rem' }}>{tx.s1RunTitle}</h4>
               <CodeBlock code={tx.s1CodePythonRun} lang={lang} kind="run" note={tx.s1RunNote} />
+              <div className="challenge-box">
+                <h4 style={{ marginTop: 0 }}>{tx.selfCheckTitle}</h4>
+                <ul style={{ margin: 0, paddingLeft: '1.15rem', lineHeight: 1.8, fontSize: '0.88rem' }}>
+                  {tx.selfCheckItems.map((item, i) => <li key={i}>{item}</li>)}
+                </ul>
+              </div>
             </section>
 
             {/* ── Section 2: Datenmodellierung ── */}
