@@ -72,10 +72,17 @@ def main():
     for pkg in PACKAGES:
         src = STARTER / pkg
         zip_path = STARTER / f"{pkg}.zip"
+        # Feste Zeitstempel: sonst erzeugt jeder Lauf ein neues ZIP und das
+        # Repository bekommt bei jedem Bauen einen Diff, obwohl sich am
+        # Inhalt nichts geaendert hat.
         with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as z:
             for f in sorted(src.rglob("*")):
-                if f.is_file():
-                    z.write(f, f"{pkg}/{f.relative_to(src)}")
+                if not f.is_file():
+                    continue
+                info = zipfile.ZipInfo(f"{pkg}/{f.relative_to(src)}", date_time=(1980, 1, 1, 0, 0, 0))
+                info.compress_type = zipfile.ZIP_DEFLATED
+                info.external_attr = 0o644 << 16
+                z.writestr(info, f.read_bytes())
         print("gepackt: ", zip_path.relative_to(ROOT))
 
 
