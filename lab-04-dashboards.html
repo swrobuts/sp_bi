@@ -190,6 +190,16 @@
     .quiz-option:hover:not(:disabled) { border-color: #2563EB; background: rgba(37,99,235,0.04); }
     [data-lang="en"] .quiz-option:hover:not(:disabled) { border-color: #0D9488; background: rgba(13,148,136,0.04); }
     [data-lang="en"] .footer { background: #0D9488; }
+  
+    /* ── Barrierefreiheit ────────────────────────────────────────────────────
+       sr-only blendet Text visuell aus, laesst ihn aber vorlesbar. Wird fuer
+       die Antwortzustaende im Quiz und den Sprunglink gebraucht. */
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+    .quiz-mark { font-weight: 800; margin-right: 0.4rem; }
+    .skip-link { position: absolute; left: -9999px; top: 0; z-index: 200; background: var(--col-primary, #1E3A8A); color: #fff; padding: 0.6rem 1rem; border-radius: 0 0 6px 0; font-weight: 700; text-decoration: none; }
+    .skip-link:focus { left: 0; }
+    /* Sichtbarer Fokus - der Browser-Default verschwindet auf farbigen Flaechen. */
+    a:focus-visible, button:focus-visible { outline: 3px solid #F59E0B; outline-offset: 2px; }
   </style>
 </head>
 <body>
@@ -340,9 +350,10 @@
           </p>
           <div style={{ display: 'grid', gap: '0.5rem' }}>
             {question.options.map((opt, oi) => {
-              let bg = 'white'; let border = '#D1D5DB'; let color = '#374151';
-              if (revealed && oi === question.correct) { bg = '#D1FAE5'; border = '#059669'; color = '#065F46'; }
-              else if (oi === selected && oi !== question.correct) { bg = '#FEE2E2'; border = '#DC2626'; color = '#991B1B'; }
+              let bg = 'white'; let border = '#D1D5DB'; let color = '#374151'; let mark = null;
+              // Zustand nie nur ueber Farbe - das Zeichen steht im DOM.
+              if (revealed && oi === question.correct) { bg = '#D1FAE5'; border = '#059669'; color = '#065F46'; mark = '\u2713'; }
+              else if (oi === selected && oi !== question.correct) { bg = '#FEE2E2'; border = '#DC2626'; color = '#991B1B'; mark = '\u2717'; }
               return (
                 <button key={oi} disabled={revealed} onClick={() => pick(oi)}
                   className="quiz-option"
@@ -352,6 +363,12 @@
                     color, cursor: revealed ? 'default' : 'pointer',
                     fontFamily: 'inherit', transition: 'border-color 0.15s, background 0.15s'
                   }}>
+                  {mark && <span className="quiz-mark" aria-hidden="true">{mark}</span>}
+                  {mark && <span className="sr-only">
+                    {mark === '\u2713'
+                      ? (lang === 'en' ? 'Correct answer: ' : 'Richtige Antwort: ')
+                      : (lang === 'en' ? 'Your wrong answer: ' : 'Deine falsche Antwort: ')}
+                  </span>}
                   {opt}
                 </button>
               );
@@ -359,7 +376,7 @@
           </div>
 
           {wrongPick && !revealed && (
-            <div className="quiz-hint">
+            <div className="quiz-hint" role="status" aria-live="polite">
               {lang === 'en'
                 ? '\u2717 Not quite. Re-read the question and try again \u2013 or reveal the answer.'
                 : '\u2717 Noch nicht richtig. Lies die Frage noch einmal und versuche es erneut \u2013 oder lass dir die L\u00F6sung zeigen.'}
@@ -379,7 +396,7 @@
           )}
 
           {revealed && (
-            <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: solved ? '#059669' : '#B45309' }}>
+            <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: solved ? '#059669' : '#B45309' }} role="status" aria-live="polite">
               {solved
                 ? (lang === 'en' ? '\u2713 Correct!' : '\u2713 Richtig!')
                 : (lang === 'en' ? 'Answer shown' : 'L\u00F6sung eingeblendet')}
@@ -714,11 +731,26 @@ gunicorn app:server -b 0.0.0.0:8050 --workers 2`,
     };
 
     // Wird vom Dockerfile mit "COPY requirements.txt ." erwartet - muss also existieren.
-    const CODE_REQUIREMENTS = `# requirements.txt
-dash>=3.0
-plotly>=6.0
-pandas>=2.2
-gunicorn>=23.0`;
+    const CODE_REQUIREMENTS = {
+      de: `# requirements.txt
+# Untergrenze = mindestens noetige Version, Obergrenze = naechstes Major.
+# Ohne Obergrenze bricht ein kuenftiges Major-Release die Uebung, ohne dass
+# am Kurs etwas geaendert wurde. Zuletzt getestet am 20.08.2026 mit
+# dash 3.4.0, plotly 6.5.2, pandas 3.0.0, gunicorn 24.1.1.
+dash>=3.0,<4
+plotly>=6.0,<7
+pandas>=2.2,<4
+gunicorn>=23.0,<25`,
+      en: `# requirements.txt
+# Lower bound = minimum required version, upper bound = next major.
+# Without an upper bound a future major release breaks the exercise without
+# anything in the course having changed. Last tested on 20 August 2026 with
+# dash 3.4.0, plotly 6.5.2, pandas 3.0.0, gunicorn 24.1.1.
+dash>=3.0,<4
+plotly>=6.0,<7
+pandas>=2.2,<4
+gunicorn>=23.0,<25`,
+    };
 
     const CODE_DOCKERFILE = `FROM python:3.13-slim
 WORKDIR /app
@@ -732,6 +764,7 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
     const translations = {
       de: {
         title: 'Dashboard-Design & Plotly Dash',
+        ytNote: 'Externe Ziele: Die Links f\u00FChren auf Kanalstartseiten bei YouTube. Im EU-Browser erscheint dort zuerst der Consent-Dialog, und der passende Beitrag muss auf dem Kanal noch gesucht werden. Bewusst Kanal statt Einzelvideo: einzelne Videos verschwinden, Kan\u00E4le bleiben \u00FCber Semester hinweg erreichbar.',
         desc: 'In diesem Lab lernen Sie, wie Sie nach bewährten Design-Prinzipien professionelle Dashboards gestalten, interaktive Charts mit Plotly Express erstellen und vollständige Web-Dashboards mit Plotly Dash bauen.',
         lernziele: [
           'Dashboard-Design-Prinzipien anwenden',
@@ -934,6 +967,7 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
 
       en: {
         title: 'Dashboard Design & Plotly Dash',
+        ytNote: 'External destinations: these links open channel landing pages on YouTube. In an EU browser the consent dialog appears first, and you still have to find the relevant video on the channel. Channels rather than single videos on purpose: individual videos disappear, channels stay reachable across semesters.',
         desc: 'In this lab you will learn how to design professional dashboards following proven design principles, create interactive charts with Plotly Express, and build complete web dashboards with Plotly Dash.',
         lernziele: [
           'Apply dashboard design principles',
@@ -1174,14 +1208,18 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
         <div data-lang={lang}>
 
           {/* Fixed Header */}
+          {/* Sprunglink: erstes fokussierbares Element, wird beim Fokus sichtbar. */}
+          <a className="skip-link" href="#main">
+            {lang === 'en' ? 'Skip to content' : 'Zum Inhalt springen'}
+          </a>
           <header className="header">
             <div className="header-left">
               <a href="index.html" className="header-logo">{'BI Lab'}</a>
               <a href={'index.html' + (lang === 'en' ? '?lang=en' : '')} className="header-back">{tx.backLabel}</a>
             </div>
             <div style={{ display: 'flex', gap: '0.35rem' }}>
-              <button className={'lang-btn' + (lang === 'de' ? ' active' : '')} onClick={() => setLangAndStore('de')}>{'DE'}</button>
-              <button className={'lang-btn' + (lang === 'en' ? ' active' : '')} onClick={() => setLangAndStore('en')}>{'EN'}</button>
+              <button className={'lang-btn' + (lang === 'de' ? ' active' : '')} onClick={() => setLangAndStore('de')} aria-pressed={lang === 'de'} aria-label="Deutsch">{'DE'}</button>
+              <button className={'lang-btn' + (lang === 'en' ? ' active' : '')} onClick={() => setLangAndStore('en')} aria-pressed={lang === 'en'} aria-label="English">{'EN'}</button>
             </div>
           </header>
 
@@ -1212,7 +1250,7 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
           </div>
 
           {/* Main Content */}
-          <main className="main-content">
+          <main className="main-content" id="main">
 
             {/* ── Section 1: Dashboard-Design ── */}
             <section id="design-prinzipien" className="section-block">
@@ -1372,7 +1410,7 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
               <h4 style={{ marginTop: '1.5rem', color: 'var(--col-primary)' }}>{tx.s3DockerTitle}</h4>
               <p style={{ margin: '0.25rem 0 0.5rem', fontSize: '0.9rem', color: '#374151' }}>{tx.s3DockerDesc}</p>
               <p style={{ margin: '0.25rem 0 0.5rem', fontSize: '0.9rem', color: '#374151' }}>{tx.s3ReqDesc}</p>
-              <CodeBlock code={CODE_REQUIREMENTS} lang={lang} kind="run" />
+              <CodeBlock code={CODE_REQUIREMENTS[lang]} lang={lang} kind="run" />
               <CodeBlock code={CODE_DOCKERFILE} lang={lang} kind="run" />
 
               <div className="tip-box" style={{ marginTop: '1rem' }}>
@@ -1429,6 +1467,12 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
 
               <div className="youtube-box">
                 <h3>{'YouTube'}</h3>
+
+                <p style={{ margin: '0 0 1rem', fontSize: '0.8rem', color: '#78350F' }}>
+
+                  {tx.ytNote}
+
+                </p>
                 {tx.s5Resources.map((res, i) => (
                   <div key={i} style={{
                     marginBottom: i < tx.s5Resources.length - 1 ? '1.25rem' : 0,

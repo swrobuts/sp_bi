@@ -774,6 +774,16 @@
     }
     [data-lang="en"] .dashboard-card { border-left-color: #14B8A6; }
     [data-lang="en"] .dashboard-card-name { color: #0D9488; }
+  
+    /* ── Barrierefreiheit ────────────────────────────────────────────────────
+       sr-only blendet Text visuell aus, laesst ihn aber vorlesbar. Wird fuer
+       die Antwortzustaende im Quiz und den Sprunglink gebraucht. */
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+    .quiz-mark { font-weight: 800; margin-right: 0.4rem; }
+    .skip-link { position: absolute; left: -9999px; top: 0; z-index: 200; background: var(--col-primary, #1E3A8A); color: #fff; padding: 0.6rem 1rem; border-radius: 0 0 6px 0; font-weight: 700; text-decoration: none; }
+    .skip-link:focus { left: 0; }
+    /* Sichtbarer Fokus - der Browser-Default verschwindet auf farbigen Flaechen. */
+    a:focus-visible, button:focus-visible { outline: 3px solid #F59E0B; outline-offset: 2px; }
   </style>
   <script>
     function setVH() {
@@ -952,7 +962,7 @@
         bonusBadge: 'BONUS-PROJEKT',
         bonusTitle: 'Data Sovereignty Stack',
         bonusSubtitle: 'Self-Hosted BI f\u00FCr DSGVO-konforme Unternehmen',
-        bonusWhy: 'Open-Source-BI-Tools auf eigener Infrastruktur erm\u00F6glichen volle Datensouver\u00E4nit\u00E4t \u2014 unabh\u00E4ngig von Cloud-Anbietern, ohne Lizenzkosten und mit deutlich einfacherem DSGVO-Nachweis, da die Daten die eigene Infrastruktur nicht verlassen.',
+        bonusWhy: 'Self-hosted Open-Source-BI kann die Kontrolle \u00FCber Daten und Infrastruktur erh\u00F6hen und Drittland\u00FCbermittlungen vermeiden \u2014 wenn Hosting, Backups, Telemetrie und Administration entsprechend gestaltet sind. DSGVO-Konformit\u00E4t entsteht dadurch nicht automatisch, und statt Lizenzgeb\u00FChren fallen Kosten f\u00FCr Infrastruktur, Betrieb und Personal an.',
         bonusLink: 'Zum Lab \u2192',
         sectionDashboards: 'Implementierte Dashboards',
         dashboardsDesc: 'Diese Dashboards laufen produktiv \u2013 gebaut mit dem Stack aus diesem Kurs.',
@@ -1053,7 +1063,7 @@
         bonusBadge: 'BONUS PROJECT',
         bonusTitle: 'Data Sovereignty Stack',
         bonusSubtitle: 'Self-Hosted BI for GDPR-Compliant Organizations',
-        bonusWhy: 'Open-source BI tools hosted on your own infrastructure give you full data sovereignty \u2014 independent of cloud vendors, free of licence fees, and far easier to evidence under the GDPR because the data never leaves your own infrastructure.',
+        bonusWhy: 'Self-hosted open-source BI can increase control over data and infrastructure and avoid third-country transfers \u2014 provided hosting, backups, telemetry and administration are designed accordingly. It does not create GDPR compliance by itself, and instead of licence fees you pay for infrastructure, operations and staff.',
         bonusLink: 'Go to Lab \u2192',
         sectionDashboards: 'Live Dashboards',
         dashboardsDesc: 'These dashboards run in production \u2013 built with the stack from this course.',
@@ -1067,11 +1077,11 @@
     };
 
     var bonusCriteria = [
-      { titleDe: 'Datensouver\u00E4nit\u00E4t', titleEn: 'Data Sovereignty', descDe: 'Volle Kontrolle \u00FCber eigene Daten', descEn: 'Full control over your own data' },
-      { titleDe: 'No Vendor Lock-in', titleEn: 'No Vendor Lock-in', descDe: 'Unabh\u00E4ngig von Cloud-Anbietern', descEn: 'Independent of cloud providers' },
+      { titleDe: 'Datensouver\u00E4nit\u00E4t', titleEn: 'Data Sovereignty', descDe: 'Speicherort und Zugriff selbst bestimmen', descEn: 'Decide storage location and access yourself' },
+      { titleDe: 'Weniger Lock-in', titleEn: 'Less Lock-in', descDe: 'Offene Formate, wechselbare Anbieter', descEn: 'Open formats, replaceable vendors' },
       { titleDe: 'DSGVO-Konformit\u00E4t', titleEn: 'GDPR Compliance', descDe: 'Daten bleiben in der EU', descEn: 'Data stays within the EU' },
       { titleDe: 'Kostenersparnis', titleEn: 'Cost Savings', descDe: 'Open Source, keine unmittelbaren Lizenzkosten', descEn: 'Open source, no licence fees (infrastructure and operations still cost)' },
-      { titleDe: 'Volle Kontrolle', titleEn: 'Full Control', descDe: 'Eigene Infrastruktur, eigene Regeln', descEn: 'Your own infrastructure, your rules' },
+      { titleDe: 'Eigene Infrastruktur', titleEn: 'Your Own Infrastructure', descDe: 'Eigene Regeln \u2013 und eigener Betriebsaufwand', descEn: 'Your rules \u2013 and your operational effort' },
     ];
 
     function App() {
@@ -1123,6 +1133,11 @@
       return (
         <div data-lang={lang}>
 
+          {/* Sprunglink: erstes fokussierbares Element, wird beim Fokus sichtbar. */}
+          <a className="skip-link" href="#labs">
+            {lang === 'en' ? 'Skip to content' : 'Zum Inhalt springen'}
+          </a>
+
           {/* Navbar */}
           <nav className="navbar">
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -1149,6 +1164,7 @@
               <button
                 className={`lang-btn${lang === 'de' ? ' active' : ''}`}
                 onClick={() => toggleLang('de')}
+                aria-pressed={lang === 'de'}
                 aria-label="Deutsch"
               >
                 DE
@@ -1156,6 +1172,7 @@
               <button
                 className={`lang-btn${lang === 'en' ? ' active' : ''}`}
                 onClick={() => toggleLang('en')}
+                aria-pressed={lang === 'en'}
                 aria-label="English"
               >
                 EN

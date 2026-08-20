@@ -6,6 +6,35 @@ import pandas as pd
 
 app = dash.Dash(__name__)
 
+# Ein Dashboard, das auf dem Handy bricht, ist kein fertiges Dashboard.
+# Feste Spaltenzahlen (repeat(4, 1fr)) sprengen jedes schmale Display,
+# deshalb liegt das Raster in CSS mit Media Queries statt in Inline-Styles.
+app.index_string = """<!DOCTYPE html>
+<html>
+  <head>
+    {%metas%}<title>{%title%}</title>{%favicon%}{%css%}
+    <style>
+      body { margin: 0; font-family: -apple-system, BlinkMacSystemFont,
+             'Segoe UI', sans-serif; }
+      .kpi-grid, .chart-grid { display: grid; gap: 1rem; }
+      .kpi-grid   { padding: 1rem 2rem;   grid-template-columns: 1fr; }
+      .chart-grid { padding: 0 2rem 1rem; grid-template-columns: 1fr; }
+      .filter-row { display: flex; flex-wrap: wrap; gap: 1rem;
+                    padding: 1rem 2rem; background: #f8fafc; }
+      /* min-width: 0 ist noetig, sonst schrumpfen Flex-Kinder nicht unter
+         ihre Inhaltsbreite - derselbe Fallstrick wie bei den Lab-Seiten. */
+      .filter-row > div { flex: 1 1 240px; min-width: 0; }
+      @media (min-width: 640px)  { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+      @media (min-width: 1000px) { .kpi-grid   { grid-template-columns: repeat(4, 1fr); }
+                                   .chart-grid { grid-template-columns: 1fr 1fr; } }
+      /* Plotly zeichnet in SVG und richtet sich nicht von allein nach dem
+         Container - ohne diese Regel ragen die Diagramme heraus. */
+      .js-plotly-plot, .plot-container, .dash-graph { max-width: 100%; }
+    </style>
+  </head>
+  <body>{%app_entry%}<footer>{%config%}{%scripts%}{%renderer%}</footer></body>
+</html>"""
+
 # Daten laden und vorbereiten
 df = pd.read_csv('train.csv', encoding='latin-1')
 # TT/MM/JJJJ -> dayfirst=True zwingend
@@ -48,23 +77,18 @@ app.layout = html.Div([
                 multi=True, clearable=False
             ),
         ], style={'flex': 1}),
-    ], style={'display': 'flex', 'gap': '1rem',
-              'padding': '1rem 2rem', 'background': '#f8fafc'}),
+    ], className='filter-row'),
 
     # KPI Cards
-    html.Div(id='kpi-cards',
-             style={'display': 'grid',
-                    'gridTemplateColumns': 'repeat(4, 1fr)',
-                    'gap': '1rem', 'padding': '1rem 2rem'}),
+    html.Div(id='kpi-cards', className='kpi-grid'),
 
     # Charts
     html.Div([
-        dcc.Graph(id='trend-chart'),
-        dcc.Graph(id='category-chart'),
-    ], style={'display': 'grid', 'gridTemplateColumns': '1fr 1fr',
-              'gap': '1rem', 'padding': '0 2rem 1rem'}),
+        dcc.Graph(id='trend-chart', config={'responsive': True}),
+        dcc.Graph(id='category-chart', config={'responsive': True}),
+    ], className='chart-grid'),
 
-    dcc.Graph(id='scatter-chart',
+    dcc.Graph(id='scatter-chart', config={'responsive': True},
               style={'padding': '0 2rem 2rem'}),
 ])
 

@@ -1,5 +1,9 @@
 # requirements.txt
-dash>=3.0
-plotly>=6.0
-pandas>=2.2
-gunicorn>=23.0
+# Untergrenze = mindestens noetige Version, Obergrenze = naechstes Major.
+# Ohne Obergrenze bricht ein kuenftiges Major-Release die Uebung, ohne dass
+# am Kurs etwas geaendert wurde. Zuletzt getestet am 20.08.2026 mit
+# dash 3.4.0, plotly 6.5.2, pandas 3.0.0, gunicorn 24.1.1.
+dash>=3.0,<4
+plotly>=6.0,<7
+pandas>=2.2,<4
+gunicorn>=23.0,<25

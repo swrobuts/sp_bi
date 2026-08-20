@@ -9,6 +9,13 @@ Image-Download), danach 45–90 Minuten für Metabase-Onboarding und Dashboards.
 
 **Voraussetzung:** Docker Desktop läuft. Prüfen mit `docker info`.
 
+**Versionsstand:** `metabase/metabase:v0.63.13` und `postgres:17.8-alpine` sind
+auf Patchversionen gepinnt, damit derselbe Stack in einem Jahr noch dasselbe
+tut. Für harte Reproduzierbarkeit lässt sich zusätzlich der Image-Digest
+festhalten (`image: postgres@sha256:…`). Vollständig durchgespielt wurde der
+Stack am 20.08.2026 gegen `postgres:17-alpine`; auf `17.8-alpine` wurde
+anschließend nur noch das Tag umgestellt und `docker compose config` geprüft.
+
 ## 1. Vorbereiten
 
 ```bash

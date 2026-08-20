@@ -12,8 +12,10 @@ docker-compose.yml, init/*.sql, verify.sql und .env.example.
 Aufruf:  python3 tools/build_starters.py
 """
 
+import argparse
 import json
 import subprocess
+import sys
 import zipfile
 from pathlib import Path
 
@@ -25,7 +27,7 @@ STARTER = ROOT / "starter"
 # weg, damit charts.py nicht dreimal dasselbe importiert.
 GENERATED = {
     "lab-04-dash/app.py":            ("lab-04-dashboards.html", "CODE_DASH_APP[de]", 0),
-    "lab-04-dash/requirements.txt":  ("lab-04-dashboards.html", "CODE_REQUIREMENTS", 0),
+    "lab-04-dash/requirements.txt":  ("lab-04-dashboards.html", "CODE_REQUIREMENTS[de]", 0),
     "lab-04-dash/Dockerfile":        ("lab-04-dashboards.html", "CODE_DOCKERFILE", 0),
     "lab-05-fallstudie/explore.py":  ("lab-05-fallstudie.html", "CODE_EXPLORE[de]", 0),
     "lab-05-fallstudie/app.py":      ("lab-05-fallstudie.html", "CODE_DASH[de]", 0),
@@ -48,15 +50,29 @@ def blocks(lab):
 
 
 def main():
+    ap = argparse.ArgumentParser(
+        description="Erzeugt die Starterdateien aus den Lab-Seiten und packt sie als ZIP.")
+    ap.add_argument("--check", action="store_true",
+                    help="nichts schreiben, nur melden, ob die Dateien aktuell sind "
+                         "(Rueckgabewert 1, wenn ein Neubau noetig waere)")
+    args = ap.parse_args()
+
     cache = {}
+    stale = []
     for target, (lab, name, skip) in GENERATED.items():
         cache.setdefault(lab, blocks(lab))
         code = cache[lab][name]
         if skip:
             code = "\n".join(code.split("\n")[skip:])
         path = STARTER / target
+        want = code.rstrip("\n") + "\n"
+        if args.check:
+            have = path.read_text(encoding="utf-8") if path.exists() else None
+            if have != want:
+                stale.append(target)
+            continue
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(code.rstrip("\n") + "\n", encoding="utf-8")
+        path.write_text(want, encoding="utf-8")
         print("erzeugt:", target)
 
     # charts.py: die drei Plotly-Bloecke hintereinander, Praeambel nur einmal
@@ -65,8 +81,20 @@ def main():
     parts = [cache[lab][names[0]]]
     for n in names[1:]:
         parts.append("\n".join(cache[lab][n].split("\n")[5:]))
-    (STARTER / "lab-04-dash/charts.py").write_text("\n\n".join(parts).rstrip("\n") + "\n",
-                                                   encoding="utf-8")
+    charts = STARTER / "lab-04-dash/charts.py"
+    want = "\n\n".join(parts).rstrip("\n") + "\n"
+    if args.check:
+        have = charts.read_text(encoding="utf-8") if charts.exists() else None
+        if have != want:
+            stale.append("lab-04-dash/charts.py")
+        if stale:
+            print("veraltet:", ", ".join(stale))
+            print("\nStarterdateien sind nicht auf dem Stand der Lab-Seiten. "
+                  "python3 tools/build_starters.py ausfuehren.")
+            return 1
+        print("Alle Starterdateien entsprechen den Lab-Seiten.")
+        return 0
+    charts.write_text(want, encoding="utf-8")
     print("erzeugt: lab-04-dash/charts.py")
 
     for pkg in PACKAGES:
@@ -85,6 +113,8 @@ def main():
                 z.writestr(info, f.read_bytes())
         print("gepackt: ", zip_path.relative_to(ROOT))
 
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

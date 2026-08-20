@@ -189,6 +189,16 @@
     .quiz-option:hover:not(:disabled) { border-color: #2563EB; background: rgba(37,99,235,0.04); }
     [data-lang="en"] .quiz-option:hover:not(:disabled) { border-color: #0D9488; background: rgba(13,148,136,0.04); }
     [data-lang="en"] .footer { background: #0D9488; }
+  
+    /* ── Barrierefreiheit ────────────────────────────────────────────────────
+       sr-only blendet Text visuell aus, laesst ihn aber vorlesbar. Wird fuer
+       die Antwortzustaende im Quiz und den Sprunglink gebraucht. */
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+    .quiz-mark { font-weight: 800; margin-right: 0.4rem; }
+    .skip-link { position: absolute; left: -9999px; top: 0; z-index: 200; background: var(--col-primary, #1E3A8A); color: #fff; padding: 0.6rem 1rem; border-radius: 0 0 6px 0; font-weight: 700; text-decoration: none; }
+    .skip-link:focus { left: 0; }
+    /* Sichtbarer Fokus - der Browser-Default verschwindet auf farbigen Flaechen. */
+    a:focus-visible, button:focus-visible { outline: 3px solid #F59E0B; outline-offset: 2px; }
   </style>
 </head>
 <body>
@@ -339,9 +349,10 @@
           </p>
           <div style={{ display: 'grid', gap: '0.5rem' }}>
             {question.options.map((opt, oi) => {
-              let bg = 'white'; let border = '#D1D5DB'; let color = '#374151';
-              if (revealed && oi === question.correct) { bg = '#D1FAE5'; border = '#059669'; color = '#065F46'; }
-              else if (oi === selected && oi !== question.correct) { bg = '#FEE2E2'; border = '#DC2626'; color = '#991B1B'; }
+              let bg = 'white'; let border = '#D1D5DB'; let color = '#374151'; let mark = null;
+              // Zustand nie nur ueber Farbe - das Zeichen steht im DOM.
+              if (revealed && oi === question.correct) { bg = '#D1FAE5'; border = '#059669'; color = '#065F46'; mark = '\u2713'; }
+              else if (oi === selected && oi !== question.correct) { bg = '#FEE2E2'; border = '#DC2626'; color = '#991B1B'; mark = '\u2717'; }
               return (
                 <button key={oi} disabled={revealed} onClick={() => pick(oi)}
                   className="quiz-option"
@@ -351,6 +362,12 @@
                     color, cursor: revealed ? 'default' : 'pointer',
                     fontFamily: 'inherit', transition: 'border-color 0.15s, background 0.15s'
                   }}>
+                  {mark && <span className="quiz-mark" aria-hidden="true">{mark}</span>}
+                  {mark && <span className="sr-only">
+                    {mark === '\u2713'
+                      ? (lang === 'en' ? 'Correct answer: ' : 'Richtige Antwort: ')
+                      : (lang === 'en' ? 'Your wrong answer: ' : 'Deine falsche Antwort: ')}
+                  </span>}
                   {opt}
                 </button>
               );
@@ -358,7 +375,7 @@
           </div>
 
           {wrongPick && !revealed && (
-            <div className="quiz-hint">
+            <div className="quiz-hint" role="status" aria-live="polite">
               {lang === 'en'
                 ? '\u2717 Not quite. Re-read the question and try again \u2013 or reveal the answer.'
                 : '\u2717 Noch nicht richtig. Lies die Frage noch einmal und versuche es erneut \u2013 oder lass dir die L\u00F6sung zeigen.'}
@@ -378,7 +395,7 @@
           )}
 
           {revealed && (
-            <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: solved ? '#059669' : '#B45309' }}>
+            <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: solved ? '#059669' : '#B45309' }} role="status" aria-live="polite">
               {solved
                 ? (lang === 'en' ? '\u2713 Correct!' : '\u2713 Richtig!')
                 : (lang === 'en' ? 'Answer shown' : 'L\u00F6sung eingeblendet')}
@@ -408,6 +425,7 @@
     const translations = {
       de: {
         title: 'KPIs mit DAX \u0026 Python',
+        ytNote: 'Externe Ziele: Die Links f\u00FChren auf Kanalstartseiten bei YouTube. Im EU-Browser erscheint dort zuerst der Consent-Dialog, und der passende Beitrag muss auf dem Kanal noch gesucht werden. Bewusst Kanal statt Einzelvideo: einzelne Videos verschwinden, Kan\u00E4le bleiben \u00FCber Semester hinweg erreichbar.',
         desc: 'DAX (Data Analysis Expressions) ist die Formelsprache von Power BI. In diesem Lab lernen Sie, wie Sie wichtige Business-KPIs sowohl in DAX als auch in Python berechnen, den Filter-Kontext verstehen und Measures korrekt einsetzen.',
         lernziele: [
           'DAX-Grundlagen in Power BI anwenden',
@@ -447,9 +465,9 @@
             name: 'Calculated Columns',
             color: 'var(--col-accent)',
             points: [
-              'Statisch \u2013 einmal berechnet und gespeichert',
-              'Zeile f\u00FCr Zeile (Row Context)',
-              'Ergebnis wird in der Tabelle gespeichert',
+              'Werden bei jeder Datenaktualisierung neu berechnet',
+              'Zeile f\u00FCr Zeile im Row Context ausgewertet',
+              'Ergebnis wird im Modell gespeichert und belegt Speicher',
               'Beispiele: Vollst\u00E4ndiger Name, Kategorie-Gruppe',
             ],
           },
@@ -598,6 +616,7 @@
 
       en: {
         title: 'KPIs with DAX \u0026 Python',
+        ytNote: 'External destinations: these links open channel landing pages on YouTube. In an EU browser the consent dialog appears first, and you still have to find the relevant video on the channel. Channels rather than single videos on purpose: individual videos disappear, channels stay reachable across semesters.',
         desc: 'DAX (Data Analysis Expressions) is the formula language of Power BI. In this lab you will learn how to calculate important business KPIs in both DAX and Python, understand the filter context, and use measures correctly.',
         lernziele: [
           'Apply DAX fundamentals in Power BI',
@@ -637,9 +656,9 @@
             name: 'Calculated Columns',
             color: 'var(--col-accent)',
             points: [
-              'Static \u2013 calculated once and stored',
-              'Row by row (Row Context)',
-              'Result is stored in the table',
+              'Recalculated on every data refresh',
+              'Evaluated row by row in the row context',
+              'Result is stored in the model and consumes memory',
               'Examples: Full Name, Category Group',
             ],
           },
@@ -826,14 +845,18 @@
         <div data-lang={lang}>
 
           {/* Fixed Header */}
+          {/* Sprunglink: erstes fokussierbares Element, wird beim Fokus sichtbar. */}
+          <a className="skip-link" href="#main">
+            {lang === 'en' ? 'Skip to content' : 'Zum Inhalt springen'}
+          </a>
           <header className="header">
             <div className="header-left">
               <a href="index.html" className="header-logo">{'BI Lab'}</a>
               <a href={'index.html' + (lang === 'en' ? '?lang=en' : '')} className="header-back">{tx.backLabel}</a>
             </div>
             <div style={{ display: 'flex', gap: '0.35rem' }}>
-              <button className={'lang-btn' + (lang === 'de' ? ' active' : '')} onClick={() => setLangAndStore('de')}>{'DE'}</button>
-              <button className={'lang-btn' + (lang === 'en' ? ' active' : '')} onClick={() => setLangAndStore('en')}>{'EN'}</button>
+              <button className={'lang-btn' + (lang === 'de' ? ' active' : '')} onClick={() => setLangAndStore('de')} aria-pressed={lang === 'de'} aria-label="Deutsch">{'DE'}</button>
+              <button className={'lang-btn' + (lang === 'en' ? ' active' : '')} onClick={() => setLangAndStore('en')} aria-pressed={lang === 'en'} aria-label="English">{'EN'}</button>
             </div>
           </header>
 
@@ -864,7 +887,7 @@
           </div>
 
           {/* Main Content */}
-          <main className="main-content">
+          <main className="main-content" id="main">
 
             {/* ── Section 1: DAX Grundlagen ── */}
             <section id="dax-grundlagen" className="section-block">
@@ -1013,6 +1036,12 @@
 
               <div className="youtube-box">
                 <h3>{'YouTube'}</h3>
+
+                <p style={{ margin: '0 0 1rem', fontSize: '0.8rem', color: '#78350F' }}>
+
+                  {tx.ytNote}
+
+                </p>
                 {tx.s5Resources.map((res, i) => (
                   <div key={i} style={{
                     marginBottom: i < tx.s5Resources.length - 1 ? '1.25rem' : 0,

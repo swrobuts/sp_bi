@@ -201,6 +201,16 @@
     [data-lang="en"] .challenge-box { border-left-color: #0D9488; }
     [data-lang="en"] .quiz-option:hover:not(:disabled) { border-color: #0D9488; background: rgba(13,148,136,0.04); }
     [data-lang="en"] .footer { background: #0D9488; }
+  
+    /* ── Barrierefreiheit ────────────────────────────────────────────────────
+       sr-only blendet Text visuell aus, laesst ihn aber vorlesbar. Wird fuer
+       die Antwortzustaende im Quiz und den Sprunglink gebraucht. */
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+    .quiz-mark { font-weight: 800; margin-right: 0.4rem; }
+    .skip-link { position: absolute; left: -9999px; top: 0; z-index: 200; background: var(--col-primary, #1E3A8A); color: #fff; padding: 0.6rem 1rem; border-radius: 0 0 6px 0; font-weight: 700; text-decoration: none; }
+    .skip-link:focus { left: 0; }
+    /* Sichtbarer Fokus - der Browser-Default verschwindet auf farbigen Flaechen. */
+    a:focus-visible, button:focus-visible { outline: 3px solid #F59E0B; outline-offset: 2px; }
   </style>
 </head>
 <body>
@@ -348,8 +358,11 @@
           <h4>{question}</h4>
           {options.map((opt, i) => {
             let cls = 'quiz-option';
-            if (revealed && i === correctIndex) cls += ' correct';
-            else if (i === selected && i !== correctIndex) cls += ' wrong';
+            let mark = null;
+            // Zustand nie nur ueber Farbe: das Zeichen steht im DOM und wird
+            // damit auch vorgelesen und bei Farbsehschwaeche erkannt.
+            if (revealed && i === correctIndex) { cls += ' correct'; mark = '\u2713'; }
+            else if (i === selected && i !== correctIndex) { cls += ' wrong'; mark = '\u2717'; }
             return (
               <button
                 key={i}
@@ -357,13 +370,19 @@
                 disabled={revealed}
                 onClick={() => pick(i)}
               >
+                {mark && <span className="quiz-mark" aria-hidden="true">{mark}</span>}
+                {mark && <span className="sr-only">
+                  {mark === '\u2713'
+                    ? (lang === 'en' ? 'Correct answer: ' : 'Richtige Antwort: ')
+                    : (lang === 'en' ? 'Your wrong answer: ' : 'Deine falsche Antwort: ')}
+                </span>}
                 {opt}
               </button>
             );
           })}
 
           {wrongPick && !revealed && (
-            <div className="quiz-hint">
+            <div className="quiz-hint" role="status" aria-live="polite">
               {lang === 'en'
                 ? '\u2717 Not quite. Re-read the question and try again \u2013 or reveal the answer.'
                 : '\u2717 Noch nicht richtig. Lies die Frage noch einmal und versuche es erneut \u2013 oder lass dir die L\u00F6sung zeigen.'}
@@ -385,7 +404,7 @@
           )}
 
           {revealed && (
-            <div className={'quiz-explanation' + (!solved ? ' wrong-exp' : '')}>
+            <div className={'quiz-explanation' + (!solved ? ' wrong-exp' : '')} role="status" aria-live="polite">
               {solved
                 ? (lang === 'en' ? '\u2713 Correct! ' : '\u2713 Richtig! ')
                 : (lang === 'en' ? 'Answer shown. ' : 'L\u00F6sung eingeblendet. ')}{explanation}
@@ -413,6 +432,7 @@
     const translations = {
       de: {
         title: 'Daten: Quellen, Modelle, Qualit\u00E4t',
+        ytNote: 'Externe Ziele: Die Links f\u00FChren auf Kanalstartseiten bei YouTube. Im EU-Browser erscheint dort zuerst der Consent-Dialog, und der passende Beitrag muss auf dem Kanal noch gesucht werden. Bewusst Kanal statt Einzelvideo: einzelne Videos verschwinden, Kan\u00E4le bleiben \u00FCber Semester hinweg erreichbar.',
         desc: 'Daten sind das Fundament jeder BI-L\u00F6sung. In diesem Lab lernen Sie, wie verschiedene Datenquellen angebunden werden, wie Star- und Snowflake-Schemata funktionieren und wie Datenqualit\u00E4tsprobleme erkannt und behoben werden.',
         lernziele: [
           'Verschiedene Datenquellen anbinden',
@@ -637,6 +657,7 @@
 
       en: {
         title: 'Data: Sources, Models, Quality',
+        ytNote: 'External destinations: these links open channel landing pages on YouTube. In an EU browser the consent dialog appears first, and you still have to find the relevant video on the channel. Channels rather than single videos on purpose: individual videos disappear, channels stay reachable across semesters.',
         desc: 'Data is the foundation of every BI solution. In this lab you will learn how to connect different data sources, how star and snowflake schemas work, and how to identify and fix data quality issues.',
         lernziele: [
           'Connect various data sources',
@@ -899,14 +920,18 @@
         <div data-lang={lang}>
 
           {/* Fixed Header */}
+          {/* Sprunglink: erstes fokussierbares Element, wird beim Fokus sichtbar. */}
+          <a className="skip-link" href="#main">
+            {lang === 'en' ? 'Skip to content' : 'Zum Inhalt springen'}
+          </a>
           <header className="header">
             <div className="header-left">
               <a href="index.html" className="header-logo">{'BI Lab'}</a>
               <a href={'index.html' + (lang === 'en' ? '?lang=en' : '')} className="header-back">{tx.backLabel}</a>
             </div>
             <div style={{ display: 'flex', gap: '0.35rem' }}>
-              <button className={'lang-btn' + (lang === 'de' ? ' active' : '')} onClick={() => setLangAndStore('de')}>{'DE'}</button>
-              <button className={'lang-btn' + (lang === 'en' ? ' active' : '')} onClick={() => setLangAndStore('en')}>{'EN'}</button>
+              <button className={'lang-btn' + (lang === 'de' ? ' active' : '')} onClick={() => setLangAndStore('de')} aria-pressed={lang === 'de'} aria-label="Deutsch">{'DE'}</button>
+              <button className={'lang-btn' + (lang === 'en' ? ' active' : '')} onClick={() => setLangAndStore('en')} aria-pressed={lang === 'en'} aria-label="English">{'EN'}</button>
             </div>
           </header>
 
@@ -937,7 +962,7 @@
           </div>
 
           {/* Main Content */}
-          <main className="main-content">
+          <main className="main-content" id="main">
 
             {/* ── Section 1: Datenquellen ── */}
             <section id="datenquellen" className="section-block">
@@ -1123,6 +1148,12 @@
 
               <div className="youtube-box">
                 <h3>{'YouTube'}</h3>
+
+                <p style={{ margin: '0 0 1rem', fontSize: '0.8rem', color: '#78350F' }}>
+
+                  {tx.ytNote}
+
+                </p>
                 {tx.s4Resources.map((res, i) => (
                   <div key={i} style={{
                     marginBottom: i < tx.s4Resources.length - 1 ? '1.25rem' : 0,

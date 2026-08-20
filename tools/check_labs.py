@@ -149,10 +149,21 @@ def check_compose():
             record(proc.returncode == 0, "Compose",
                    f"{name} ist gueltig" if proc.returncode == 0
                    else f"{name}: {proc.stderr.strip()[:200]}")
+            # Ein blosser Major-Tag (postgres:17-alpine) gilt NICHT als gepinnt:
+            # er wandert bei jedem Patch-Release weiter, ohne dass sich am
+            # Kurs etwas aendert. Verlangt wird ein Digest oder mindestens
+            # major.minor - metabase:v0.63.13, postgres:17.6-alpine.
             pinned = re.findall(r"image:\s*(\S+)", block["code"])
-            unpinned = [i for i in pinned if ":" not in i or i.endswith(":latest")]
-            record(not unpinned, "Compose",
-                   "alle Images gepinnt" if not unpinned else f"ungepinnt: {unpinned}")
+            weak = []
+            for img in pinned:
+                if "@sha256:" in img:
+                    continue
+                tag = img.rsplit(":", 1)[1] if ":" in img else ""
+                if not tag or tag == "latest" or not re.search(r"\d+\.\d+", tag):
+                    weak.append(img)
+            record(not weak, "Compose",
+                   "alle Images auf Patchstand oder Digest gepinnt" if not weak
+                   else f"nur grob gepinnt (Major-Tag oder latest): {weak}")
 
 
 # ── 4. Sprachtrennung ────────────────────────────────────────────────────────

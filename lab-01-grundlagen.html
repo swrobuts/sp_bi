@@ -201,6 +201,16 @@
     [data-lang="en"] .challenge-box { border-left-color: #0D9488; }
     [data-lang="en"] .quiz-option:hover:not(:disabled) { border-color: #0D9488; background: rgba(13,148,136,0.04); }
     [data-lang="en"] .footer { background: #0D9488; }
+  
+    /* ── Barrierefreiheit ────────────────────────────────────────────────────
+       sr-only blendet Text visuell aus, laesst ihn aber vorlesbar. Wird fuer
+       die Antwortzustaende im Quiz und den Sprunglink gebraucht. */
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+    .quiz-mark { font-weight: 800; margin-right: 0.4rem; }
+    .skip-link { position: absolute; left: -9999px; top: 0; z-index: 200; background: var(--col-primary, #1E3A8A); color: #fff; padding: 0.6rem 1rem; border-radius: 0 0 6px 0; font-weight: 700; text-decoration: none; }
+    .skip-link:focus { left: 0; }
+    /* Sichtbarer Fokus - der Browser-Default verschwindet auf farbigen Flaechen. */
+    a:focus-visible, button:focus-visible { outline: 3px solid #F59E0B; outline-offset: 2px; }
   </style>
 </head>
 <body>
@@ -348,8 +358,11 @@
           <h4>{question}</h4>
           {options.map((opt, i) => {
             let cls = 'quiz-option';
-            if (revealed && i === correctIndex) cls += ' correct';
-            else if (i === selected && i !== correctIndex) cls += ' wrong';
+            let mark = null;
+            // Zustand nie nur ueber Farbe: das Zeichen steht im DOM und wird
+            // damit auch vorgelesen und bei Farbsehschwaeche erkannt.
+            if (revealed && i === correctIndex) { cls += ' correct'; mark = '\u2713'; }
+            else if (i === selected && i !== correctIndex) { cls += ' wrong'; mark = '\u2717'; }
             return (
               <button
                 key={i}
@@ -357,13 +370,19 @@
                 disabled={revealed}
                 onClick={() => pick(i)}
               >
+                {mark && <span className="quiz-mark" aria-hidden="true">{mark}</span>}
+                {mark && <span className="sr-only">
+                  {mark === '\u2713'
+                    ? (lang === 'en' ? 'Correct answer: ' : 'Richtige Antwort: ')
+                    : (lang === 'en' ? 'Your wrong answer: ' : 'Deine falsche Antwort: ')}
+                </span>}
                 {opt}
               </button>
             );
           })}
 
           {wrongPick && !revealed && (
-            <div className="quiz-hint">
+            <div className="quiz-hint" role="status" aria-live="polite">
               {lang === 'en'
                 ? '\u2717 Not quite. Re-read the question and try again \u2013 or reveal the answer.'
                 : '\u2717 Noch nicht richtig. Lies die Frage noch einmal und versuche es erneut \u2013 oder lass dir die L\u00F6sung zeigen.'}
@@ -385,7 +404,7 @@
           )}
 
           {revealed && (
-            <div className={'quiz-explanation' + (!solved ? ' wrong-exp' : '')}>
+            <div className={'quiz-explanation' + (!solved ? ' wrong-exp' : '')} role="status" aria-live="polite">
               {solved
                 ? (lang === 'en' ? '\u2713 Correct! ' : '\u2713 Richtig! ')
                 : (lang === 'en' ? 'Answer shown. ' : 'L\u00F6sung eingeblendet. ')}{explanation}
@@ -413,6 +432,7 @@
     const translations = {
       de: {
         title: 'Grundlagen Business Intelligence',
+        ytNote: 'Externe Ziele: Die Links f\u00FChren auf Kanalstartseiten bei YouTube. Im EU-Browser erscheint dort zuerst der Consent-Dialog, und der passende Beitrag muss auf dem Kanal noch gesucht werden. Bewusst Kanal statt Einzelvideo: einzelne Videos verschwinden, Kan\u00E4le bleiben \u00FCber Semester hinweg erreichbar.',
         desc: 'Was ist Business Intelligence? In diesem Lab lernen Sie die Kernkonzepte, die Architektur von BI-Systemen, KPI-Grundlagen und den Tool-\u00DCberblick kennen.',
         lernziele: [
           'BI definieren & abgrenzen',
@@ -517,7 +537,7 @@
         s4FabricTitle: 'Einordnung: Power BI und Microsoft Fabric',
         s4FabricText: 'Seit 2023 ist Power BI Teil von Microsoft Fabric \u2013 einer SaaS-Plattform, die Datenintegration (Data Factory), Data Engineering (Spark), Data Warehouse, Real-Time Analytics und Power BI unter einem gemeinsamen Speicher namens OneLake zusammenfasst. F\u00FCr die Lehre wichtig: Power BI Desktop und Power BI Pro funktionieren unver\u00E4ndert weiter \u2013 alles in diesem Kurs bleibt g\u00FCltig. Ge\u00E4ndert hat sich das Kapazit\u00E4tsmodell: Die fr\u00FCheren Premium-Kapazit\u00E4ten (P1\u2013P5) werden zum Ende der jeweiligen Vertragslaufzeit durch Fabric-Kapazit\u00E4ten (F-SKUs) ersetzt (P1\u2192F64, P2\u2192F128 usw.). Die entscheidende Schwelle ist F64: erst ab dieser Gr\u00F6\u00DFe d\u00FCrfen Berichte von Nutzern mit kostenloser Lizenz gelesen werden \u2013 darunter braucht jeder Betrachter eine Pro- oder PPU-Lizenz. Aus Souver\u00E4nit\u00E4tssicht versch\u00E4rft Fabric das Lock-in: OneLake ist der gemeinsame Speicher aller Workloads, und je mehr Pipelines, Modelle und Notebooks dort liegen, desto teurer wird ein Ausstieg.',
         s4NoteTitle: 'Hinweis zur Datensouver\u00E4nit\u00E4t',
-        s4NoteText: 'Open-Source-Tools wie Apache Superset und Metabase erm\u00F6glichen self-hosted Betrieb. Das ist eine wichtige Voraussetzung f\u00FCr Datensouver\u00E4nit\u00E4t \u2013 es entf\u00E4llt der Drittlandtransfer und der AVV mit einem Cloud-Anbieter. DSGVO-Konformit\u00E4t entsteht dadurch aber nicht automatisch: Rechtsgrundlage, Verarbeitungsverzeichnis (Art. 30), TOMs (Art. 32) und Betroffenenrechte sind unabh\u00E4ngig vom Hosting-Modell zu erf\u00FCllen. In Lab 06 vertiefen wir das.',
+        s4NoteText: 'Open-Source-Tools wie Apache Superset und Metabase erm\u00F6glichen self-hosted Betrieb. Das kann Drittland\u00FCbermittlungen und einen Auftragsverarbeitungsvertrag mit einem BI-SaaS-Anbieter vermeiden \u2013 allerdings nur, wenn auch Hosting, Backups, Telemetrie, Support und Administration ohne externe Auftragsverarbeiter auskommen. Entscheidend ist die konkrete Betriebsarchitektur, nicht das Etikett self-hosted. DSGVO-Konformit\u00E4t entsteht dadurch ohnehin nicht automatisch: Rechtsgrundlage, Verarbeitungsverzeichnis (Art. 30), TOMs (Art. 32) und Betroffenenrechte sind unabh\u00E4ngig vom Hosting-Modell zu erf\u00FCllen. In Lab 06 vertiefen wir das.',
 
         // Section 5
         s5Title: 'Lernressourcen',
@@ -563,7 +583,7 @@
               'Google Analytics',
             ],
             correct: 2,
-            exp: 'Apache Superset ist ein vollst\u00E4ndig Open-Source BI-Tool, das selbst gehostet werden kann und keine Lizenzkosten verursacht.',
+            exp: 'Apache Superset ist ein vollst\u00E4ndig quelloffenes BI-Tool (Apache-2.0) und kann selbst gehostet werden. Lizenzgeb\u00FChren fallen nicht an \u2013 Infrastruktur, Betrieb und Administration verursachen aber weiterhin Kosten.',
           },
           {
             q: 'Wer prägte 1958 den Begriff „Business Intelligence"?',
@@ -607,7 +627,7 @@
               'Bei jeder Größe – Fabric braucht keine Nutzerlizenzen',
             ],
             correct: 2,
-            exp: 'F64 ist die entscheidende Schwelle: Erst ab dieser Kapazität können Berichte von Nutzern mit kostenloser Lizenz konsumiert werden. Darunter benötigt jeder Betrachter eine Pro- (14 $) oder PPU-Lizenz (24 $). Genau an dieser Grenze entscheidet sich in der Praxis, ob eine Kapazität oder Einzellizenzen günstiger sind.',
+            exp: 'F64 ist die entscheidende Schwelle \u2013 aber die Bedingung geht weiter: Nutzer mit kostenloser Lizenz k\u00F6nnen Power-BI-Inhalte nur ansehen, wenn Bericht und semantisches Modell auf einer Kapazit\u00E4t ab F64 liegen, die Nutzer Zugriff haben und im Arbeitsbereich die Rolle Viewer besitzen. Unterhalb von F64 braucht jeder Betrachter Pro (14 $/Monat) oder PPU (24 $/Monat). An dieser Grenze entscheidet sich in der Praxis, ob eine Kapazit\u00E4t oder Einzellizenzen g\u00FCnstiger sind. Stand: 20.08.2026 \u2013 Preise und Bedingungen bei Microsoft Learn pr\u00FCfen.',
           },
         ],
         // Zusammenfassung
@@ -619,7 +639,7 @@
           'Moderne Konzepte wie Data Lakehouse (Databricks) vereinen die Vorteile von Data Warehouse und Data Lake in einer Plattform.',
           'KPIs werden nach Typ (quantitativ/qualitativ, absolut/relativ) und Zeitrichtung (Lead = vorausschauend, Lag = rückblickend) klassifiziert. Gute KPIs folgen dem SMART-Prinzip.',
           'Der BI-Markt teilt sich in kommerzielle Lösungen (Power BI seit 2015, Tableau, Looker, Qlik) und Open-Source-Alternativen (Apache Superset, Metabase, Plotly Dash) mit voller Datenhoheit.',
-          'Power BI ist seit 2023 Teil von Microsoft Fabric: Die fr\u00FCheren Premium-Kapazit\u00E4ten (P1\u2013P5) weichen Fabric-F-SKUs, gemeinsamer Speicher ist OneLake. Ab F64 d\u00FCrfen Nutzer mit kostenloser Lizenz Berichte lesen \u2013 unterhalb braucht jeder Betrachter Pro oder PPU.',
+          'Power BI ist seit 2023 Teil von Microsoft Fabric: Die fr\u00FCheren Premium-Kapazit\u00E4ten (P1\u2013P5) weichen Fabric-F-SKUs, gemeinsamer Speicher ist OneLake. Ab F64 d\u00FCrfen Nutzer mit kostenloser Lizenz Berichte lesen, sofern Inhalt und Modell auf dieser Kapazit\u00E4t liegen und sie im Arbeitsbereich die Viewer-Rolle haben \u2013 unterhalb braucht jeder Betrachter Pro oder PPU (Stand: 20.08.2026).',
           'Bill Inmon (1992) und Ralph Kimball (1996) begründeten das Data Warehousing – die Grundlage moderner BI-Architektur.',
         ],
         navNext: 'Lab 02: Daten \u2192',
@@ -627,6 +647,7 @@
 
       en: {
         title: 'BI Foundations',
+        ytNote: 'External destinations: these links open channel landing pages on YouTube. In an EU browser the consent dialog appears first, and you still have to find the relevant video on the channel. Channels rather than single videos on purpose: individual videos disappear, channels stay reachable across semesters.',
         desc: 'What is Business Intelligence? In this lab you will learn the core concepts, the architecture of BI systems, KPI fundamentals, and a tool overview.',
         lernziele: [
           'Define & distinguish BI',
@@ -731,7 +752,7 @@
         s4FabricTitle: 'Context: Power BI and Microsoft Fabric',
         s4FabricText: 'Since 2023 Power BI has been part of Microsoft Fabric, a SaaS platform that combines data integration (Data Factory), data engineering (Spark), data warehousing, real-time analytics and Power BI on top of a shared storage layer called OneLake. Important for this course: Power BI Desktop and Power BI Pro continue to work unchanged, so everything taught here remains valid. What changed is the capacity model: the former Premium capacities (P1-P5) are being replaced by Fabric capacities (F-SKUs) at the end of each contract term (P1 to F64, P2 to F128, and so on). The decisive threshold is F64: only from that size may reports be consumed by users holding a free licence; below it every viewer needs a Pro or PPU licence. From a sovereignty perspective Fabric deepens lock-in: OneLake is the shared store for all workloads, and the more pipelines, models and notebooks live there, the more expensive an exit becomes.',
         s4NoteTitle: 'Note on Data Sovereignty',
-        s4NoteText: 'Open-source tools like Apache Superset and Metabase allow self-hosted operation. That is an important prerequisite for data sovereignty \u2013 it removes third-country transfers and the processing agreement with a cloud vendor. It does not by itself make you GDPR-compliant: a legal basis, records of processing (Art. 30), TOMs (Art. 32) and data subject rights apply regardless of the hosting model. Lab 06 explores this in depth.',
+        s4NoteText: 'Open-source tools like Apache Superset and Metabase allow self-hosted operation. That can avoid third-country transfers and a data processing agreement with a BI SaaS vendor \u2013 but only if hosting, backups, telemetry, support and administration also work without external processors. What matters is the actual operating architecture, not the label self-hosted. It does not by itself make you GDPR-compliant: a legal basis, records of processing (Art. 30), TOMs (Art. 32) and data subject rights apply regardless of the hosting model. Lab 06 explores this in depth.',
 
         // Section 5
         s5Title: 'Learning Resources',
@@ -777,7 +798,7 @@
               'Google Analytics',
             ],
             correct: 2,
-            exp: 'Apache Superset is a fully open-source BI tool that can be self-hosted and incurs no licensing costs.',
+            exp: 'Apache Superset is a fully open-source BI tool (Apache-2.0) and can be self-hosted. There are no licence fees \u2013 but infrastructure, operations and administration still cost money.',
           },
           {
             q: 'Who coined the term "Business Intelligence" in 1958?',
@@ -821,7 +842,7 @@
               'At any size – Fabric needs no user licences',
             ],
             correct: 2,
-            exp: 'F64 is the decisive threshold: only from this capacity onwards can reports be consumed by users holding a free licence. Below it, every viewer needs a Pro ($14) or PPU ($24) licence. In practice this boundary decides whether a capacity or per-user licensing is cheaper.',
+            exp: 'F64 is the decisive threshold \u2013 but the condition goes further: users with a free licence can only view Power BI content if the report and its semantic model sit on a capacity of F64 or larger, they have access, and they hold the Viewer role in the workspace. Below F64 every viewer needs Pro ($14/month) or PPU ($24/month). In practice this boundary decides whether a capacity or per-user licensing is cheaper. As of 20 August 2026 \u2013 check prices and conditions on Microsoft Learn.',
           },
         ],
         // Summary
@@ -833,7 +854,7 @@
           'Modern concepts like Data Lakehouse (Databricks) combine the advantages of Data Warehouse and Data Lake into a single platform.',
           'KPIs are classified by type (quantitative/qualitative, absolute/relative) and time direction (Lead = forward-looking, Lag = backward-looking). Good KPIs follow the SMART principle.',
           'The BI market is split between commercial solutions (Power BI since 2015, Tableau, Looker, Qlik) and open-source alternatives (Apache Superset, Metabase, Plotly Dash) with full data sovereignty.',
-          'Power BI has been part of Microsoft Fabric since 2023: the former Premium capacities (P1-P5) give way to Fabric F-SKUs, with OneLake as the shared store. From F64 upwards users with a free licence may read reports; below that every viewer needs Pro or PPU.',
+          'Power BI has been part of Microsoft Fabric since 2023: the former Premium capacities (P1-P5) give way to Fabric F-SKUs, with OneLake as the shared store. From F64 upwards users with a free licence may read reports, provided the content and its model sit on that capacity and they hold the Viewer role in the workspace; below that every viewer needs Pro or PPU (as of 20 August 2026).',
           'Bill Inmon (1992) and Ralph Kimball (1996) established data warehousing – the foundation of modern BI architecture.',
         ],
         navNext: 'Lab 02: Data \u2192',
@@ -879,14 +900,18 @@
         <div data-lang={lang}>
 
           {/* Fixed Header */}
+          {/* Sprunglink: erstes fokussierbares Element, wird beim Fokus sichtbar. */}
+          <a className="skip-link" href="#main">
+            {lang === 'en' ? 'Skip to content' : 'Zum Inhalt springen'}
+          </a>
           <header className="header">
             <div className="header-left">
               <a href="index.html" className="header-logo">{'BI Lab'}</a>
               <a href={'index.html' + (lang === 'en' ? '?lang=en' : '')} className="header-back">{tx.backLabel}</a>
             </div>
             <div style={{ display: 'flex', gap: '0.35rem' }}>
-              <button className={'lang-btn' + (lang === 'de' ? ' active' : '')} onClick={() => setLangAndStore('de')}>{'DE'}</button>
-              <button className={'lang-btn' + (lang === 'en' ? ' active' : '')} onClick={() => setLangAndStore('en')}>{'EN'}</button>
+              <button className={'lang-btn' + (lang === 'de' ? ' active' : '')} onClick={() => setLangAndStore('de')} aria-pressed={lang === 'de'} aria-label="Deutsch">{'DE'}</button>
+              <button className={'lang-btn' + (lang === 'en' ? ' active' : '')} onClick={() => setLangAndStore('en')} aria-pressed={lang === 'en'} aria-label="English">{'EN'}</button>
             </div>
           </header>
 
@@ -917,7 +942,7 @@
           </div>
 
           {/* Main Content */}
-          <main className="main-content">
+          <main className="main-content" id="main">
 
             {/* ── Section 1: Was ist BI? ── */}
             <section id="was-ist-bi" className="section-block">
@@ -1083,6 +1108,12 @@
 
               <div className="youtube-box">
                 <h3>{'YouTube'}</h3>
+
+                <p style={{ margin: '0 0 1rem', fontSize: '0.8rem', color: '#78350F' }}>
+
+                  {tx.ytNote}
+
+                </p>
                 {tx.s5Resources.map((res, i) => (
                   <div key={i} style={{
                     marginBottom: i < tx.s5Resources.length - 1 ? '1.25rem' : 0,

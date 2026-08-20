@@ -30,6 +30,7 @@
     *, *::before, *::after { box-sizing: border-box; }
     body { background: #FAFAFA; font-family: 'Space Grotesk', -apple-system, sans-serif; margin: 0; color: #1A1A1A; }
     h2 { color: #1E3A8A; font-weight: 800; font-family: 'Space Grotesk', sans-serif; margin-top: 0; }
+    h1 { color: #1E3A8A; font-weight: 800; font-family: 'Space Grotesk', sans-serif; margin-top: 0; }
     h3 { color: #1E3A8A; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
     h4 { font-family: 'Space Grotesk', sans-serif; font-weight: 600; margin: 0.5rem 0; }
     p { line-height: 1.7; }
@@ -142,6 +143,16 @@
     [data-lang="en"] .nav-btn.primary { background: #0D9488; border-color: #0D9488; }
     [data-lang="en"] .nav-btn.primary:hover { background: #0f766e; border-color: #0f766e; }
     [data-lang="en"] .quiz-option:hover:not(:disabled) { border-color: #0D9488; background: rgba(13,148,136,0.04); }
+  
+    /* ── Barrierefreiheit ────────────────────────────────────────────────────
+       sr-only blendet Text visuell aus, laesst ihn aber vorlesbar. Wird fuer
+       die Antwortzustaende im Quiz und den Sprunglink gebraucht. */
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+    .quiz-mark { font-weight: 800; margin-right: 0.4rem; }
+    .skip-link { position: absolute; left: -9999px; top: 0; z-index: 200; background: var(--col-primary, #1E3A8A); color: #fff; padding: 0.6rem 1rem; border-radius: 0 0 6px 0; font-weight: 700; text-decoration: none; }
+    .skip-link:focus { left: 0; }
+    /* Sichtbarer Fokus - der Browser-Default verschwindet auf farbigen Flaechen. */
+    a:focus-visible, button:focus-visible { outline: 3px solid #F59E0B; outline-offset: 2px; }
   </style>
 </head>
 <body>
@@ -297,18 +308,25 @@
       <div style={{ marginBottom: '1.75rem' }}>
         <p style={{ fontWeight: 600, marginBottom: '0.5rem' }}>{index}. {question.q}</p>
         {question.options.map((opt, i) => {
-          let style = {};
-          if (revealed && i === question.correct) style = { borderColor: '#059669', background: '#F0FDF4', color: '#065F46' };
-          else if (i === selected && i !== question.correct) style = { borderColor: '#DC2626', background: '#FEF2F2', color: '#991B1B' };
+          let style = {}; let mark = null;
+          // Zustand nie nur ueber Farbe - das Zeichen steht im DOM.
+          if (revealed && i === question.correct) { style = { borderColor: '#059669', background: '#F0FDF4', color: '#065F46' }; mark = '\u2713'; }
+          else if (i === selected && i !== question.correct) { style = { borderColor: '#DC2626', background: '#FEF2F2', color: '#991B1B' }; mark = '\u2717'; }
           return (
             <button key={i} className="quiz-option" disabled={revealed} onClick={() => handleClick(i)} style={style}>
+              {mark && <span className="quiz-mark" aria-hidden="true">{mark}</span>}
+              {mark && <span className="sr-only">
+                {mark === '\u2713'
+                  ? (lang === 'en' ? 'Correct answer: ' : 'Richtige Antwort: ')
+                  : (lang === 'en' ? 'Your wrong answer: ' : 'Deine falsche Antwort: ')}
+              </span>}
               {String.fromCharCode(65 + i)}) {opt}
             </button>
           );
         })}
 
         {wrongPick && !revealed && (
-          <div className="quiz-hint">
+          <div className="quiz-hint" role="status" aria-live="polite">
             {lang === 'en'
               ? '\u2717 Not quite. Re-read the question and try again \u2013 or reveal the answer.'
               : '\u2717 Noch nicht richtig. Lies die Frage noch einmal und versuche es erneut \u2013 oder lass dir die L\u00F6sung zeigen.'}
@@ -328,7 +346,7 @@
         )}
 
         {revealed && (
-          <div style={{ marginTop: '0.5rem', padding: '0.75rem 1rem', background: solved ? '#F0FDF4' : '#FFFBEB', borderRadius: '8px', fontSize: '0.88rem', color: solved ? '#065F46' : '#92400E' }}>
+          <div style={{ marginTop: '0.5rem', padding: '0.75rem 1rem', background: solved ? '#F0FDF4' : '#FFFBEB', borderRadius: '8px', fontSize: '0.88rem', color: solved ? '#065F46' : '#92400E' }} role="status" aria-live="polite">
             {!solved && (lang === 'en' ? 'Answer shown. ' : 'L\u00F6sung eingeblendet. ')}{question.explanation}
           </div>
         )}
@@ -429,7 +447,7 @@
         ],
         s2Title: 'Was ist Digitale Souver\u00e4nit\u00e4t?',
         s2P1: 'Digitale Souver\u00e4nit\u00e4t bezeichnet die F\u00e4higkeit von Organisationen und Staaten, ihre digitale Infrastruktur selbst zu kontrollieren \u2013 von Hardware und Software bis hin zu Daten, Algorithmen und Plattformen (Floridi, 2020).',
-        s2P2: 'Auf EU-Ebene werden Initiativen wie GAIA-X, die European Cloud Initiative und der European Data Act (2024) vorangetrieben, um europ\u00e4ische Datensouver\u00e4nit\u00e4t gegen\u00fcber US-amerikanischen Hyperscalern (AWS, Azure, GCP) zu st\u00e4rken. Auch der EU AI Act (2024) ber\u00fchrt die Souver\u00e4nitätsfrage, indem er Transparenzpflichten f\u00fcr KI-Systeme fordert.',
+        s2P2: 'Auf EU-Ebene werden Initiativen wie GAIA-X, die European Cloud Initiative und der EU Data Act \u2013 Verordnung (EU) 2023/2854, anwendbar seit 12.09.2025 \u2013 vorangetrieben, um europ\u00e4ische Datensouver\u00e4nit\u00e4t gegen\u00fcber US-amerikanischen Hyperscalern (AWS, Azure, GCP) zu st\u00e4rken. Auch der EU AI Act (2024) ber\u00fchrt die Souver\u00e4nitätsfrage, indem er Transparenzpflichten f\u00fcr KI-Systeme fordert.',
         s2P3: 'F\u00fcr Business Intelligence stellen sich folgende Kernfragen:',
         s2Bullets: [
           'Wo liegen meine Daten \u2013 auf welchem Server, in welchem Land?',
@@ -445,7 +463,7 @@
           'Regulatorische Souver\u00e4nit\u00e4t: F\u00e4higkeit, eigene rechtliche Standards (DSGVO, Data Act) durchzusetzen',
         ],
         s2InfoTitle: 'Schrems II & EU-US Data Privacy Framework',
-        s2InfoText: 'Nach Schrems II (EuGH, 2020) ist der Transfer personenbezogener Daten in die USA ohne spezielle Schutzma\u00dfnahmen rechtswidrig. Das EU-US Data Privacy Framework (2023) schafft eine neue Rechtsgrundlage, bleibt aber politisch umstritten. Unternehmen sollten zus\u00e4tzlich Standard Contractual Clauses (SCCs) und Transfer Impact Assessments (TIAs) einsetzen.',
+        s2InfoText: 'Nach Schrems II (EuGH, 2020) ist der Transfer personenbezogener Daten in die USA ohne spezielle Schutzma\u00dfnahmen rechtswidrig. F\u00fcr \u00dcbermittlungen an US-Unternehmen, die am EU-US Data Privacy Framework (Angemessenheitsbeschluss 2023) teilnehmen, kann dieser Beschluss die Transfergrundlage bilden \u2013 ein zus\u00e4tzliches Instrument ist dann nicht erforderlich. Bei nicht teilnehmenden Empf\u00e4ngern braucht es andere Instrumente, etwa Standardvertragsklauseln oder Binding Corporate Rules, je nach Konstellation erg\u00e4nzt um eine Transferpr\u00fcfung. Der Angemessenheitsbeschluss bleibt politisch und gerichtlich umstritten; welcher Pfad gilt, ist im Einzelfall und je Dienst zu kl\u00e4ren.',
         s3Title: 'SaaS BI-Tools: Cloud Lock-in',
         s3P1: 'Cloud Lock-in entsteht, wenn der Wechsel zu einem alternativen Anbieter technisch oder wirtschaftlich prohibitiv wird. Im BI-Kontext sind propriet\u00e4re Datenmodelle, DAX/M-Formeln, Berechtigungsstrukturen und API-Abh\u00e4ngigkeiten die Haupttreiber. Plattformen wie Microsoft Fabric verst\u00e4rken diesen Effekt: Wenn Ingestion, Transformation, Warehouse und Reporting gemeinsam auf OneLake liegen, w\u00e4chst die Wechselh\u00fcrde mit jedem zus\u00e4tzlichen Workload.',
         s3ConceptTitle: 'Total Cost of Ownership (TCO) bei BI-Tools',
@@ -459,13 +477,13 @@
         s3LockInTitle: 'Lock-in-Risiken:',
         s3LockInItems: [
           'Plattform-Gravitation: Microsoft Fabric b\u00fcndelt Data Factory, Warehouse, Spark und Power BI auf OneLake \u2013 ein Wechsel bedeutet dann nicht mehr nur Dashboards, sondern die gesamte Datenplattform zu migrieren',
-          'Daten liegen beim Anbieter \u2013 US-Server bei Microsoft (Power BI), Google (Looker), Salesforce (Tableau)',
+          'Daten liegen beim Anbieter \u2013 US-amerikanische Anbieter wie Microsoft (Power BI), Google (Looker), Salesforce (Tableau). Datenregion, Subprozessoren, Supportzugriffe, Verschl\u00fcsselung und Transfermechanismus sind getrennt zu pr\u00fcfen; eine EU-Region reduziert Risiken, beantwortet aber nicht alle Fragen',
           'Propriet\u00e4re Formate: DAX (Power BI), VizQL (Tableau), LookML (Looker) \u2013 nicht portabel',
-          'DSGVO-Komplikationen betreffen ALLE US-Cloud-Anbieter gleicherma\u00dfen (Patriot Act, CLOUD Act)',
+          'Beh\u00f6rdlicher Zugriff nach US-Recht (CLOUD Act, FISA 702) ist bei US-Anbietern zu pr\u00fcfen \u2013 wie stark er wirkt, h\u00e4ngt von Anbieter, Dienst, Region und Vertragsgestaltung ab und trifft nicht alle gleicherma\u00dfen',
           'On-Premises-Optionen existieren: Power BI Report Server, Tableau Server, Qlik Sense Enterprise',
         ],
         s4Title: 'Open-Source BI im \u00dcberblick',
-        s4P1: 'Open-Source BI-Tools bieten volle Kontrolle \u00fcber Daten und Infrastruktur. Entscheidend ist dabei das Lizenzmodell: Apache 2.0 erlaubt kommerzielle Nutzung ohne Einschr\u00e4nkungen, AGPL verlangt, den korrespondierenden Quellcode einer \u00e4nderten Anwendung ihren Netzwerk-Nutzern zug\u00e4nglich zu machen, und MIT ist \u00e4hnlich permissiv wie Apache.',
+        s4P1: 'Open-Source-BI-Tools verlagern die Kontrolle \u00fcber Daten und Infrastruktur zu dir \u2013 zusammen mit der Verantwortung f\u00fcr Betrieb, Updates und Sicherung. Entscheidend ist dabei das Lizenzmodell: Apache 2.0 erlaubt kommerzielle Nutzung ohne Einschr\u00e4nkungen, AGPL verlangt, den korrespondierenden Quellcode einer \u00e4nderten Anwendung ihren Netzwerk-Nutzern zug\u00e4nglich zu machen, und MIT ist \u00e4hnlich permissiv wie Apache.',
         s4TableTitle: 'Open-Source Alternativen im Vergleich',
         s4ThTool: 'Tool',
         s4ThLicense: 'Lizenz',
@@ -572,6 +590,7 @@
         ],
         s9Title: 'YouTube-Ressourcen',
         s9Intro: 'Empfohlene Video-Ressourcen zu Open-Source BI, Docker und Datensouver\u00e4nit\u00e4t:',
+        ytNote: 'Externe Ziele: Die Links f\u00fchren auf Kanalstartseiten bei YouTube. Im EU-Browser erscheint dort zuerst der Consent-Dialog, und der passende Beitrag muss auf dem Kanal noch gesucht werden. Bewusst Kanal statt Einzelvideo: einzelne Videos verschwinden, Kan\u00e4le bleiben \u00fcber Semester hinweg erreichbar.',
         s9Resources: [
           {
             title: 'Metabase \u2013 Official Getting Started',
@@ -613,8 +632,8 @@
         sumItems: [
           'Digitale Souver\u00e4nit\u00e4t umfasst Daten-, Technologie- und regulatorische Souver\u00e4nit\u00e4t (Floridi, 2020).',
           'Cloud Lock-in entsteht durch propriet\u00e4re Formate, APIs und \u00d6kosystem-Abh\u00e4ngigkeiten \u2013 TCO-Analyse hilft bei der Bewertung.',
-          'EU Data Act (2024) und AI Act (2024) st\u00e4rken europ\u00e4ische Datensouver\u00e4nit\u00e4t und Cloud-Wechselrechte.',
-          'Open-Source BI (Superset, Metabase, Grafana, Dash, Lightdash, Evidence) bietet volle Kontrolle \u2013 Lizenzmodelle beachten.',
+          'Der EU Data Act \u2013 VO (EU) 2023/2854, anwendbar seit 12.09.2025 \u2013 und der AI Act st\u00e4rken europ\u00e4ische Datensouver\u00e4nit\u00e4t und Cloud-Wechselrechte.',
+          'Open-Source BI (Superset, Metabase, Grafana, Dash, Lightdash, Evidence) verlagert Kontrolle und Betriebsverantwortung zu dir \u2013 Lizenzmodelle beachten.',
           'Docker Compose erm\u00f6glicht schnelles Self-Hosted-Deployment \u2013 HTTPS und Backup-Strategie nicht vergessen.',
           'DSGVO-Compliance erfordert systematische Pr\u00fcfung: AVV, SCCs, TIA, TOMs, L\u00f6schkonzept.',
           'Tool-Wahl h\u00e4ngt vom Szenario ab: Team-Gr\u00f6\u00dfe, Datentyp, regulatorische Anforderungen, vorhandener Tech-Stack.',
@@ -655,7 +674,7 @@
         ],
         s2Title: 'What is Digital Sovereignty?',
         s2P1: 'Digital sovereignty refers to the ability of organizations and states to control their own digital infrastructure \u2013 from hardware and software to data, algorithms, and platforms (Floridi, 2020).',
-        s2P2: 'At the EU level, initiatives such as GAIA-X, the European Cloud Initiative, and the European Data Act (2024) aim to strengthen European data sovereignty against US hyperscalers (AWS, Azure, GCP). The EU AI Act (2024) also touches on sovereignty by requiring transparency obligations for AI systems.',
+        s2P2: 'At the EU level, initiatives such as GAIA-X, the European Cloud Initiative, and the EU Data Act \u2013 Regulation (EU) 2023/2854, applicable since 12 September 2025 \u2013 aim to strengthen European data sovereignty against US hyperscalers (AWS, Azure, GCP). The EU AI Act (2024) also touches on sovereignty by requiring transparency obligations for AI systems.',
         s2P3: 'For Business Intelligence, the core questions are:',
         s2Bullets: [
           'Where is my data stored \u2013 on which server, in which country?',
@@ -671,7 +690,7 @@
           'Regulatory sovereignty: Ability to enforce own legal standards (GDPR, Data Act)',
         ],
         s2InfoTitle: 'Schrems II & EU-US Data Privacy Framework',
-        s2InfoText: 'After Schrems II (CJEU, 2020), the transfer of personal data to the USA without special safeguards is unlawful. The EU-US Data Privacy Framework (2023) creates a new legal basis but remains politically controversial. Companies should additionally use Standard Contractual Clauses (SCCs) and Transfer Impact Assessments (TIAs).',
+        s2InfoText: 'After Schrems II (CJEU, 2020), the transfer of personal data to the USA without special safeguards is unlawful. For transfers to US companies participating in the EU-US Data Privacy Framework (adequacy decision 2023), that decision can serve as the transfer basis \u2013 no additional instrument is then required. For non-participating recipients other instruments are needed, such as Standard Contractual Clauses or Binding Corporate Rules, complemented by a transfer assessment depending on the constellation. The adequacy decision remains politically and legally contested; which path applies has to be settled case by case and per service.',
         s3Title: 'SaaS BI Tools: Cloud Lock-in',
         s3P1: 'Cloud lock-in occurs when switching to an alternative provider becomes technically or economically prohibitive. In the BI context, proprietary data models, DAX/M formulas, permission structures, and API dependencies are the main drivers. Platforms such as Microsoft Fabric amplify this: once ingestion, transformation, warehousing and reporting all sit on OneLake, the switching barrier grows with every additional workload.',
         s3ConceptTitle: 'Total Cost of Ownership (TCO) for BI Tools',
@@ -685,13 +704,13 @@
         s3LockInTitle: 'Lock-in risks:',
         s3LockInItems: [
           'Platform gravity: Microsoft Fabric bundles Data Factory, Warehouse, Spark and Power BI on OneLake \u2013 switching then means migrating an entire data platform, not just dashboards',
-          'Data stored with the provider \u2013 US servers at Microsoft (Power BI), Google (Looker), Salesforce (Tableau)',
+          'Data stored with the provider \u2013 US-based vendors such as Microsoft (Power BI), Google (Looker), Salesforce (Tableau). Data region, subprocessors, support access, encryption and transfer mechanism must be checked separately; an EU region reduces risk but does not answer every question',
           'Proprietary formats: DAX (Power BI), VizQL (Tableau), LookML (Looker) \u2013 not portable',
-          'GDPR complications affect ALL US cloud providers equally (Patriot Act, CLOUD Act)',
+          'Government access under US law (CLOUD Act, FISA 702) has to be assessed for US vendors \u2013 how far it reaches depends on vendor, service, region and contract, and does not affect all of them equally',
           'On-premises options exist: Power BI Report Server, Tableau Server, Qlik Sense Enterprise',
         ],
         s4Title: 'Open-Source BI Overview',
-        s4P1: 'Open-source BI tools offer full control over data and infrastructure. The license model is decisive: Apache 2.0 allows commercial use without restrictions, AGPL requires making the corresponding source of a modified application available to its network users, and MIT is similarly permissive to Apache.',
+        s4P1: 'Open-source BI tools shift control over data and infrastructure to you \u2013 together with the responsibility for operations, updates and backups. The license model is decisive: Apache 2.0 allows commercial use without restrictions, AGPL requires making the corresponding source of a modified application available to its network users, and MIT is similarly permissive to Apache.',
         s4TableTitle: 'Open-Source Alternatives Compared',
         s4ThTool: 'Tool',
         s4ThLicense: 'License',
@@ -798,6 +817,7 @@
         ],
         s9Title: 'YouTube Resources',
         s9Intro: 'Recommended video resources on open-source BI, Docker, and data sovereignty:',
+        ytNote: 'External destinations: these links open channel landing pages on YouTube. In an EU browser the consent dialog appears first, and you still have to find the relevant video on the channel. Channels rather than single videos on purpose: individual videos disappear, channels stay reachable across semesters.',
         s9Resources: [
           {
             title: 'Metabase \u2013 Official Getting Started',
@@ -839,8 +859,8 @@
         sumItems: [
           'Digital sovereignty encompasses data, technology, and regulatory sovereignty (Floridi, 2020).',
           'Cloud lock-in arises from proprietary formats, APIs, and ecosystem dependencies \u2013 TCO analysis helps assess the situation.',
-          'EU Data Act (2024) and AI Act (2024) strengthen European data sovereignty and cloud switching rights.',
-          'Open-source BI (Superset, Metabase, Grafana, Dash, Lightdash, Evidence) offers full control \u2013 mind the license models.',
+          'The EU Data Act \u2013 Regulation (EU) 2023/2854, applicable since 12 September 2025 \u2013 and the AI Act strengthen European data sovereignty and cloud switching rights.',
+          'Open-source BI (Superset, Metabase, Grafana, Dash, Lightdash, Evidence) shifts control and operational responsibility to you \u2013 mind the license models.',
           'Docker Compose enables fast self-hosted deployment \u2013 don\u2019t forget HTTPS and backup strategy.',
           'GDPR compliance requires systematic checks: DPA, SCCs, TIA, TOMs, deletion concept.',
           'Tool choice depends on scenario: Team size, data type, regulatory requirements, existing tech stack.',
@@ -861,8 +881,8 @@
 
     // Code strings as regular strings (safe, no ${} collision risk)
     const codeDockerCompose = {
-      de: "# docker-compose.yml - Self-Hosted BI-Stack fuer Lab 06\n# Compose Spec (v2) - der 'version'-Schluessel ist abgekuendigt.\n#\n# Drei Dienste, und die Trennung ist Absicht:\n#   metabase   - die Anwendung\n#   postgres   - Metabases EIGENE Metadaten (Fragen, Dashboards, Nutzer)\n#   warehouse  - die Analysedatenbank mit den Superstore-Daten. Nur dieser\n#                Dienst ist nach aussen veroeffentlicht (Port 5433), damit\n#                psql, DBeaver oder pgAdmin hineinschauen koennen.\nservices:\n  metabase:\n    image: metabase/metabase:v0.63.13   # Version pinnen!\n    ports:\n      - \"3000:3000\"\n    environment:\n      MB_DB_TYPE: postgres\n      MB_DB_DBNAME: metabase\n      MB_DB_HOST: postgres\n      MB_DB_USER: metabase\n      MB_DB_PASS: ${POSTGRES_PASSWORD}\n    depends_on:\n      postgres:\n        condition: service_healthy\n      warehouse:\n        condition: service_healthy\n    restart: unless-stopped\n\n  postgres:\n    image: postgres:17-alpine\n    environment:\n      POSTGRES_USER: metabase\n      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}\n      POSTGRES_DB: metabase\n    volumes:\n      - metabase_meta:/var/lib/postgresql/data\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U metabase\"]\n      interval: 5s\n      timeout: 5s\n      retries: 10\n    restart: unless-stopped\n\n  warehouse:\n    image: postgres:17-alpine\n    ports:\n      - \"5433:5432\"          # aussen 5433, damit ein lokales Postgres nicht kollidiert\n    environment:\n      POSTGRES_USER: superstore\n      POSTGRES_PASSWORD: ${WAREHOUSE_PASSWORD}\n      POSTGRES_DB: superstore\n    volumes:\n      - warehouse_data:/var/lib/postgresql/data\n      - ./init:/docker-entrypoint-initdb.d:ro   # laeuft einmalig beim ersten Start\n      - ./train.csv:/data/train.csv:ro          # damit COPY die Datei sieht\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U superstore -d superstore\"]\n      interval: 5s\n      timeout: 5s\n      retries: 10\n    restart: unless-stopped\n\nvolumes:\n  metabase_meta:\n  warehouse_data:",
-      en: "# docker-compose.yml - self-hosted BI stack for Lab 06\n# Compose Spec (v2) - the 'version' key is deprecated.\n#\n# Three services, and the split is deliberate:\n#   metabase   - the application\n#   postgres   - Metabase's OWN metadata (questions, dashboards, users)\n#   warehouse  - the analytical database holding the Superstore data. Only\n#                this service is published (port 5433) so that psql, DBeaver\n#                or pgAdmin can look inside.\nservices:\n  metabase:\n    image: metabase/metabase:v0.63.13   # pin the version!\n    ports:\n      - \"3000:3000\"\n    environment:\n      MB_DB_TYPE: postgres\n      MB_DB_DBNAME: metabase\n      MB_DB_HOST: postgres\n      MB_DB_USER: metabase\n      MB_DB_PASS: ${POSTGRES_PASSWORD}\n    depends_on:\n      postgres:\n        condition: service_healthy\n      warehouse:\n        condition: service_healthy\n    restart: unless-stopped\n\n  postgres:\n    image: postgres:17-alpine\n    environment:\n      POSTGRES_USER: metabase\n      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}\n      POSTGRES_DB: metabase\n    volumes:\n      - metabase_meta:/var/lib/postgresql/data\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U metabase\"]\n      interval: 5s\n      timeout: 5s\n      retries: 10\n    restart: unless-stopped\n\n  warehouse:\n    image: postgres:17-alpine\n    ports:\n      - \"5433:5432\"          # 5433 outside, so a local Postgres does not clash\n    environment:\n      POSTGRES_USER: superstore\n      POSTGRES_PASSWORD: ${WAREHOUSE_PASSWORD}\n      POSTGRES_DB: superstore\n    volumes:\n      - warehouse_data:/var/lib/postgresql/data\n      - ./init:/docker-entrypoint-initdb.d:ro   # runs once on first start\n      - ./train.csv:/data/train.csv:ro          # so that COPY can see the file\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U superstore -d superstore\"]\n      interval: 5s\n      timeout: 5s\n      retries: 10\n    restart: unless-stopped\n\nvolumes:\n  metabase_meta:\n  warehouse_data:",
+      de: "# docker-compose.yml - Self-Hosted BI-Stack fuer Lab 06\n# Compose Spec (v2) - der 'version'-Schluessel ist abgekuendigt.\n#\n# Drei Dienste, und die Trennung ist Absicht:\n#   metabase   - die Anwendung\n#   postgres   - Metabases EIGENE Metadaten (Fragen, Dashboards, Nutzer)\n#   warehouse  - die Analysedatenbank mit den Superstore-Daten. Nur dieser\n#                Dienst ist nach aussen veroeffentlicht (Port 5433), damit\n#                psql, DBeaver oder pgAdmin hineinschauen koennen.\nservices:\n  metabase:\n    image: metabase/metabase:v0.63.13   # auf Patchstand pinnen, nie auf :latest\n    # Fuer echte Reproduzierbarkeit zusaetzlich den Digest festhalten:\n    #   image: metabase/metabase@sha256:<digest>\n    ports:\n      - \"3000:3000\"\n    environment:\n      MB_DB_TYPE: postgres\n      MB_DB_DBNAME: metabase\n      MB_DB_HOST: postgres\n      MB_DB_USER: metabase\n      MB_DB_PASS: ${POSTGRES_PASSWORD}\n    depends_on:\n      postgres:\n        condition: service_healthy\n      warehouse:\n        condition: service_healthy\n    restart: unless-stopped\n\n  postgres:\n    image: postgres:17.8-alpine\n    environment:\n      POSTGRES_USER: metabase\n      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}\n      POSTGRES_DB: metabase\n    volumes:\n      - metabase_meta:/var/lib/postgresql/data\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U metabase\"]\n      interval: 5s\n      timeout: 5s\n      retries: 10\n    restart: unless-stopped\n\n  warehouse:\n    image: postgres:17.8-alpine\n    ports:\n      - \"5433:5432\"          # aussen 5433, damit ein lokales Postgres nicht kollidiert\n    environment:\n      POSTGRES_USER: superstore\n      POSTGRES_PASSWORD: ${WAREHOUSE_PASSWORD}\n      POSTGRES_DB: superstore\n    volumes:\n      - warehouse_data:/var/lib/postgresql/data\n      - ./init:/docker-entrypoint-initdb.d:ro   # laeuft einmalig beim ersten Start\n      - ./train.csv:/data/train.csv:ro          # damit COPY die Datei sieht\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U superstore -d superstore\"]\n      interval: 5s\n      timeout: 5s\n      retries: 10\n    restart: unless-stopped\n\nvolumes:\n  metabase_meta:\n  warehouse_data:",
+      en: "# docker-compose.yml - self-hosted BI stack for Lab 06\n# Compose Spec (v2) - the 'version' key is deprecated.\n#\n# Three services, and the split is deliberate:\n#   metabase   - the application\n#   postgres   - Metabase's OWN metadata (questions, dashboards, users)\n#   warehouse  - the analytical database holding the Superstore data. Only\n#                this service is published (port 5433) so that psql, DBeaver\n#                or pgAdmin can look inside.\nservices:\n  metabase:\n    image: metabase/metabase:v0.63.13   # pin to a patch version, never :latest\n    # For real reproducibility pin the digest as well:\n    #   image: metabase/metabase@sha256:<digest>\n    ports:\n      - \"3000:3000\"\n    environment:\n      MB_DB_TYPE: postgres\n      MB_DB_DBNAME: metabase\n      MB_DB_HOST: postgres\n      MB_DB_USER: metabase\n      MB_DB_PASS: ${POSTGRES_PASSWORD}\n    depends_on:\n      postgres:\n        condition: service_healthy\n      warehouse:\n        condition: service_healthy\n    restart: unless-stopped\n\n  postgres:\n    image: postgres:17.8-alpine\n    environment:\n      POSTGRES_USER: metabase\n      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}\n      POSTGRES_DB: metabase\n    volumes:\n      - metabase_meta:/var/lib/postgresql/data\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U metabase\"]\n      interval: 5s\n      timeout: 5s\n      retries: 10\n    restart: unless-stopped\n\n  warehouse:\n    image: postgres:17.8-alpine\n    ports:\n      - \"5433:5432\"          # 5433 outside, so a local Postgres does not clash\n    environment:\n      POSTGRES_USER: superstore\n      POSTGRES_PASSWORD: ${WAREHOUSE_PASSWORD}\n      POSTGRES_DB: superstore\n    volumes:\n      - warehouse_data:/var/lib/postgresql/data\n      - ./init:/docker-entrypoint-initdb.d:ro   # runs once on first start\n      - ./train.csv:/data/train.csv:ro          # so that COPY can see the file\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U superstore -d superstore\"]\n      interval: 5s\n      timeout: 5s\n      retries: 10\n    restart: unless-stopped\n\nvolumes:\n  metabase_meta:\n  warehouse_data:",
     };
 
     const codeEnvFile = {
@@ -916,14 +936,18 @@
 
     return (
       <div data-lang={lang}>
+        {/* Sprunglink: erstes fokussierbares Element, wird beim Fokus sichtbar. */}
+        <a className="skip-link" href="#main">
+          {lang === 'en' ? 'Skip to content' : 'Zum Inhalt springen'}
+        </a>
         <header className="header">
           <div className="header-left">
             <a href="index.html" className="header-logo">{c.logo}</a>
             <a href={c.backHref} className="header-back">{c.back}</a>
           </div>
           <div style={{ display: 'flex', gap: '0.35rem' }}>
-            <button className={'lang-btn' + (lang === 'de' ? ' active' : '')} onClick={() => toggleLang('de')}>DE</button>
-            <button className={'lang-btn' + (lang === 'en' ? ' active' : '')} onClick={() => toggleLang('en')}>EN</button>
+            <button className={'lang-btn' + (lang === 'de' ? ' active' : '')} onClick={() => toggleLang('de')} aria-pressed={lang === 'de'} aria-label="Deutsch">DE</button>
+            <button className={'lang-btn' + (lang === 'en' ? ' active' : '')} onClick={() => toggleLang('en')} aria-pressed={lang === 'en'} aria-label="English">EN</button>
           </div>
         </header>
 
@@ -934,12 +958,15 @@
           ))}
         </nav>
 
-        <main className="main-content">
+        <main className="main-content" id="main">
           {/* Lab Header */}
           <div style={{ marginBottom: '2.5rem', position: 'relative' }}>
             <span className="lab-num">06</span>
             <span className="bauhaus-badge">{c.badge}</span>
-            <h2 style={{ fontSize: '2rem', marginTop: '0.75rem', marginBottom: '0.25rem' }}>{c.pageTitle}</h2>
+            {/* Der Labtitel ist die einzige h1 der Seite; die Abschnitte darunter
+                sind h2. Vorher war der Titel selbst eine h2 - die Seite hatte damit
+                gar keine h1 und keine erkennbare Ueberschriftenhierarchie. */}
+            <h1 style={{ fontSize: '2rem', marginTop: '0.75rem', marginBottom: '0.25rem' }}>{c.pageTitle}</h1>
             <div className="bauhaus-accent-line"></div>
             <p style={{ color: '#555', fontSize: '1.05rem', maxWidth: '640px' }}>{c.pageSubtitle}</p>
           </div>
@@ -1179,6 +1206,9 @@
             <div className="bauhaus-accent-line"></div>
             <p>{c.s9Intro}</p>
             <div className="youtube-box">
+              <p style={{ margin: '0 0 1rem', fontSize: '0.8rem', color: '#78350F' }}>
+                {c.ytNote}
+              </p>
               {c.s9Resources.map((res, i) => (
                 <div key={i} style={{ marginBottom: i < c.s9Resources.length - 1 ? '1.25rem' : 0 }}>
                   <h4 style={{ marginTop: 0 }}>{res.title}</h4>

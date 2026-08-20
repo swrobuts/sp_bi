@@ -9,7 +9,9 @@
 #                psql, DBeaver oder pgAdmin hineinschauen koennen.
 services:
   metabase:
-    image: metabase/metabase:v0.63.13   # Version pinnen!
+    image: metabase/metabase:v0.63.13   # auf Patchstand pinnen, nie auf :latest
+    # Fuer echte Reproduzierbarkeit zusaetzlich den Digest festhalten:
+    #   image: metabase/metabase@sha256:<digest>
     ports:
       - "3000:3000"
     environment:
@@ -26,7 +28,7 @@ services:
     restart: unless-stopped
 
   postgres:
-    image: postgres:17-alpine
+    image: postgres:17.8-alpine
     environment:
       POSTGRES_USER: metabase
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -41,7 +43,7 @@ services:
     restart: unless-stopped
 
   warehouse:
-    image: postgres:17-alpine
+    image: postgres:17.8-alpine
     ports:
       - "5433:5432"          # aussen 5433, damit ein lokales Postgres nicht kollidiert
     environment:
