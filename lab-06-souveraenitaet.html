@@ -413,8 +413,27 @@
         s4LicenseTip: 'Lizenz-Tipp: Der unver\u00e4nderte Betrieb einer AGPL-3.0-Anwendung (Metabase, Grafana) l\u00f6st keine Pflicht aus. Wer die Anwendung \u00e4ndert und \u00fcber ein Netzwerk anbietet, muss deren Nutzern den korrespondierenden Quellcode zug\u00e4nglich machen \u2013 das ist keine allgemeine Ver\u00f6ffentlichungspflicht gegen\u00fcber der \u00d6ffentlichkeit. Wer Anpassungen intern halten will, f\u00e4hrt mit Apache-2.0 oder MIT oft einfacher. Im Zweifel die Lizenz juristisch pr\u00fcfen lassen.',
         s5Title: 'Docker Setup: Self-Hosted Metabase',
         s5Intro: 'Mit Docker Compose l\u00e4sst sich ein vollst\u00e4ndiger Self-Hosted BI-Stack in wenigen Minuten aufsetzen. Das folgende Beispiel zeigt Metabase mit PostgreSQL als Metadatenbank.',
+        starterTitle: 'Starterpaket herunterladen',
+        starterText: 'Enth\u00e4lt die docker-compose.yml, init/01_schema.sql, init/02_import.sql, verify.sql, .env.example und eine README mit Sollwerten und Fehlerbildern. Zuletzt vollst\u00e4ndig durchgespielt am 20.08.2026: Stack startet, importiert 9.800 Zeilen und liefert dieselben Zahlen wie pandas.',
+        starterBtn: 'lab-06-stack.zip',
         s5TipText: 'Voraussetzungen: Docker Desktop installiert. Download: https://www.docker.com/products/docker-desktop',
         s5BashIntro: 'Stack starten und pr\u00fcfen:',
+        s5ImportTitle: 'Kursdatensatz in PostgreSQL importieren',
+        s5ImportIntro: 'Metabase braucht Daten, an die es sich anschliessen kann. Der Stack bringt dafuer einen zweiten PostgreSQL-Dienst mit: warehouse. Die Trennung ist Absicht - postgres haelt Metabases eigene Metadaten (Fragen, Dashboards, Nutzer), warehouse haelt die Analysedaten. Analysedaten gehoeren nicht in die Metadatenbank des Werkzeugs.',
+        s5ImportStepsTitle: 'Vorbereiten und starten',
+        s5ImportSteps: [
+          'Starterpaket lab-06-stack.zip herunterladen und entpacken.',
+          '.env.example nach .env kopieren und beide Passwoerter aendern.',
+          'train.csv aus Lab 04 neben die docker-compose.yml legen - der Mount erwartet sie dort.',
+          'docker compose up -d ausfuehren. Der Dienst warehouse legt die Tabelle an und importiert die CSV beim ersten Start von selbst.',
+        ],
+        s5ImportDdlTitle: 'Tabelle: init/01_schema.sql',
+        s5ImportCopyTitle: 'Import: init/02_import.sql',
+        s5ImportInitNote: 'Alles unter init/ laeuft genau einmal - naemlich solange das Volume leer ist. Ein zweites docker compose up importiert nicht doppelt. Wer die Skripte aendert, braucht deshalb docker compose down -v, sonst wirkt die Aenderung nicht.',
+        s5ImportVerifyTitle: 'Erfolgskontrolle und Aufraeumen',
+        s5ImportMbTitle: 'Datenbank in Metabase eintragen',
+        s5ImportMbText: 'Einstellungen -> Datenbanken -> Datenbank hinzufuegen: Typ PostgreSQL, Host warehouse, Port 5432, Datenbank superstore, Benutzer superstore, Passwort aus der .env. Host ist warehouse, nicht localhost: Metabase laeuft in einem eigenen Container, dort waere localhost Metabase selbst. Im Compose-Netzwerk erreichen sich die Dienste ueber ihren Dienstnamen und den Container-Port 5432 - nicht ueber den nach aussen veroeffentlichten Port 5433. Vom eigenen Rechner aus gilt umgekehrt localhost:5433.',
+        s5ImportTimeNote: 'Zeitbedarf: 10-20 Minuten, bis der Stack steht (davon der groesste Teil Image-Download), danach 45-90 Minuten fuer Onboarding und Dashboards. Zuletzt vollstaendig durchgespielt am 20.08.2026.',
         s5SecurityTitle: 'Sicherheit im Self-Hosted Setup',
         s5SecurityItems: [
           'HTTPS via Reverse Proxy (Traefik, Caddy oder nginx) \u2013 niemals Metabase direkt ohne TLS exponieren',
@@ -605,8 +624,27 @@
         s4LicenseTip: 'License tip: running an unmodified AGPL-3.0 application (Metabase, Grafana) triggers no obligation. If you modify it and offer it over a network, you must make the corresponding source available to those users \u2013 this is not a general duty to publish to the world. If you want to keep customisations internal, Apache-2.0 or MIT is usually simpler. When in doubt, have the licence reviewed.',
         s5Title: 'Docker Setup: Self-Hosted Metabase',
         s5Intro: 'With Docker Compose, a complete self-hosted BI stack can be set up in minutes. The following example shows Metabase with PostgreSQL as the metadata database.',
+        starterTitle: 'Download the starter package',
+        starterText: 'Contains docker-compose.yml, init/01_schema.sql, init/02_import.sql, verify.sql, .env.example and a README with expected values and failure symptoms. Last fully rehearsed on 20 August 2026: the stack starts, imports 9,800 rows and produces the same numbers as pandas.',
+        starterBtn: 'lab-06-stack.zip',
         s5TipText: 'Prerequisites: Docker Desktop installed. Download: https://www.docker.com/products/docker-desktop',
         s5BashIntro: 'Start and verify the stack:',
+        s5ImportTitle: 'Import the course dataset into PostgreSQL',
+        s5ImportIntro: 'Metabase needs data to connect to. The stack ships a second PostgreSQL service for that: warehouse. The split is deliberate - postgres holds Metabase\u2019s own metadata (questions, dashboards, users), warehouse holds the analytical data. Analytical data does not belong in the tool\u2019s metadata database.',
+        s5ImportStepsTitle: 'Prepare and start',
+        s5ImportSteps: [
+          'Download and unpack the starter package lab-06-stack.zip.',
+          'Copy .env.example to .env and change both passwords.',
+          'Place train.csv from Lab 04 next to docker-compose.yml - the mount expects it there.',
+          'Run docker compose up -d. The warehouse service creates the table and imports the CSV by itself on first start.',
+        ],
+        s5ImportDdlTitle: 'Table: init/01_schema.sql',
+        s5ImportCopyTitle: 'Import: init/02_import.sql',
+        s5ImportInitNote: 'Everything under init/ runs exactly once - namely while the volume is still empty. A second docker compose up does not import twice. If you change the scripts you therefore need docker compose down -v, otherwise the change has no effect.',
+        s5ImportVerifyTitle: 'Success check and cleanup',
+        s5ImportMbTitle: 'Register the database in Metabase',
+        s5ImportMbText: 'Settings -> Databases -> Add database: type PostgreSQL, host warehouse, port 5432, database superstore, user superstore, password from .env. The host is warehouse, not localhost: Metabase runs in its own container, where localhost would be Metabase itself. Inside the compose network the services reach each other by service name and container port 5432 - not via the published port 5433. From your own machine it is the other way round: localhost:5433.',
+        s5ImportTimeNote: 'Time needed: 10-20 minutes until the stack is up (mostly image download), then 45-90 minutes for onboarding and dashboards. Last fully rehearsed on 20 August 2026.',
         s5SecurityTitle: 'Security for Self-Hosted Setups',
         s5SecurityItems: [
           'HTTPS via reverse proxy (Traefik, Caddy, or nginx) \u2013 never expose Metabase directly without TLS',
@@ -721,15 +759,15 @@
 
     // Code strings as regular strings (safe, no ${} collision risk)
     const codeDockerCompose = {
-      de: "# docker-compose.yml \u2013 Self-Hosted Metabase + PostgreSQL\n# Compose Spec (v2) \u2013 'version' key is deprecated\nservices:\n  metabase:\n    image: metabase/metabase:v0.63.13   # Version pinnen!\n    ports:\n      - \"3000:3000\"\n    environment:\n      MB_DB_TYPE: postgres\n      MB_DB_DBNAME: metabase\n      MB_DB_HOST: postgres\n      MB_DB_USER: metabase\n      MB_DB_PASS: ${POSTGRES_PASSWORD}   # eine einzige Variable fuer beide Container!\n    depends_on:\n      postgres:\n        condition: service_healthy\n    restart: unless-stopped\n\n  postgres:\n    image: postgres:17-alpine\n    environment:\n      POSTGRES_USER: metabase\n      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # .env-Datei!\n      POSTGRES_DB: metabase\n    volumes:\n      - metabase_data:/var/lib/postgresql/data\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U metabase\"]\n      interval: 10s\n      timeout: 5s\n      retries: 5\n    restart: unless-stopped\n\nvolumes:\n  metabase_data:",
-      en: "# docker-compose.yml \u2013 Self-Hosted Metabase + PostgreSQL\n# Compose Spec (v2) \u2013 'version' key is deprecated\nservices:\n  metabase:\n    image: metabase/metabase:v0.63.13   # pin the version!\n    ports:\n      - \"3000:3000\"\n    environment:\n      MB_DB_TYPE: postgres\n      MB_DB_DBNAME: metabase\n      MB_DB_HOST: postgres\n      MB_DB_USER: metabase\n      MB_DB_PASS: ${POSTGRES_PASSWORD}   # a single variable for both containers!\n    depends_on:\n      postgres:\n        condition: service_healthy\n    restart: unless-stopped\n\n  postgres:\n    image: postgres:17-alpine\n    environment:\n      POSTGRES_USER: metabase\n      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # from the .env file!\n      POSTGRES_DB: metabase\n    volumes:\n      - metabase_data:/var/lib/postgresql/data\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U metabase\"]\n      interval: 10s\n      timeout: 5s\n      retries: 5\n    restart: unless-stopped\n\nvolumes:\n  metabase_data:",
+      de: "# docker-compose.yml - Self-Hosted BI-Stack fuer Lab 06\n# Compose Spec (v2) - der 'version'-Schluessel ist abgekuendigt.\n#\n# Drei Dienste, und die Trennung ist Absicht:\n#   metabase   - die Anwendung\n#   postgres   - Metabases EIGENE Metadaten (Fragen, Dashboards, Nutzer)\n#   warehouse  - die Analysedatenbank mit den Superstore-Daten. Nur dieser\n#                Dienst ist nach aussen veroeffentlicht (Port 5433), damit\n#                psql, DBeaver oder pgAdmin hineinschauen koennen.\nservices:\n  metabase:\n    image: metabase/metabase:v0.63.13   # Version pinnen!\n    ports:\n      - \"3000:3000\"\n    environment:\n      MB_DB_TYPE: postgres\n      MB_DB_DBNAME: metabase\n      MB_DB_HOST: postgres\n      MB_DB_USER: metabase\n      MB_DB_PASS: ${POSTGRES_PASSWORD}\n    depends_on:\n      postgres:\n        condition: service_healthy\n      warehouse:\n        condition: service_healthy\n    restart: unless-stopped\n\n  postgres:\n    image: postgres:17-alpine\n    environment:\n      POSTGRES_USER: metabase\n      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}\n      POSTGRES_DB: metabase\n    volumes:\n      - metabase_meta:/var/lib/postgresql/data\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U metabase\"]\n      interval: 5s\n      timeout: 5s\n      retries: 10\n    restart: unless-stopped\n\n  warehouse:\n    image: postgres:17-alpine\n    ports:\n      - \"5433:5432\"          # aussen 5433, damit ein lokales Postgres nicht kollidiert\n    environment:\n      POSTGRES_USER: superstore\n      POSTGRES_PASSWORD: ${WAREHOUSE_PASSWORD}\n      POSTGRES_DB: superstore\n    volumes:\n      - warehouse_data:/var/lib/postgresql/data\n      - ./init:/docker-entrypoint-initdb.d:ro   # laeuft einmalig beim ersten Start\n      - ./train.csv:/data/train.csv:ro          # damit COPY die Datei sieht\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U superstore -d superstore\"]\n      interval: 5s\n      timeout: 5s\n      retries: 10\n    restart: unless-stopped\n\nvolumes:\n  metabase_meta:\n  warehouse_data:",
+      en: "# docker-compose.yml - self-hosted BI stack for Lab 06\n# Compose Spec (v2) - the 'version' key is deprecated.\n#\n# Three services, and the split is deliberate:\n#   metabase   - the application\n#   postgres   - Metabase's OWN metadata (questions, dashboards, users)\n#   warehouse  - the analytical database holding the Superstore data. Only\n#                this service is published (port 5433) so that psql, DBeaver\n#                or pgAdmin can look inside.\nservices:\n  metabase:\n    image: metabase/metabase:v0.63.13   # pin the version!\n    ports:\n      - \"3000:3000\"\n    environment:\n      MB_DB_TYPE: postgres\n      MB_DB_DBNAME: metabase\n      MB_DB_HOST: postgres\n      MB_DB_USER: metabase\n      MB_DB_PASS: ${POSTGRES_PASSWORD}\n    depends_on:\n      postgres:\n        condition: service_healthy\n      warehouse:\n        condition: service_healthy\n    restart: unless-stopped\n\n  postgres:\n    image: postgres:17-alpine\n    environment:\n      POSTGRES_USER: metabase\n      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}\n      POSTGRES_DB: metabase\n    volumes:\n      - metabase_meta:/var/lib/postgresql/data\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U metabase\"]\n      interval: 5s\n      timeout: 5s\n      retries: 10\n    restart: unless-stopped\n\n  warehouse:\n    image: postgres:17-alpine\n    ports:\n      - \"5433:5432\"          # 5433 outside, so a local Postgres does not clash\n    environment:\n      POSTGRES_USER: superstore\n      POSTGRES_PASSWORD: ${WAREHOUSE_PASSWORD}\n      POSTGRES_DB: superstore\n    volumes:\n      - warehouse_data:/var/lib/postgresql/data\n      - ./init:/docker-entrypoint-initdb.d:ro   # runs once on first start\n      - ./train.csv:/data/train.csv:ro          # so that COPY can see the file\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U superstore -d superstore\"]\n      interval: 5s\n      timeout: 5s\n      retries: 10\n    restart: unless-stopped\n\nvolumes:\n  metabase_meta:\n  warehouse_data:",
     };
 
     const codeEnvFile = {
 
-      de: "# .env (im selben Verzeichnis wie docker-compose.yml)\n# Diese Datei NIE ins Git-Repo committen -> in .gitignore aufnehmen!\nPOSTGRES_PASSWORD=EinSicheresPasswort123!",
+      de: "# .env (im selben Verzeichnis wie docker-compose.yml)\n# Diese Datei NIE ins Git-Repo committen -> in .gitignore aufnehmen!\nPOSTGRES_PASSWORD=BitteAendern_Metabase123!\nWAREHOUSE_PASSWORD=BitteAendern_Warehouse123!",
 
-      en: "# .env (in the same directory as docker-compose.yml)\n# NEVER commit this file to the Git repo -> add it to .gitignore!\nPOSTGRES_PASSWORD=AStrongPassword123!",
+      en: "# .env (in the same directory as docker-compose.yml)\n# NEVER commit this file to the Git repo -> add it to .gitignore!\nPOSTGRES_PASSWORD=ChangeMe_Metabase123!\nWAREHOUSE_PASSWORD=ChangeMe_Warehouse123!",
 
     };
 
@@ -738,6 +776,37 @@
       de: "# .env-Datei aus dem Block oben anlegen (Passwort anpassen!):\nnano .env      # oder: notepad .env / code .env\n\n# Stack starten:\ndocker compose up -d\n\n# Status pr\u00fcfen:\ndocker compose ps\n\n# Logs anzeigen:\ndocker compose logs -f metabase\n\n# Zugriff: http://localhost:3000\n# Erster Start: Einrichtungsassistent \u00f6ffnet sich",
 
       en: "# Create the .env file from the block above (change the password!):\nnano .env      # or: notepad .env / code .env\n\n# Start the stack:\ndocker compose up -d\n\n# Check status:\ndocker compose ps\n\n# View logs:\ndocker compose logs -f metabase\n\n# Access: http://localhost:3000\n# First start: the setup wizard opens",
+
+    };
+
+
+    // Import des Kursdatensatzes in die Analysedatenbank. Getestet am 20.08.2026
+
+    // gegen postgres:17-alpine und metabase/metabase:v0.63.13.
+
+    const codeSchemaSql = {
+
+      de: "-- init/01_schema.sql - laeuft beim ersten Start automatisch\nCREATE TABLE IF NOT EXISTS orders (\n    row_id        integer PRIMARY KEY,\n    order_id      text NOT NULL,\n    order_date    date NOT NULL,\n    ship_date     date NOT NULL,\n    ship_mode     text NOT NULL,\n    customer_id   text NOT NULL,\n    customer_name text NOT NULL,\n    segment       text NOT NULL,\n    country       text NOT NULL,\n    city          text NOT NULL,\n    state         text NOT NULL,\n    postal_code   text,            -- NULL-faehig: elf Werte fehlen\n    region        text NOT NULL,\n    product_id    text NOT NULL,\n    category      text NOT NULL,\n    sub_category  text NOT NULL,\n    product_name  text NOT NULL,\n    sales         numeric(12,4) NOT NULL\n);\n\n-- Zwei Entscheidungen, die man begruenden koennen sollte:\n--   postal_code ist text, nicht integer. US-PLZ haben fuehrende Nullen\n--   (\"01013\"); als Zahl gespeichert gingen sie verloren.\n--   sales ist numeric(12,4), nicht float und nicht numeric(12,2). Die CSV\n--   enthaelt Werte wie 957,5775. Mit zwei Nachkommastellen rundet Postgres\n--   schon beim Import, und die Gesamtsumme weicht um rund 20 Cent von der\n--   pandas- und der Power-BI-Zahl ab.\n\nCREATE INDEX IF NOT EXISTS orders_order_date_idx   ON orders (order_date);\nCREATE INDEX IF NOT EXISTS orders_category_idx     ON orders (category, sub_category);\nCREATE INDEX IF NOT EXISTS orders_region_state_idx ON orders (region, state);",
+
+      en: "-- init/01_schema.sql - runs automatically on first start\nCREATE TABLE IF NOT EXISTS orders (\n    row_id        integer PRIMARY KEY,\n    order_id      text NOT NULL,\n    order_date    date NOT NULL,\n    ship_date     date NOT NULL,\n    ship_mode     text NOT NULL,\n    customer_id   text NOT NULL,\n    customer_name text NOT NULL,\n    segment       text NOT NULL,\n    country       text NOT NULL,\n    city          text NOT NULL,\n    state         text NOT NULL,\n    postal_code   text,            -- nullable: eleven values are missing\n    region        text NOT NULL,\n    product_id    text NOT NULL,\n    category      text NOT NULL,\n    sub_category  text NOT NULL,\n    product_name  text NOT NULL,\n    sales         numeric(12,4) NOT NULL\n);\n\n-- Two decisions you should be able to justify:\n--   postal_code is text, not integer. US ZIP codes have leading zeros\n--   (\"01013\"); stored as a number they would be lost.\n--   sales is numeric(12,4), not float and not numeric(12,2). The CSV\n--   contains values such as 957.5775. With two decimal places Postgres\n--   rounds during import, and the total then differs by about 20 cents\n--   from the pandas and Power BI figures.\n\nCREATE INDEX IF NOT EXISTS orders_order_date_idx   ON orders (order_date);\nCREATE INDEX IF NOT EXISTS orders_category_idx     ON orders (category, sub_category);\nCREATE INDEX IF NOT EXISTS orders_region_state_idx ON orders (region, state);",
+
+    };
+
+
+    const codeImportSql = {
+
+      de: "-- init/02_import.sql - laeuft direkt nach dem Schema\n--\n-- COPY liest serverseitig, die Datei muss also IM Container liegen. Dafuer\n-- ist der Mount ./train.csv -> /data/train.csv in der Compose-Datei da.\n-- Wer keine Datei in den Container legen kann, nimmt \\copy in psql; dann\n-- liest der Client.\n--\n-- Das Datumsformat ist TT/MM/JJJJ. Ohne DateStyle bricht Postgres bei jedem\n-- Tag > 12 ab - dieselbe Falle wie dayfirst=True in pandas.\nSET datestyle = 'ISO, DMY';\n\nCOPY orders (\n    row_id, order_id, order_date, ship_date, ship_mode,\n    customer_id, customer_name, segment, country, city, state,\n    postal_code, region, product_id, category, sub_category,\n    product_name, sales\n)\nFROM '/data/train.csv'\nWITH (FORMAT csv, HEADER true, ENCODING 'LATIN1');\n\n-- Erfolgskontrolle: bricht ab, wenn die Zeilenzahl nicht stimmt.\nDO $$\nDECLARE n bigint;\nBEGIN\n    SELECT count(*) INTO n FROM orders;\n    IF n <> 9800 THEN\n        RAISE EXCEPTION 'Import fehlgeschlagen: % Zeilen statt 9800', n;\n    END IF;\n    RAISE NOTICE 'Import ok: % Zeilen', n;\nEND $$;",
+
+      en: "-- init/02_import.sql - runs right after the schema\n--\n-- COPY reads server-side, so the file has to be INSIDE the container. That\n-- is what the mount ./train.csv -> /data/train.csv in the compose file is\n-- for. If you cannot place a file in the container, use \\copy in psql;\n-- then the client reads it.\n--\n-- The date format is DD/MM/YYYY. Without DateStyle, Postgres fails on every\n-- day > 12 - the same trap as dayfirst=True in pandas.\nSET datestyle = 'ISO, DMY';\n\nCOPY orders (\n    row_id, order_id, order_date, ship_date, ship_mode,\n    customer_id, customer_name, segment, country, city, state,\n    postal_code, region, product_id, category, sub_category,\n    product_name, sales\n)\nFROM '/data/train.csv'\nWITH (FORMAT csv, HEADER true, ENCODING 'LATIN1');\n\n-- Success check: aborts if the row count is wrong.\nDO $$\nDECLARE n bigint;\nBEGIN\n    SELECT count(*) INTO n FROM orders;\n    IF n <> 9800 THEN\n        RAISE EXCEPTION 'Import failed: % rows instead of 9800', n;\n    END IF;\n    RAISE NOTICE 'Import ok: % rows', n;\nEND $$;",
+
+    };
+
+
+    const codeVerifyBash = {
+
+      de: "# Erfolgskontrolle - laeuft gegen den warehouse-Container\ndocker compose logs warehouse | grep \"Import ok\"\n# -> NOTICE:  Import ok: 9800 Zeilen\n\ndocker compose exec -T warehouse \\\n  psql -U superstore -d superstore -f - < verify.sql\n\n# Sollausgabe:\n#   zeilen        9800\n#   bestellungen  4922\n#   gesamtumsatz  2261536.78\n#   fehlende_plz  11\n#   Zeitraum      2015-01-03 bis 2018-12-30\n#   2015 479856.21 | 2016 459436.01 | 2017 600192.55 | 2018 722052.02\n#\n# Dieselben Zahlen liefern der pandas-Block aus Lab 05 und die DAX-Measures\n# in Power BI. Weichen sie ab: Datumsformat oder Encoding pruefen.\n\n# Aufraeumen\ndocker compose down       # Container weg, Daten bleiben\ndocker compose down -v    # auch die Volumes - der Import laeuft dann neu",
+
+      en: "# Success check - runs against the warehouse container\ndocker compose logs warehouse | grep \"Import ok\"\n# -> NOTICE:  Import ok: 9800 rows\n\ndocker compose exec -T warehouse \\\n  psql -U superstore -d superstore -f - < verify.sql\n\n# Expected output:\n#   rows          9800\n#   orders        4922\n#   total_sales   2261536.78\n#   missing_zip   11\n#   period        2015-01-03 to 2018-12-30\n#   2015 479856.21 | 2016 459436.01 | 2017 600192.55 | 2018 722052.02\n#\n# The pandas block from Lab 05 and the DAX measures in Power BI produce the\n# same numbers. If they differ: check the date format or the encoding.\n\n# Cleanup\ndocker compose down       # containers gone, data stays\ndocker compose down -v    # volumes too - the import then runs again",
 
     };
 
@@ -868,6 +937,15 @@
             <h2>{c.s5Title}</h2>
             <div className="bauhaus-accent-line"></div>
             <p>{c.s5Intro}</p>
+            <div className="tip-box" style={{ marginTop: '1.25rem' }}>
+              <h4 style={{ marginTop: 0 }}>{c.starterTitle}</h4>
+              <p style={{ margin: '0 0 0.75rem', fontSize: '0.9rem' }}>{c.starterText}</p>
+              <a href="starter/lab-06-stack.zip" download
+                 style={{ background: 'var(--col-primary)', color: 'white', textDecoration: 'none',
+                          padding: '0.45rem 0.9rem', borderRadius: '6px', fontSize: '0.82rem', fontWeight: 700 }}>
+                {c.starterBtn}
+              </a>
+            </div>
             <CodeBlock code={codeDockerCompose[lang]} lang={lang} kind="run" />
             <h4 style={{ marginTop: '1.5rem' }}>.env</h4>
             <CodeBlock code={codeEnvFile[lang]} lang={lang} kind="run" />
@@ -876,6 +954,23 @@
             </div>
             <p style={{ marginTop: '1.5rem' }}>{c.s5BashIntro}</p>
             <CodeBlock code={codeBashDocker[lang]} lang={lang} kind="run" />
+            <h3 style={{ marginTop: '2.5rem' }}>{c.s5ImportTitle}</h3>
+            <p>{c.s5ImportIntro}</p>
+            <h4>{c.s5ImportStepsTitle}</h4>
+            <ol style={{ lineHeight: '1.9', paddingLeft: '1.25rem' }}>
+              {c.s5ImportSteps.map((item, i) => <li key={i}>{item}</li>)}
+            </ol>
+            <h4 style={{ marginTop: '1.5rem' }}>{c.s5ImportDdlTitle}</h4>
+            <CodeBlock code={codeSchemaSql[lang]} lang={lang} kind="run" />
+            <h4 style={{ marginTop: '1.5rem' }}>{c.s5ImportCopyTitle}</h4>
+            <CodeBlock code={codeImportSql[lang]} lang={lang} kind="run" note={c.s5ImportInitNote} />
+            <h4 style={{ marginTop: '1.5rem' }}>{c.s5ImportVerifyTitle}</h4>
+            <CodeBlock code={codeVerifyBash[lang]} lang={lang} kind="run" />
+            <div className="tip-box">
+              <strong>{c.s5ImportMbTitle}:</strong> {c.s5ImportMbText}
+            </div>
+            <p style={{ fontSize: '0.82rem', color: '#4B5563' }}>{c.s5ImportTimeNote}</p>
+
             <div className="concept-box" style={{ marginTop: '1.5rem' }}>
               <h4 style={{ marginTop: 0 }}>{c.s5SecurityTitle}</h4>
               <ul style={{ margin: 0, paddingLeft: '1.25rem', lineHeight: '2' }}>

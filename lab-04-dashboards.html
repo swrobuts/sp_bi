@@ -722,6 +722,9 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
         s2Desc: 'Plotly Express ist eine High-Level Python-Bibliothek für interaktive Charts. Mit wenigen Zeilen Code entstehen publikationsreife Visualisierungen, die im Browser als interaktive HTML-Grafiken dargestellt werden.',
         dataTitle: 'Datensatz für alle Beispiele',
         dataText: 'Alle Codebeispiele in diesem Lab arbeiten mit train.csv aus dem Superstore Sales Dataset (Kaggle, GPL 2): 9.800 Bestellpositionen, 2015\u20132018. Legen Sie die Datei in dasselbe Verzeichnis wie Ihr Skript. Achtung: Die Datumsspalten liegen als TT/MM/JJJJ vor \u2013 deshalb dayfirst=True beim Parsen. Eine Profit-Spalte gibt es in dieser Variante nicht; einzige Kennzahl ist Sales.',
+        starterTitle: 'Starterpaket herunterladen',
+        starterText: 'Statt die Bloecke einzeln zu kopieren: das Paket enthaelt charts.py, app.py, requirements.txt, Dockerfile und eine README mit Sollausgaben und typischen Fehlern. train.csv daneben legen, pip install -r requirements.txt, fertig.',
+        starterBtn: 'lab-04-dash.zip',
         runNoteCsv: 'Voraussetzung: pip install plotly pandas, train.csv im selben Verzeichnis. Der Block \u00F6ffnet eine Figur im Browser \u2013 kommt keine, fehlt meist der Aufruf fig.show() in einer nicht-interaktiven Umgebung.',
         runNoteApp: 'Voraussetzung: pip install dash plotly pandas, train.csv im selben Verzeichnis. Als app.py speichern und mit python app.py starten. Sollzustand: Konsole meldet Running on http://127.0.0.1:8050, die Seite zeigt vier KPI-Karten mit Gesamtumsatz 2.261.536,78 und 4.922 Bestellungen.',
         dataDirect: '\u2193 train.csv herunterladen',
@@ -912,6 +915,9 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
         s2Desc: 'Plotly Express is a high-level Python library for interactive charts. With just a few lines of code you can create publication-ready visualizations displayed as interactive HTML graphics in the browser.',
         dataTitle: 'Dataset for all examples',
         dataText: 'Every code example in this lab uses train.csv from the Superstore Sales Dataset (Kaggle, GPL 2): 9,800 order line items, 2015\u20132018. Place the file in the same directory as your script. Note: the date columns are DD/MM/YYYY, hence dayfirst=True when parsing. This variant has no Profit column; Sales is the only measure.',
+        starterTitle: 'Download the starter package',
+        starterText: 'Instead of copying the blocks one by one: the package contains charts.py, app.py, requirements.txt, Dockerfile and a README with expected output and common errors. Put train.csv next to it, pip install -r requirements.txt, done.',
+        starterBtn: 'lab-04-dash.zip',
         runNoteCsv: 'Prerequisites: pip install plotly pandas, train.csv in the same directory. The block opens a figure in the browser \u2013 if none appears, fig.show() is usually missing in a non-interactive environment.',
         runNoteApp: 'Prerequisites: pip install dash plotly pandas, train.csv in the same directory. Save as app.py and run python app.py. Expected state: the console reports Running on http://127.0.0.1:8050 and the page shows four KPI cards with total revenue 2,261,536.78 and 4,922 orders.',
         dataDirect: '\u2193 Download train.csv',
@@ -1195,6 +1201,12 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
                 <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.dataTitle}</h4>
                 <p style={{ margin: '0 0 0.75rem' }}>{tx.dataText}</p>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <a href="starter/lab-04-dash.zip" download
+                     style={{ border: '1.5px solid var(--col-primary)', color: 'var(--col-primary)',
+                              textDecoration: 'none', padding: '0.45rem 0.9rem', borderRadius: '6px',
+                              fontSize: '0.82rem', fontWeight: 700 }}>
+                    {tx.starterBtn}
+                  </a>
                   <a href="data/train.csv" download
                      style={{ background: 'var(--col-primary)', color: 'white', textDecoration: 'none',
                               padding: '0.45rem 0.9rem', borderRadius: '6px', fontSize: '0.82rem', fontWeight: 700 }}>

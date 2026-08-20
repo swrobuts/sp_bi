@@ -332,6 +332,9 @@
         s1DownloadDirect: '\u2193 train.csv herunterladen',
         s1DownloadKaggle: 'Quelle auf Kaggle \u2197',
         s1InfoText: 'Superstore Sales Dataset (Kaggle, \u00F6ffentlich, GPL\u00A02). 9.800 Bestellpositionen aus den USA (2015\u20132018) mit 18 Feldern: Row ID, Order ID, Order Date, Ship Date, Ship Mode, Customer ID, Customer Name, Segment, Country, City, State, Postal Code, Region, Product ID, Category, Sub-Category, Product Name, Sales. Einzige Kennzahl ist Sales \u2013 die Forecasting-Variante enth\u00E4lt bewusst kein Profit, Quantity oder Discount.',
+        starterTitle: 'Starterpaket herunterladen',
+        starterText: 'Enth\u00E4lt explore.py, app.py, measures.dax mit der Kalendertabelle, requirements.txt und eine README mit allen Sollwerten. train.csv daneben legen und loslegen \u2013 der lange Dash-Code muss nicht aus der Seite kopiert werden.',
+        starterBtn: 'lab-05-fallstudie.zip',
         runNoteExplore: 'Voraussetzung: pip install pandas numpy, train.csv im selben Verzeichnis. Sollausgabe: (9800, 18), Gesamtumsatz $2.261.537, 4.922 Bestellungen, 9.800 Positionen, \u00D8 Bestellwert $459,48, Zeitraum 03.01.2015 bis 30.12.2018, elf fehlende Postal Code.',
         runNoteMeasures: 'Voraussetzung: train.csv ist importiert und die Tabelle in Orders umbenannt (Schritt\u00A01). Sollwerte: Umsatz 2.261.536,78 \u00B7 Bestellungen 4.922 \u00B7 Positionen 9.800 \u00B7 \u00D8 Bestellwert 459,48 \u00B7 YoY_Wachstum 2018 gegen\u00FCber 2017 rund 20,3\u00A0%.',
         runNoteDash: 'Voraussetzung: pip install dash plotly pandas, train.csv im selben Verzeichnis. Als app.py speichern, mit python app.py starten, dann http://127.0.0.1:8050 \u00F6ffnen. Ohne Filterauswahl zeigen die KPI-Karten dieselben Werte wie die Power-BI-Measures.',
@@ -451,6 +454,9 @@
         s1DownloadDirect: '\u2193 Download train.csv',
         s1DownloadKaggle: 'Source on Kaggle \u2197',
         s1InfoText: 'Superstore Sales Dataset (Kaggle, public, GPL\u00A02). 9,800 order line items from the USA (2015\u20132018) with 18 fields: Row ID, Order ID, Order Date, Ship Date, Ship Mode, Customer ID, Customer Name, Segment, Country, City, State, Postal Code, Region, Product ID, Category, Sub-Category, Product Name, Sales. Sales is the only measure \u2013 the forecasting variant deliberately omits Profit, Quantity and Discount.',
+        starterTitle: 'Download the starter package',
+        starterText: 'Contains explore.py, app.py, measures.dax including the calendar table, requirements.txt and a README with all expected values. Put train.csv next to it and go \u2013 no need to copy the long Dash code out of the page.',
+        starterBtn: 'lab-05-fallstudie.zip',
         runNoteExplore: 'Prerequisites: pip install pandas numpy, train.csv in the same directory. Expected output: (9800, 18), total revenue $2,261,537, 4,922 orders, 9,800 line items, average order value $459.48, period 03/01/2015 to 30/12/2018, eleven missing Postal Code values.',
         runNoteMeasures: 'Prerequisites: train.csv imported and the table renamed to Orders (step\u00A01). Expected values: revenue 2,261,536.78 \u00B7 orders 4,922 \u00B7 line items 9,800 \u00B7 average order value 459.48 \u00B7 YoY growth 2018 over 2017 about 20.3%.',
         runNoteDash: 'Prerequisites: pip install dash plotly pandas, train.csv in the same directory. Save as app.py, run python app.py, then open http://127.0.0.1:8050. With no filter selection the KPI cards show the same values as the Power BI measures.',
@@ -658,6 +664,15 @@
               <div className="info-box" style={{ marginTop: '1.5rem' }}>
                 <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.s1InfoTitle}</h4>
                 <p style={{ margin: '0 0 0.75rem' }}>{tx.s1InfoText}</p>
+            <div className="tip-box" style={{ marginTop: '1.25rem' }}>
+              <h4 style={{ marginTop: 0 }}>{tx.starterTitle}</h4>
+              <p style={{ margin: '0 0 0.75rem', fontSize: '0.9rem' }}>{tx.starterText}</p>
+              <a href="starter/lab-05-fallstudie.zip" download
+                 style={{ background: 'var(--col-primary)', color: 'white', textDecoration: 'none',
+                          padding: '0.45rem 0.9rem', borderRadius: '6px', fontSize: '0.82rem', fontWeight: 700 }}>
+                {tx.starterBtn}
+              </a>
+            </div>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                   <a href="data/train.csv" download
                      style={{ background: 'var(--col-primary)', color: 'white', textDecoration: 'none',

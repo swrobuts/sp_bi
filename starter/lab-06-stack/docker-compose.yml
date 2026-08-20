@@ -1,0 +1,64 @@
+# docker-compose.yml - Self-Hosted BI-Stack fuer Lab 06
+# Compose Spec (v2) - der 'version'-Schluessel ist abgekuendigt.
+#
+# Drei Dienste, und die Trennung ist Absicht:
+#   metabase   - die Anwendung
+#   postgres   - Metabases EIGENE Metadaten (Fragen, Dashboards, Nutzer)
+#   warehouse  - die Analysedatenbank mit den Superstore-Daten. Nur dieser
+#                Dienst ist nach aussen veroeffentlicht (Port 5433), damit
+#                psql, DBeaver oder pgAdmin hineinschauen koennen.
+services:
+  metabase:
+    image: metabase/metabase:v0.63.13   # Version pinnen!
+    ports:
+      - "3000:3000"
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabase
+      MB_DB_HOST: postgres
+      MB_DB_USER: metabase
+      MB_DB_PASS: ${POSTGRES_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      warehouse:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: metabase
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: metabase
+    volumes:
+      - metabase_meta:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U metabase"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  warehouse:
+    image: postgres:17-alpine
+    ports:
+      - "5433:5432"          # aussen 5433, damit ein lokales Postgres nicht kollidiert
+    environment:
+      POSTGRES_USER: superstore
+      POSTGRES_PASSWORD: ${WAREHOUSE_PASSWORD}
+      POSTGRES_DB: superstore
+    volumes:
+      - warehouse_data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d:ro   # laeuft einmalig beim ersten Start
+      - ./train.csv:/data/train.csv:ro          # damit COPY die Datei sieht
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U superstore -d superstore"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  metabase_meta:
+  warehouse_data:

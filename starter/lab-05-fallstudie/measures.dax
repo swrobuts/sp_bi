@@ -1,0 +1,49 @@
+-- 1. Kalendertabelle anlegen (Modellierung -> Neue Tabelle)
+--    Zeitintelligenz braucht eine lueckenlose, als Datumstabelle
+--    markierte Tabelle. Auto-Datum/Uhrzeit reicht dafuer nicht.
+
+Datum =
+VAR _min = MIN(Orders[Order Date])
+VAR _max = MAX(Orders[Order Date])
+RETURN
+ADDCOLUMNS(
+    CALENDAR(DATE(YEAR(_min), 1, 1), DATE(YEAR(_max), 12, 31)),
+    "Jahr",        YEAR([Date]),
+    "Monatsnr",    MONTH([Date]),
+    "Monat",       FORMAT([Date], "MMM"),
+    "Quartal",     "Q" & QUARTER([Date])
+)
+
+-- 2. Danach im Menueband: Tabellentools -> Als Datumstabelle markieren
+--    -> Spalte [Date] waehlen. Anschliessend im Modell eine 1:n-Beziehung
+--    von Datum[Date] zu Orders[Order Date] ziehen.
+
+-- 3. Grundlegende Measures
+
+Umsatz =
+SUM(Orders[Sales])
+
+Bestellungen =
+DISTINCTCOUNT(Orders[Order ID])
+
+Positionen =
+COUNTROWS(Orders)
+
+Avg_Bestellwert =
+DIVIDE([Umsatz], [Bestellungen], 0)
+
+-- Zeitintelligenz laeuft ueber die Datumstabelle, nicht ueber Orders:
+Umsatz_VJ =
+CALCULATE([Umsatz], SAMEPERIODLASTYEAR(Datum[Date]))
+
+YoY_Wachstum =
+DIVIDE([Umsatz] - [Umsatz_VJ], [Umsatz_VJ], 0) * 100
+
+-- Sollwerte zur Kontrolle:
+-- Umsatz 2.261.536,78 | Bestellungen 4.922 | Positionen 9.800
+-- Avg_Bestellwert 459,48
+-- 2017: 600.192,55 | 2018: 722.052,02 | YoY_Wachstum 2018 ~ 20,3 %
+
+-- Hinweis: Der Datensatz enthaelt keine Kosten- oder Gewinnspalte.
+-- Deckungsbeitrags-Measures wie Gewinn oder Marge lassen sich damit
+-- nicht bilden; sie brauchen die Vollversion des Superstore-Datensatzes.

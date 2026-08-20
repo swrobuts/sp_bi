@@ -1,0 +1,292 @@
+[      25ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[   30932ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[   33767ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  202514ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  204085ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  205676ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  207262ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  208844ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  210436ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  212022ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  528437ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  529935ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  531432ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  531442ms] SyntaxError: /Inline Babel script: Unexpected token, expected "," (190:217)
+
+  188 |         s1CodeNote: 'Dieser Block zeigt das Muster, nicht den Kursdatensatz: daten.csv, bericht.xlsx und api.example.com existieren nicht. So kopiert erzeugt er File- und Netzwerkfehler. Die lauff\u00E4hige Fassung mit train.csv steht direkt darunter.',
+  189 |         s1RunTitle: 'Dasselbe Muster, lauff\u00E4hig mit train.csv',
+> 190 |         s1CodePythonRun: '# Dieselben drei Quellen, aber mit dem Kursdatensatz statt Platzhaltern.\n# train.csv liegt im selben Verzeichnis wie dieses Skript.\nimport pandas as pd\n\n# 1. CSV laden\ndf = pd.read_csv('train.csv', encoding='latin-1')\n\n# 2. Datum: die Datei nutzt TT/MM/JJJJ -> dayfirst=True ist Pflicht,\n#    sonst bricht das Parsen ab, sobald der Tag groesser als 12 ist.\ndf['Order Date'] = pd.to_datetime(df['Order Date'], dayfirst=True)\n\n# 3. Struktur und Qualitaet pruefen\nprint(df.shape)                            # (9800, 18)\nprint(round(df['Sales'].sum(), 2))         # 2261536.78\nprint(df['Order ID'].nunique())            # 4922\nprint(df.isnull().sum()[lambda s: s > 0])  # Postal Code    11',
+      |                                                                                                                                                                                                                          ^
+  191 |         s1RunNote: 'Voraussetzung: pandas installiert, train.csv im selben Verzeichnis (Download in Lab\u00A004). Sollausgabe: (9800, 18) \u00B7 2261536.78 \u00B7 4922 \u00B7 Postal Code 11. Weichen die Zahlen ab, wurde meist dayfirst=True vergessen.',
+  192 |
+  193 |         s2Title: 'Datenmodellierung',
+    at e (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:260229)
+    at r.raise (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:312603)
+    at r.unexpected (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:313037)
+    at r.expect (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:317891)
+    at r.parseObjectLike (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:494524)
+    at r.parseExprAtom (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:484111)
+    at r.parseExprAtom (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:354498)
+    at r.parseExprSubscripts (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478811)
+    at r.parseUpdate (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478432)
+    at r.parseMaybeUnary (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478046)
+    at r.parseMaybeUnaryOrPrivate (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474839)
+    at r.parseExprOps (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474949)
+    at r.parseMaybeConditional (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474419)
+    at r.parseMaybeAssign (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:473325)
+    at r.parseMaybeAssign (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:394749)
+    at https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:472905
+    at r.allowInAnd (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:506314)
+    at r.parseMaybeAssignAllowIn (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:472874)
+    at r.parseMaybeAssignAllowInOrVoidPattern (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:507913)
+    at r.parseObjectProperty (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:497151)
+    at r.parseObjPropValue (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:497871)
+    at r.parseObjPropValue (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:390063)
+    at r.parsePropertyDefinition (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:496260)
+    at r.parseObjectLike (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:494645)
+    at r.parseExprAtom (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:484111)
+    at r.parseExprAtom (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:354498)
+    at r.parseExprSubscripts (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478811)
+    at r.parseUpdate (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478432)
+    at r.parseMaybeUnary (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478046)
+    at r.parseMaybeUnaryOrPrivate (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474839)
+    at r.parseExprOps (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474949)
+    at r.parseMaybeConditional (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474419)
+    at r.parseMaybeAssign (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:473325)
+    at r.parseMaybeAssign (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:394749)
+    at https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:472905
+    at r.allowInAnd (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:506272)
+    at r.parseMaybeAssignAllowIn (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:472874)
+    at r.parseVar (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:526162)
+    at r.parseVarStatement (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:522400)
+    at r.parseStatementContent (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:514533)
+    at r.parseStatementLike (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:512739)
+    at r.parseStatementLike (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:380115)
+    at r.parseModuleItem (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:512234)
+    at r.parseBlockOrModuleBlockBody (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:524559)
+    at r.parseBlockBody (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:524392)
+    at r.parseProgram (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:509643)
+    at r.parseTopLevel (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:508349)
+    at r.parseTopLevel (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:398630)
+    at r.parse (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:551351)
+    at nR (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:551549)
+[  532870ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  532878ms] SyntaxError: /Inline Babel script: Unexpected token, expected "," (190:217)
+
+  188 |         s1CodeNote: 'Dieser Block zeigt das Muster, nicht den Kursdatensatz: daten.csv, bericht.xlsx und api.example.com existieren nicht. So kopiert erzeugt er File- und Netzwerkfehler. Die lauff\u00E4hige Fassung mit train.csv steht direkt darunter.',
+  189 |         s1RunTitle: 'Dasselbe Muster, lauff\u00E4hig mit train.csv',
+> 190 |         s1CodePythonRun: '# Dieselben drei Quellen, aber mit dem Kursdatensatz statt Platzhaltern.\n# train.csv liegt im selben Verzeichnis wie dieses Skript.\nimport pandas as pd\n\n# 1. CSV laden\ndf = pd.read_csv('train.csv', encoding='latin-1')\n\n# 2. Datum: die Datei nutzt TT/MM/JJJJ -> dayfirst=True ist Pflicht,\n#    sonst bricht das Parsen ab, sobald der Tag groesser als 12 ist.\ndf['Order Date'] = pd.to_datetime(df['Order Date'], dayfirst=True)\n\n# 3. Struktur und Qualitaet pruefen\nprint(df.shape)                            # (9800, 18)\nprint(round(df['Sales'].sum(), 2))         # 2261536.78\nprint(df['Order ID'].nunique())            # 4922\nprint(df.isnull().sum()[lambda s: s > 0])  # Postal Code    11',
+      |                                                                                                                                                                                                                          ^
+  191 |         s1RunNote: 'Voraussetzung: pandas installiert, train.csv im selben Verzeichnis (Download in Lab\u00A004). Sollausgabe: (9800, 18) \u00B7 2261536.78 \u00B7 4922 \u00B7 Postal Code 11. Weichen die Zahlen ab, wurde meist dayfirst=True vergessen.',
+  192 |
+  193 |         s2Title: 'Datenmodellierung',
+    at e (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:260229)
+    at r.raise (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:312603)
+    at r.unexpected (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:313037)
+    at r.expect (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:317891)
+    at r.parseObjectLike (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:494524)
+    at r.parseExprAtom (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:484111)
+    at r.parseExprAtom (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:354498)
+    at r.parseExprSubscripts (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478811)
+    at r.parseUpdate (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478432)
+    at r.parseMaybeUnary (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478046)
+    at r.parseMaybeUnaryOrPrivate (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474839)
+    at r.parseExprOps (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474949)
+    at r.parseMaybeConditional (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474419)
+    at r.parseMaybeAssign (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:473325)
+    at r.parseMaybeAssign (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:394749)
+    at https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:472905
+    at r.allowInAnd (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:506314)
+    at r.parseMaybeAssignAllowIn (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:472874)
+    at r.parseMaybeAssignAllowInOrVoidPattern (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:507913)
+    at r.parseObjectProperty (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:497151)
+    at r.parseObjPropValue (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:497871)
+    at r.parseObjPropValue (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:390063)
+    at r.parsePropertyDefinition (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:496260)
+    at r.parseObjectLike (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:494645)
+    at r.parseExprAtom (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:484111)
+    at r.parseExprAtom (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:354498)
+    at r.parseExprSubscripts (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478811)
+    at r.parseUpdate (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478432)
+    at r.parseMaybeUnary (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478046)
+    at r.parseMaybeUnaryOrPrivate (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474839)
+    at r.parseExprOps (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474949)
+    at r.parseMaybeConditional (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474419)
+    at r.parseMaybeAssign (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:473325)
+    at r.parseMaybeAssign (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:394749)
+    at https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:472905
+    at r.allowInAnd (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:506272)
+    at r.parseMaybeAssignAllowIn (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:472874)
+    at r.parseVar (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:526162)
+    at r.parseVarStatement (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:522400)
+    at r.parseStatementContent (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:514533)
+    at r.parseStatementLike (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:512739)
+    at r.parseStatementLike (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:380115)
+    at r.parseModuleItem (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:512234)
+    at r.parseBlockOrModuleBlockBody (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:524559)
+    at r.parseBlockBody (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:524392)
+    at r.parseProgram (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:509643)
+    at r.parseTopLevel (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:508349)
+    at r.parseTopLevel (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:398630)
+    at r.parse (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:551351)
+    at nR (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:551549)
+[  534306ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  534314ms] SyntaxError: /Inline Babel script: Unexpected token, expected "," (199:192)
+
+  197 |         s2CodeNote: 'Konzeptsnippet mit Platzhalterspalten. Die lauff\u00E4hige Fassung auf train.csv steht direkt darunter.',
+  198 |         s2RunTitle: 'Dieselben KPIs, lauff\u00E4hig mit train.csv',
+> 199 |         s2CodePythonRun: '# Dieselben KPIs wie oben, aber auf dem Kursdatensatz train.csv\n# (echte Spaltennamen statt Betrag / Bruttogewinn / Land).\nimport pandas as pd\n\ndf = pd.read_csv('train.csv', encoding='latin-1')\ndf['Order Date'] = pd.to_datetime(df['Order Date'], dayfirst=True)\n\n# Gesamtumsatz  ->  DAX: Umsatz = SUM(Orders[Sales])\numsatz_gesamt = df['Sales'].sum()\nprint(f\"Gesamtumsatz: {umsatz_gesamt:,.2f}\")        # 2,261,536.78\n\n# Gefilterte Aggregation  ->  DAX: CALCULATE(..., Orders[Region] = \"West\")\numsatz_west = df.loc[df['Region'] == 'West', 'Sales'].sum()\nprint(f\"Umsatz West:  {umsatz_west:,.2f}\")           # 710,219.68\n\n# Anteil am Gesamtumsatz  ->  DAX: DIVIDE(..., CALCULATE(..., ALL(...)))\nprint(f\"Anteil West:  {umsatz_west / umsatz_gesamt * 100:.1f} %\")  # 31.4 %\n\n# Jahresvergleich  ->  DAX: SAMEPERIODLASTYEAR(Datum[Datum])\njahr = df.groupby(df['Order Date'].dt.year)['Sales'].sum()\nprint(jahr.round(2))       # 2015 479856.21 | 2016 459436.01\n                           # 2017 600192.55 | 2018 722052.02\nprint((jahr.pct_change() * 100).round(1))   # 2018: 20.3\n\n# Ranking  ->  DAX: RANKX(ALL(...), [Umsatz], , DESC, Dense)\ntop = df.groupby('Sub-Category')['Sales'].sum().sort_values(ascending=False)\nprint(top.head(3).round(2))  # Phones 327782.45 | Chairs 322822.73\n                             # Storage 219343.39',
+      |                                                                                                                                                                                                 ^
+  200 |         s2RunNote: 'Voraussetzung: pandas installiert, train.csv im selben Verzeichnis (Download in Lab\u00A004). Die Sollwerte stehen als Kommentar hinter jeder Zeile \u2013 stimmt eine Zahl nicht, liegt es fast immer am Datumsformat oder am encoding.',
+  201 |
+  202 |         s3Title: 'KPI-Tabelle',
+    at e (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:260229)
+    at r.raise (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:312603)
+    at r.unexpected (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:313037)
+    at r.expect (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:317891)
+    at r.parseObjectLike (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:494524)
+    at r.parseExprAtom (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:484111)
+    at r.parseExprAtom (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:354498)
+    at r.parseExprSubscripts (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478811)
+    at r.parseUpdate (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478432)
+    at r.parseMaybeUnary (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478046)
+    at r.parseMaybeUnaryOrPrivate (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474839)
+    at r.parseExprOps (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474949)
+    at r.parseMaybeConditional (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474419)
+    at r.parseMaybeAssign (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:473325)
+    at r.parseMaybeAssign (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:394749)
+    at https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:472905
+    at r.allowInAnd (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:506314)
+    at r.parseMaybeAssignAllowIn (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:472874)
+    at r.parseMaybeAssignAllowInOrVoidPattern (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:507913)
+    at r.parseObjectProperty (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:497151)
+    at r.parseObjPropValue (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:497871)
+    at r.parseObjPropValue (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:390063)
+    at r.parsePropertyDefinition (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:496260)
+    at r.parseObjectLike (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:494645)
+    at r.parseExprAtom (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:484111)
+    at r.parseExprAtom (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:354498)
+    at r.parseExprSubscripts (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478811)
+    at r.parseUpdate (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478432)
+    at r.parseMaybeUnary (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478046)
+    at r.parseMaybeUnaryOrPrivate (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474839)
+    at r.parseExprOps (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474949)
+    at r.parseMaybeConditional (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474419)
+    at r.parseMaybeAssign (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:473325)
+    at r.parseMaybeAssign (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:394749)
+    at https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:472905
+    at r.allowInAnd (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:506272)
+    at r.parseMaybeAssignAllowIn (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:472874)
+    at r.parseVar (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:526162)
+    at r.parseVarStatement (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:522400)
+    at r.parseStatementContent (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:514533)
+    at r.parseStatementLike (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:512739)
+    at r.parseStatementLike (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:380115)
+    at r.parseModuleItem (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:512234)
+    at r.parseBlockOrModuleBlockBody (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:524559)
+    at r.parseBlockBody (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:524392)
+    at r.parseProgram (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:509643)
+    at r.parseTopLevel (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:508349)
+    at r.parseTopLevel (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:398630)
+    at r.parse (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:551351)
+    at nR (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:551549)
+[  535746ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  535756ms] SyntaxError: /Inline Babel script: Unexpected token, expected "," (199:192)
+
+  197 |         s2CodeNote: 'Konzeptsnippet mit Platzhalterspalten. Die lauff\u00E4hige Fassung auf train.csv steht direkt darunter.',
+  198 |         s2RunTitle: 'Dieselben KPIs, lauff\u00E4hig mit train.csv',
+> 199 |         s2CodePythonRun: '# Dieselben KPIs wie oben, aber auf dem Kursdatensatz train.csv\n# (echte Spaltennamen statt Betrag / Bruttogewinn / Land).\nimport pandas as pd\n\ndf = pd.read_csv('train.csv', encoding='latin-1')\ndf['Order Date'] = pd.to_datetime(df['Order Date'], dayfirst=True)\n\n# Gesamtumsatz  ->  DAX: Umsatz = SUM(Orders[Sales])\numsatz_gesamt = df['Sales'].sum()\nprint(f\"Gesamtumsatz: {umsatz_gesamt:,.2f}\")        # 2,261,536.78\n\n# Gefilterte Aggregation  ->  DAX: CALCULATE(..., Orders[Region] = \"West\")\numsatz_west = df.loc[df['Region'] == 'West', 'Sales'].sum()\nprint(f\"Umsatz West:  {umsatz_west:,.2f}\")           # 710,219.68\n\n# Anteil am Gesamtumsatz  ->  DAX: DIVIDE(..., CALCULATE(..., ALL(...)))\nprint(f\"Anteil West:  {umsatz_west / umsatz_gesamt * 100:.1f} %\")  # 31.4 %\n\n# Jahresvergleich  ->  DAX: SAMEPERIODLASTYEAR(Datum[Datum])\njahr = df.groupby(df['Order Date'].dt.year)['Sales'].sum()\nprint(jahr.round(2))       # 2015 479856.21 | 2016 459436.01\n                           # 2017 600192.55 | 2018 722052.02\nprint((jahr.pct_change() * 100).round(1))   # 2018: 20.3\n\n# Ranking  ->  DAX: RANKX(ALL(...), [Umsatz], , DESC, Dense)\ntop = df.groupby('Sub-Category')['Sales'].sum().sort_values(ascending=False)\nprint(top.head(3).round(2))  # Phones 327782.45 | Chairs 322822.73\n                             # Storage 219343.39',
+      |                                                                                                                                                                                                 ^
+  200 |         s2RunNote: 'Voraussetzung: pandas installiert, train.csv im selben Verzeichnis (Download in Lab\u00A004). Die Sollwerte stehen als Kommentar hinter jeder Zeile \u2013 stimmt eine Zahl nicht, liegt es fast immer am Datumsformat oder am encoding.',
+  201 |
+  202 |         s3Title: 'KPI-Tabelle',
+    at e (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:260229)
+    at r.raise (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:312603)
+    at r.unexpected (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:313037)
+    at r.expect (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:317891)
+    at r.parseObjectLike (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:494524)
+    at r.parseExprAtom (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:484111)
+    at r.parseExprAtom (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:354498)
+    at r.parseExprSubscripts (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478811)
+    at r.parseUpdate (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478432)
+    at r.parseMaybeUnary (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478046)
+    at r.parseMaybeUnaryOrPrivate (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474839)
+    at r.parseExprOps (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474949)
+    at r.parseMaybeConditional (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474419)
+    at r.parseMaybeAssign (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:473325)
+    at r.parseMaybeAssign (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:394749)
+    at https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:472905
+    at r.allowInAnd (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:506314)
+    at r.parseMaybeAssignAllowIn (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:472874)
+    at r.parseMaybeAssignAllowInOrVoidPattern (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:507913)
+    at r.parseObjectProperty (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:497151)
+    at r.parseObjPropValue (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:497871)
+    at r.parseObjPropValue (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:390063)
+    at r.parsePropertyDefinition (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:496260)
+    at r.parseObjectLike (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:494645)
+    at r.parseExprAtom (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:484111)
+    at r.parseExprAtom (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:354498)
+    at r.parseExprSubscripts (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478811)
+    at r.parseUpdate (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478432)
+    at r.parseMaybeUnary (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:478046)
+    at r.parseMaybeUnaryOrPrivate (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474839)
+    at r.parseExprOps (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474949)
+    at r.parseMaybeConditional (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:474419)
+    at r.parseMaybeAssign (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:473325)
+    at r.parseMaybeAssign (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:394749)
+    at https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:472905
+    at r.allowInAnd (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:506272)
+    at r.parseMaybeAssignAllowIn (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:472874)
+    at r.parseVar (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:526162)
+    at r.parseVarStatement (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:522400)
+    at r.parseStatementContent (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:514533)
+    at r.parseStatementLike (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:512739)
+    at r.parseStatementLike (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:380115)
+    at r.parseModuleItem (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:512234)
+    at r.parseBlockOrModuleBlockBody (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:524559)
+    at r.parseBlockBody (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:524392)
+    at r.parseProgram (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:509643)
+    at r.parseTopLevel (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:508349)
+    at r.parseTopLevel (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:398630)
+    at r.parse (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:551351)
+    at nR (https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:3:551549)
+[  537182ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  538685ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  540191ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  541684ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  543175ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  544672ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  586686ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  588183ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  589675ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  591166ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  604557ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[  606047ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 1104186ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 1105657ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 1107128ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 1108623ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 1110119ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 1111612ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 1113104ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 1114593ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 1116078ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 1117574ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 1119072ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 1120561ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 1122052ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 1123548ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 2263699ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 2265175ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 2266644ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 2268142ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 2269638ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 2271126ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 2272617ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 2274103ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 2275589ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 2277085ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 2278579ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 2280069ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 2281564ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2
+[ 2283075ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ https://unpkg.com/@babel/standalone@7.29.8/babel.min.js:2

@@ -1,0 +1,9 @@
+.env
+.DS_Store
+starter/*/train.csv
+
+# Nicht Teil dieser Lernumgebung - eigene Projekte bzw. IDE-Einstellungen
+.idea/
+Quizfragen_BasisVorlesung/
+bi-quiz/
+.playwright-mcp/

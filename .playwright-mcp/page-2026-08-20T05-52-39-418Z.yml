@@ -1,0 +1,190 @@
+- generic [ref=f23e3]:
+  - navigation [ref=f23e4]:
+    - generic [ref=f23e5]:
+      - generic [ref=f23e6]: BI Lab
+      - generic [ref=f23e7]: Modul Business Intelligence
+    - generic [ref=f23e8]:
+      - button "Deutsch" [ref=f23e9] [cursor=pointer]: DE
+      - button "English" [ref=f23e10] [cursor=pointer]: EN
+  - generic [ref=f23e11]:
+    - generic [ref=f23e13]:
+      - generic [ref=f23e14]: THWS BUSINESS SCHOOL
+      - heading "BI Lab" [level=1] [ref=f23e15]
+      - generic [ref=f23e16]: Power BI · Python · Plotly Dash
+      - paragraph [ref=f23e17]: Die Companion-Site zum Kurs “Business Intelligence”
+      - generic [ref=f23e18]:
+        - generic [ref=f23e19]: Sommersemester 2026
+        - generic [ref=f23e20]: Prof. Dr. Robert Butscher
+      - generic [ref=f23e21]:
+        - link "Zu den Labs →" [ref=f23e22] [cursor=pointer]:
+          - /url: "#labs"
+        - link "GitHub →" [ref=f23e23] [cursor=pointer]:
+          - /url: https://github.com/swrobuts/sp_bi
+    - generic [ref=f23e25]:
+      - generic [ref=f23e26]:
+        - generic [ref=f23e27]: "6"
+        - generic [ref=f23e28]: Labs
+      - generic [ref=f23e29]:
+        - generic [ref=f23e30]: "1"
+        - generic [ref=f23e31]: Fallstudie
+      - generic [ref=f23e32]:
+        - generic [ref=f23e33]: Power BI & Python
+        - generic [ref=f23e34]: Tech Stack
+      - generic [ref=f23e35]:
+        - generic [ref=f23e36]: Open Source BI
+        - generic [ref=f23e37]: Digitale Souveränität
+  - generic [ref=f23e39]:
+    - paragraph [ref=f23e41]:
+      - generic [ref=f23e42]: In God we trust.
+      - generic [ref=f23e43]: All others must bring data.
+    - generic [ref=f23e44]:
+      - img "William Edwards Deming" [ref=f23e45]
+      - generic [ref=f23e46]:
+        - generic [ref=f23e47]: "- William Edwards Deming"
+        - generic [ref=f23e48]: Statistiker & Qualitätsmanagement-Pionier
+  - generic [ref=f23e49]:
+    - heading "Die Labs" [level=2] [ref=f23e51]
+    - generic [ref=f23e53]:
+      - generic [ref=f23e54]:
+        - generic [ref=f23e55]: "01"
+        - generic [ref=f23e56]:
+          - generic [ref=f23e57]: Grundlagen Business Intelligence
+          - generic [ref=f23e58]: BI Foundations
+        - paragraph [ref=f23e59]: Was ist BI? Architektur, KPIs, Tool-Überblick.
+        - link "Zum Lab →" [ref=f23e60] [cursor=pointer]:
+          - /url: lab-01-grundlagen.html
+      - generic [ref=f23e61]:
+        - generic [ref=f23e62]: "02"
+        - generic [ref=f23e63]:
+          - generic [ref=f23e64]: "Daten: Quellen, Modelle, Qualität"
+          - generic [ref=f23e65]: "Data: Sources, Models, Quality"
+        - paragraph [ref=f23e66]: Star Schema, Power Query, Pandas Datentransformation.
+        - link "Zum Lab →" [ref=f23e67] [cursor=pointer]:
+          - /url: lab-02-daten.html
+      - generic [ref=f23e68]:
+        - generic [ref=f23e69]: "03"
+        - generic [ref=f23e70]:
+          - generic [ref=f23e71]: KPIs mit DAX & Python
+          - generic [ref=f23e72]: KPIs with DAX & Python
+        - paragraph [ref=f23e73]: DAX Measures, Calculated Columns, Filter-Kontext.
+        - link "Zum Lab →" [ref=f23e74] [cursor=pointer]:
+          - /url: lab-03-kpis.html
+      - generic [ref=f23e75]:
+        - generic [ref=f23e76]: "04"
+        - generic [ref=f23e77]:
+          - generic [ref=f23e78]: Dashboard-Design & Plotly Dash
+          - generic [ref=f23e79]: Dashboard Design & Plotly Dash
+        - paragraph [ref=f23e80]: Design-Prinzipien, Plotly Express, Dash Callbacks.
+        - link "Zum Lab →" [ref=f23e81] [cursor=pointer]:
+          - /url: lab-04-dashboards.html
+      - generic [ref=f23e82]:
+        - generic [ref=f23e83]: "05"
+        - generic [ref=f23e84]:
+          - generic [ref=f23e85]: "Fallstudie: Retail Analytics"
+          - generic [ref=f23e86]: "Case Study: Retail Analytics"
+        - paragraph [ref=f23e87]: Superstore Dataset – Power BI & Dash im Vergleich.
+        - link "Zum Lab →" [ref=f23e88] [cursor=pointer]:
+          - /url: lab-05-fallstudie.html
+      - generic [ref=f23e89]:
+        - generic [ref=f23e90]: "06"
+        - generic [ref=f23e91]:
+          - generic [ref=f23e92]: Digitale Souveränität & Open-Source BI
+          - generic [ref=f23e93]: Digital Sovereignty & Open-Source BI
+        - paragraph [ref=f23e94]: Apache Superset, Metabase, Docker, DSGVO.
+        - link "Zum Lab →" [ref=f23e95] [cursor=pointer]:
+          - /url: lab-06-souveraenitaet.html
+      - generic [ref=f23e96]:
+        - generic [ref=f23e97]: BONUS-PROJEKT
+        - generic [ref=f23e98]: Data Sovereignty Stack
+        - generic [ref=f23e99]: Self-Hosted BI für DSGVO-konforme Unternehmen
+        - generic [ref=f23e100]:
+          - generic [ref=f23e101]: Apache Superset
+          - generic [ref=f23e102]: Metabase
+          - generic [ref=f23e103]: Docker
+          - generic [ref=f23e104]: PostgreSQL
+          - generic [ref=f23e105]: DSGVO
+          - generic [ref=f23e106]: Self-Hosted
+        - generic [ref=f23e107]:
+          - paragraph [ref=f23e109]: Open-Source-BI-Tools auf eigener Infrastruktur ermöglichen volle Datensouveränität — unabhängig von Cloud-Anbietern, ohne Lizenzkosten und mit deutlich einfacherem DSGVO-Nachweis, da die Daten die eigene Infrastruktur nicht verlassen.
+          - list [ref=f23e111]:
+            - listitem [ref=f23e112]:
+              - generic [ref=f23e113]: "1"
+              - generic [ref=f23e114]:
+                - strong [ref=f23e115]: Datensouveränität
+                - text: Volle Kontrolle über eigene Daten
+            - listitem [ref=f23e116]:
+              - generic [ref=f23e117]: "2"
+              - generic [ref=f23e118]:
+                - strong [ref=f23e119]: No Vendor Lock-in
+                - text: Unabhängig von Cloud-Anbietern
+            - listitem [ref=f23e120]:
+              - generic [ref=f23e121]: "3"
+              - generic [ref=f23e122]:
+                - strong [ref=f23e123]: DSGVO-Konformität
+                - text: Daten bleiben in der EU
+            - listitem [ref=f23e124]:
+              - generic [ref=f23e125]: "4"
+              - generic [ref=f23e126]:
+                - strong [ref=f23e127]: Kostenersparnis
+                - text: Open Source, keine unmittelbaren Lizenzkosten
+            - listitem [ref=f23e128]:
+              - generic [ref=f23e129]: "5"
+              - generic [ref=f23e130]:
+                - strong [ref=f23e131]: Volle Kontrolle
+                - text: Eigene Infrastruktur, eigene Regeln
+        - link "Zum Lab →" [ref=f23e132] [cursor=pointer]:
+          - /url: lab-06-souveraenitaet.html
+  - generic [ref=f23e134]:
+    - generic [ref=f23e135]:
+      - heading "Implementierte Dashboards" [level=2] [ref=f23e136]
+      - paragraph [ref=f23e138]: Diese Dashboards laufen produktiv – gebaut mit dem Stack aus diesem Kurs.
+    - generic [ref=f23e139]:
+      - link "WHI Dashboard LIVE World Happiness Index – Ländervergleich 2015–2025 Python · Plotly Dash · Docker" [ref=f23e140] [cursor=pointer]:
+        - /url: https://whi-dashboard.butscher.cloud
+        - generic [ref=f23e141]:
+          - generic [ref=f23e142]: WHI Dashboard
+          - generic [ref=f23e143]: LIVE
+        - paragraph [ref=f23e144]: World Happiness Index – Ländervergleich 2015–2025
+        - generic [ref=f23e145]: Python · Plotly Dash · Docker
+      - link "Alkohol Dashboard LIVE Alkoholkonsum-Analyse nach Ländern und Jahren Python · Plotly Dash · Docker" [ref=f23e146] [cursor=pointer]:
+        - /url: https://alc-dashboard.butscher.cloud
+        - generic [ref=f23e147]:
+          - generic [ref=f23e148]: Alkohol Dashboard
+          - generic [ref=f23e149]: LIVE
+        - paragraph [ref=f23e150]: Alkoholkonsum-Analyse nach Ländern und Jahren
+        - generic [ref=f23e151]: Python · Plotly Dash · Docker
+      - link "Rainforest Dashboard LIVE Amazonas-Abholzung und Klimadaten interaktiv Python · Plotly Dash · Docker" [ref=f23e152] [cursor=pointer]:
+        - /url: https://rainforest.butscher.cloud
+        - generic [ref=f23e153]:
+          - generic [ref=f23e154]: Rainforest Dashboard
+          - generic [ref=f23e155]: LIVE
+        - paragraph [ref=f23e156]: Amazonas-Abholzung und Klimadaten interaktiv
+        - generic [ref=f23e157]: Python · Plotly Dash · Docker
+      - link "Rechnungsanalyse LIVE KI-gestützte Rechnungsanalyse mit n8n-Automatisierung Chart.js · Supabase · n8n" [ref=f23e158] [cursor=pointer]:
+        - /url: https://invoices.butscher.cloud
+        - generic [ref=f23e159]:
+          - generic [ref=f23e160]: Rechnungsanalyse
+          - generic [ref=f23e161]: LIVE
+        - paragraph [ref=f23e162]: KI-gestützte Rechnungsanalyse mit n8n-Automatisierung
+        - generic [ref=f23e163]: Chart.js · Supabase · n8n
+  - contentinfo [ref=f23e164]:
+    - generic [ref=f23e165]:
+      - generic [ref=f23e166]:
+        - generic [ref=f23e168]: BI Lab
+        - generic [ref=f23e169]: Business Intelligence · THWS
+      - generic [ref=f23e170]:
+        - generic [ref=f23e171]: Labs
+        - navigation [ref=f23e172]:
+          - link "01 - Grundlagen Business Intelligence" [ref=f23e173] [cursor=pointer]:
+            - /url: lab-01-grundlagen.html
+          - 'link "02 - Daten: Quellen, Modelle, Qualität" [ref=f23e174] [cursor=pointer]':
+            - /url: lab-02-daten.html
+          - link "03 - KPIs mit DAX & Python" [ref=f23e175] [cursor=pointer]:
+            - /url: lab-03-kpis.html
+          - link "04 - Dashboard-Design & Plotly Dash" [ref=f23e176] [cursor=pointer]:
+            - /url: lab-04-dashboards.html
+          - 'link "05 - Fallstudie: Retail Analytics" [ref=f23e177] [cursor=pointer]':
+            - /url: lab-05-fallstudie.html
+          - link "06 - Digitale Souveränität & Open-Source BI" [ref=f23e178] [cursor=pointer]:
+            - /url: lab-06-souveraenitaet.html
+    - generic [ref=f23e179]: THWS Business School · BI Lab · Prof. Dr. Robert Butscher · 2026
