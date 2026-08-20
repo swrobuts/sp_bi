@@ -67,6 +67,14 @@
     .lernziele-heading { color: #1E3A8A; margin: 0 0 0.75rem; font-family: 'Space Grotesk', sans-serif; font-weight: 700; }
     .lernziel-chip { display: inline-block; background: rgba(30,58,138,0.08); color: #1E3A8A; border: 1px solid rgba(30,58,138,0.2); padding: 0.3rem 0.7rem; border-radius: 999px; font-size: 0.82rem; font-weight: 500; margin: 0.2rem; }
     table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+    /* ── Kennzeichnung kopierbarer Codebloecke ───────────────────────────────
+       Jeder Block sagt, ob er in einer frischen Umgebung so laeuft ("run")
+       oder ob er ein Konzeptsnippet mit Platzhalternamen ist ("concept"). */
+    .code-tag { display: inline-block; font-family: 'Space Grotesk', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 0.25rem 0.65rem; border-radius: 5px 5px 0 0; }
+    .code-tag-run { background: #065F46; color: #fff; }
+    .code-tag-concept { background: #92400E; color: #fff; }
+    .code-tag + .code-block { border-radius: 0 8px 8px 0; margin-top: 0; }
+    .code-note { font-size: 0.78rem; color: #4B5563; margin: 0.35rem 0 0; line-height: 1.55; }
     /* ── Quiz: zweiter Versuch statt Einmal-Sperre ───────────────────────────
        Eine falsche Antwort sperrt die Frage nicht mehr. Die Loesung wird erst
        gezeigt, wenn sie getroffen oder ausdruecklich angefordert wurde. */
@@ -139,7 +147,7 @@
 <body>
 <div id="root"></div>
 <script type="text/babel">
-  function CodeBlock({ code, lang }) {
+  function CodeBlock({ code, lang, kind, note }) {
     const [copied, setCopied] = React.useState(false);
     const copyLabel = lang === 'en' ? 'Copy' : 'Kopieren';
     const copiedLabel = lang === 'en' ? '\u2713 Copied' : '\u2713 Kopiert';
@@ -160,7 +168,17 @@
     };
     return (
       <div style={{ position: 'relative', marginBottom: '1rem' }}>
+        {kind && (
+          <div className={'code-tag ' + (kind === 'run' ? 'code-tag-run' : 'code-tag-concept')}>
+            {kind === 'run'
+              ? (lang === 'en' ? 'Runnable as-is' : 'L\u00E4uft unver\u00E4ndert')
+              : kind === 'diagram'
+                ? (lang === 'en' ? 'Schema \u2013 not code' : 'Schema \u2013 kein Code')
+                : (lang === 'en' ? 'Concept \u2013 placeholder names' : 'Konzept \u2013 Platzhalternamen')}
+          </div>
+        )}
         <pre className="code-block">{code}</pre>
+        {note && <p className="code-note">{note}</p>}
         <button onClick={copy} style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', background: copied ? '#059669' : '#E5E7EB', color: copied ? 'white' : '#374151', border: 'none', padding: '0.2rem 0.5rem', fontSize: '0.75rem', cursor: 'pointer', fontFamily: 'Space Grotesk, sans-serif' }}>{copied ? copiedLabel : copyLabel}</button>
       </div>
     );
@@ -702,11 +720,26 @@
     }, [lang, c.pageTitle]);
 
     // Code strings as regular strings (safe, no ${} collision risk)
-    const codeDockerCompose = "# docker-compose.yml \u2013 Self-Hosted Metabase + PostgreSQL\n# Compose Spec (v2) \u2013 'version' key is deprecated\nservices:\n  metabase:\n    image: metabase/metabase:v0.63.13   # Version pinnen!\n    ports:\n      - \"3000:3000\"\n    environment:\n      MB_DB_TYPE: postgres\n      MB_DB_DBNAME: metabase\n      MB_DB_HOST: postgres\n      MB_DB_USER: metabase\n      MB_DB_PASS: ${POSTGRES_PASSWORD}   # eine einzige Variable fuer beide Container!\n    depends_on:\n      postgres:\n        condition: service_healthy\n    restart: unless-stopped\n\n  postgres:\n    image: postgres:17-alpine\n    environment:\n      POSTGRES_USER: metabase\n      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # .env-Datei!\n      POSTGRES_DB: metabase\n    volumes:\n      - metabase_data:/var/lib/postgresql/data\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U metabase\"]\n      interval: 10s\n      timeout: 5s\n      retries: 5\n    restart: unless-stopped\n\nvolumes:\n  metabase_data:";
+    const codeDockerCompose = {
+      de: "# docker-compose.yml \u2013 Self-Hosted Metabase + PostgreSQL\n# Compose Spec (v2) \u2013 'version' key is deprecated\nservices:\n  metabase:\n    image: metabase/metabase:v0.63.13   # Version pinnen!\n    ports:\n      - \"3000:3000\"\n    environment:\n      MB_DB_TYPE: postgres\n      MB_DB_DBNAME: metabase\n      MB_DB_HOST: postgres\n      MB_DB_USER: metabase\n      MB_DB_PASS: ${POSTGRES_PASSWORD}   # eine einzige Variable fuer beide Container!\n    depends_on:\n      postgres:\n        condition: service_healthy\n    restart: unless-stopped\n\n  postgres:\n    image: postgres:17-alpine\n    environment:\n      POSTGRES_USER: metabase\n      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # .env-Datei!\n      POSTGRES_DB: metabase\n    volumes:\n      - metabase_data:/var/lib/postgresql/data\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U metabase\"]\n      interval: 10s\n      timeout: 5s\n      retries: 5\n    restart: unless-stopped\n\nvolumes:\n  metabase_data:",
+      en: "# docker-compose.yml \u2013 Self-Hosted Metabase + PostgreSQL\n# Compose Spec (v2) \u2013 'version' key is deprecated\nservices:\n  metabase:\n    image: metabase/metabase:v0.63.13   # pin the version!\n    ports:\n      - \"3000:3000\"\n    environment:\n      MB_DB_TYPE: postgres\n      MB_DB_DBNAME: metabase\n      MB_DB_HOST: postgres\n      MB_DB_USER: metabase\n      MB_DB_PASS: ${POSTGRES_PASSWORD}   # a single variable for both containers!\n    depends_on:\n      postgres:\n        condition: service_healthy\n    restart: unless-stopped\n\n  postgres:\n    image: postgres:17-alpine\n    environment:\n      POSTGRES_USER: metabase\n      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # from the .env file!\n      POSTGRES_DB: metabase\n    volumes:\n      - metabase_data:/var/lib/postgresql/data\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U metabase\"]\n      interval: 10s\n      timeout: 5s\n      retries: 5\n    restart: unless-stopped\n\nvolumes:\n  metabase_data:",
+    };
 
-    const codeEnvFile = "# .env (im selben Verzeichnis wie docker-compose.yml)\n# Diese Datei NIE ins Git-Repo committen -> in .gitignore aufnehmen!\nPOSTGRES_PASSWORD=EinSicheresPasswort123!";
+    const codeEnvFile = {
 
-    const codeBashDocker = "# .env-Datei aus dem Block oben anlegen (Passwort anpassen!):\nnano .env      # oder: notepad .env / code .env\n\n# Stack starten:\ndocker compose up -d\n\n# Status pr\u00fcfen:\ndocker compose ps\n\n# Logs anzeigen:\ndocker compose logs -f metabase\n\n# Zugriff: http://localhost:3000\n# Erster Start: Einrichtungsassistent \u00f6ffnet sich";
+      de: "# .env (im selben Verzeichnis wie docker-compose.yml)\n# Diese Datei NIE ins Git-Repo committen -> in .gitignore aufnehmen!\nPOSTGRES_PASSWORD=EinSicheresPasswort123!",
+
+      en: "# .env (in the same directory as docker-compose.yml)\n# NEVER commit this file to the Git repo -> add it to .gitignore!\nPOSTGRES_PASSWORD=AStrongPassword123!",
+
+    };
+
+    const codeBashDocker = {
+
+      de: "# .env-Datei aus dem Block oben anlegen (Passwort anpassen!):\nnano .env      # oder: notepad .env / code .env\n\n# Stack starten:\ndocker compose up -d\n\n# Status pr\u00fcfen:\ndocker compose ps\n\n# Logs anzeigen:\ndocker compose logs -f metabase\n\n# Zugriff: http://localhost:3000\n# Erster Start: Einrichtungsassistent \u00f6ffnet sich",
+
+      en: "# Create the .env file from the block above (change the password!):\nnano .env      # or: notepad .env / code .env\n\n# Start the stack:\ndocker compose up -d\n\n# Check status:\ndocker compose ps\n\n# View logs:\ndocker compose logs -f metabase\n\n# Access: http://localhost:3000\n# First start: the setup wizard opens",
+
+    };
 
     const doneCount = checkedItems.filter(Boolean).length;
 
@@ -835,14 +868,14 @@
             <h2>{c.s5Title}</h2>
             <div className="bauhaus-accent-line"></div>
             <p>{c.s5Intro}</p>
-            <CodeBlock code={codeDockerCompose} lang={lang} />
+            <CodeBlock code={codeDockerCompose[lang]} lang={lang} kind="run" />
             <h4 style={{ marginTop: '1.5rem' }}>.env</h4>
-            <CodeBlock code={codeEnvFile} lang={lang} />
+            <CodeBlock code={codeEnvFile[lang]} lang={lang} kind="run" />
             <div className="tip-box">
               <strong>Tipp:</strong> {c.s5TipText}
             </div>
             <p style={{ marginTop: '1.5rem' }}>{c.s5BashIntro}</p>
-            <CodeBlock code={codeBashDocker} lang={lang} />
+            <CodeBlock code={codeBashDocker[lang]} lang={lang} kind="run" />
             <div className="concept-box" style={{ marginTop: '1.5rem' }}>
               <h4 style={{ marginTop: 0 }}>{c.s5SecurityTitle}</h4>
               <ul style={{ margin: 0, paddingLeft: '1.25rem', lineHeight: '2' }}>

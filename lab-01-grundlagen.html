@@ -102,6 +102,14 @@
 
     /* Tables */
     table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+    /* ── Kennzeichnung kopierbarer Codebloecke ───────────────────────────────
+       Jeder Block sagt, ob er in einer frischen Umgebung so laeuft ("run")
+       oder ob er ein Konzeptsnippet mit Platzhalternamen ist ("concept"). */
+    .code-tag { display: inline-block; font-family: 'Space Grotesk', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 0.25rem 0.65rem; border-radius: 5px 5px 0 0; }
+    .code-tag-run { background: #065F46; color: #fff; }
+    .code-tag-concept { background: #92400E; color: #fff; }
+    .code-tag + .code-block { border-radius: 0 8px 8px 0; margin-top: 0; }
+    .code-note { font-size: 0.78rem; color: #4B5563; margin: 0.35rem 0 0; line-height: 1.55; }
     /* ── Quiz: zweiter Versuch statt Einmal-Sperre ───────────────────────────
        Eine falsche Antwort sperrt die Frage nicht mehr. Die Loesung wird erst
        gezeigt, wenn sie getroffen oder ausdruecklich angefordert wurde. */
@@ -202,7 +210,7 @@
     const { useState, useEffect } = React;
 
     // ─── CodeBlock Component ──────────────────────────────────────────────────
-    function CodeBlock({ code, language, lang }) {
+    function CodeBlock({ code, language, lang, kind, note }) {
       const [copied, setCopied] = React.useState(false);
       const copy = () => {
         navigator.clipboard.writeText(code).then(() => {
@@ -221,7 +229,17 @@
       };
       return (
         <div style={{ position: 'relative', marginBottom: '1rem' }}>
+          {kind && (
+            <div className={'code-tag ' + (kind === 'run' ? 'code-tag-run' : 'code-tag-concept')}>
+              {kind === 'run'
+                ? (lang === 'en' ? 'Runnable as-is' : 'L\u00E4uft unver\u00E4ndert')
+                : kind === 'diagram'
+                  ? (lang === 'en' ? 'Schema \u2013 not code' : 'Schema \u2013 kein Code')
+                  : (lang === 'en' ? 'Concept \u2013 placeholder names' : 'Konzept \u2013 Platzhalternamen')}
+            </div>
+          )}
           <pre className="code-block">{code}</pre>
+          {note && <p className="code-note">{note}</p>}
           <button onClick={copy} style={{
             position: 'absolute', top: '0.5rem', right: '0.5rem',
             background: copied ? '#059669' : '#E5E7EB',
@@ -875,7 +893,7 @@
               <div className="bauhaus-accent-line"></div>
               <p>{tx.s2Desc}</p>
 
-              <CodeBlock code={tx.s2DiagramCode} lang={lang} />
+              <CodeBlock code={tx.s2DiagramCode} lang={lang} kind="diagram" />
 
               <h3 style={{ marginTop: '2rem' }}>{tx.s2LayersTitle}</h3>
               {tx.s2Layers.map((layer, i) => (

@@ -95,6 +95,14 @@
 
     /* Tables */
     table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+    /* ── Kennzeichnung kopierbarer Codebloecke ───────────────────────────────
+       Jeder Block sagt, ob er in einer frischen Umgebung so laeuft ("run")
+       oder ob er ein Konzeptsnippet mit Platzhalternamen ist ("concept"). */
+    .code-tag { display: inline-block; font-family: 'Space Grotesk', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 0.25rem 0.65rem; border-radius: 5px 5px 0 0; }
+    .code-tag-run { background: #065F46; color: #fff; }
+    .code-tag-concept { background: #92400E; color: #fff; }
+    .code-tag + .code-block { border-radius: 0 8px 8px 0; margin-top: 0; }
+    .code-note { font-size: 0.78rem; color: #4B5563; margin: 0.35rem 0 0; line-height: 1.55; }
     /* ── Quiz: zweiter Versuch statt Einmal-Sperre ───────────────────────────
        Eine falsche Antwort sperrt die Frage nicht mehr. Die Loesung wird erst
        gezeigt, wenn sie getroffen oder ausdruecklich angefordert wurde. */
@@ -191,7 +199,7 @@
     const { useState, useEffect } = React;
 
     // ─── CodeBlock Component ──────────────────────────────────────────────────
-    function CodeBlock({ code, lang }) {
+    function CodeBlock({ code, lang, kind, note }) {
       const [copied, setCopied] = React.useState(false);
       const copy = () => {
         navigator.clipboard.writeText(code).then(() => {
@@ -212,7 +220,17 @@
       const labelDone = lang === 'en' ? '\u2713 Copied' : '\u2713 Kopiert';
       return (
         <div style={{ position: 'relative', marginBottom: '1rem' }}>
+          {kind && (
+            <div className={'code-tag ' + (kind === 'run' ? 'code-tag-run' : 'code-tag-concept')}>
+              {kind === 'run'
+                ? (lang === 'en' ? 'Runnable as-is' : 'L\u00E4uft unver\u00E4ndert')
+                : kind === 'diagram'
+                  ? (lang === 'en' ? 'Schema \u2013 not code' : 'Schema \u2013 kein Code')
+                  : (lang === 'en' ? 'Concept \u2013 placeholder names' : 'Konzept \u2013 Platzhalternamen')}
+            </div>
+          )}
           <pre className="code-block">{code}</pre>
+          {note && <p className="code-note">{note}</p>}
           <button onClick={copy} style={{
             position: 'absolute', top: '0.5rem', right: '0.5rem',
             background: copied ? '#059669' : '#E5E7EB',
@@ -316,7 +334,8 @@
     }
 
     // ─── Code Strings ─────────────────────────────────────────────────────────
-    const CODE_PX_BAR = `import plotly.express as px
+    const CODE_PX_BAR = {
+      de: `import plotly.express as px
 import pandas as pd
 
 df = pd.read_csv('train.csv', encoding='latin-1')
@@ -334,9 +353,36 @@ fig.update_layout(
     paper_bgcolor='white',
     font_family='Space Grotesk'  # Font muss via Google Fonts geladen sein; lokal ggf. weglassen
 )
-fig.show()`;
+fig.show()`,
+      en: `import plotly.express as px
+import pandas as pd
 
-    const CODE_PX_LINE = `# Umsatz-Trend über Zeit (Linie)
+df = pd.read_csv('train.csv', encoding='latin-1')
+
+# Revenue by category (bar chart)
+fig = px.bar(
+    df.groupby('Category')['Sales'].sum().reset_index(),
+    x='Category',
+    y='Sales',
+    title='Revenue by category',
+    color_discrete_sequence=['#2563EB']
+)
+fig.update_layout(
+    plot_bgcolor='white',
+    paper_bgcolor='white',
+    font_family='Space Grotesk'  # font must be loaded via Google Fonts; drop it locally if unavailable
+)
+fig.show()`,
+    };
+
+    const CODE_PX_LINE = {
+
+      de: `import plotly.express as px
+import pandas as pd
+
+df = pd.read_csv('train.csv', encoding='latin-1')
+
+# Umsatz-Trend über Zeit (Linie)
 # dayfirst=True ist Pflicht: die Daten liegen als TT/MM/JJJJ vor.
 # Ohne den Parameter bricht pandas ab, sobald der Tag > 12 ist.
 df['Order Date'] = pd.to_datetime(df['Order Date'], dayfirst=True)
@@ -349,9 +395,38 @@ fig2 = px.line(
     y='Sales',
     title='Monatlicher Umsatz-Trend'
 )
-fig2.show()`;
+fig2.show()`,
 
-    const CODE_PX_SCATTER = `# Scatter: Umsatz vs. Bestellanzahl je Sub-Kategorie
+      en: `import plotly.express as px
+import pandas as pd
+
+df = pd.read_csv('train.csv', encoding='latin-1')
+
+# Revenue trend over time (line)
+# dayfirst=True is mandatory: the data is stored as DD/MM/YYYY.
+# Without it pandas fails as soon as the day exceeds 12.
+df['Order Date'] = pd.to_datetime(df['Order Date'], dayfirst=True)
+monthly = df.groupby(df['Order Date'].dt.to_period('M'))['Sales'].sum().reset_index()
+monthly['Order Date'] = monthly['Order Date'].astype(str)
+
+fig2 = px.line(
+    monthly,
+    x='Order Date',
+    y='Sales',
+    title='Monthly revenue trend'
+)
+fig2.show()`,
+
+    };
+
+    const CODE_PX_SCATTER = {
+
+      de: `import plotly.express as px
+import pandas as pd
+
+df = pd.read_csv('train.csv', encoding='latin-1')
+
+# Scatter: Umsatz vs. Bestellanzahl je Sub-Kategorie
 # Der Datensatz enthaelt als einzige Kennzahl 'Sales'. Eine zweite
 # Dimension gewinnt man durch Aggregation - hier die Zahl der Positionen.
 by_sub = df.groupby(['Category', 'Sub-Category']).agg(
@@ -369,9 +444,38 @@ fig3 = px.scatter(
     title='Umsatz vs. Bestellpositionen je Sub-Kategorie'
 )
 fig3.update_traces(textposition='top center')
-fig3.show()`;
+fig3.show()`,
 
-    const CODE_DASH_APP = `# app.py – Vollständiges Dash-Dashboard
+      en: `import plotly.express as px
+import pandas as pd
+
+df = pd.read_csv('train.csv', encoding='latin-1')
+
+# Scatter: revenue vs. number of line items per sub-category
+# The dataset carries 'Sales' as its only measure. A second
+# dimension comes from aggregation - here the number of line items.
+by_sub = df.groupby(['Category', 'Sub-Category']).agg(
+    Revenue=('Sales', 'sum'),
+    LineItems=('Order ID', 'count')
+).reset_index()
+
+fig3 = px.scatter(
+    by_sub,
+    x='LineItems',
+    y='Revenue',
+    color='Category',
+    text='Sub-Category',
+    size='Revenue',
+    title='Revenue vs. line items per sub-category'
+)
+fig3.update_traces(textposition='top center')
+fig3.show()`,
+
+    };
+
+    const CODE_DASH_APP = {
+
+      de: `# app.py – Vollständiges Dash-Dashboard
 import dash
 from dash import dcc, html, Input, Output
 import plotly.express as px
@@ -438,16 +542,104 @@ def update_scatter(category):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)`;
+    app.run(debug=True)`,
 
-    const CODE_INSTALL = `pip install dash plotly pandas gunicorn
+      en: `# app.py - complete Dash dashboard
+import dash
+from dash import dcc, html, Input, Output
+import plotly.express as px
+import pandas as pd
+
+app = dash.Dash(__name__)
+server = app.server  # required for gunicorn app:server
+df = pd.read_csv('train.csv', encoding='latin-1')
+
+app.layout = html.Div([
+    html.H1('Sales Dashboard', style={'fontFamily': 'Space Grotesk', 'color': '#1E3A8A'}),
+
+    html.Label('Select category:'),
+    dcc.Dropdown(
+        id='category-filter',
+        options=[{'label': c, 'value': c} for c in df['Category'].unique()],
+        value=df['Category'].unique()[0],
+        clearable=False
+    ),
+
+    dcc.Graph(id='subcategory-chart'),
+    dcc.Graph(id='orders-scatter')
+], style={'maxWidth': '1200px', 'margin': '0 auto', 'padding': '2rem'})
+
+
+@app.callback(
+    Output('subcategory-chart', 'figure'),
+    Input('category-filter', 'value')
+)
+def update_bar(category):
+    filtered = df[df['Category'] == category]
+    sales_by_sub = filtered.groupby('Sub-Category')['Sales'].sum().reset_index()
+    fig = px.bar(
+        sales_by_sub,
+        x='Sub-Category',
+        y='Sales',
+        title=f'Revenue by sub-category: {category}',
+        color_discrete_sequence=['#2563EB']
+    )
+    return fig
+
+
+@app.callback(
+    Output('orders-scatter', 'figure'),
+    Input('category-filter', 'value')
+)
+def update_scatter(category):
+    filtered = df[df['Category'] == category]
+    by_sub = filtered.groupby('Sub-Category').agg(
+        Revenue=('Sales', 'sum'),
+        LineItems=('Order ID', 'count')
+    ).reset_index()
+    fig = px.scatter(
+        by_sub,
+        x='LineItems',
+        y='Revenue',
+        text='Sub-Category',
+        size='Revenue',
+        title=f'Revenue vs. line items: {category}',
+        color_discrete_sequence=['#0D9488']
+    )
+    fig.update_traces(textposition='top center')
+    return fig
+
+
+if __name__ == '__main__':
+    app.run(debug=True)`,
+
+    };
+
+    const CODE_INSTALL = {
+
+      de: `pip install dash plotly pandas gunicorn
 python app.py
-# Öffne http://localhost:8050`;
+# Öffne http://localhost:8050`,
 
-    const CODE_GUNICORN = `# Starten mit Gunicorn (Production)
+      en: `pip install dash plotly pandas gunicorn
+python app.py
+# Open http://localhost:8050`,
+
+    };
+
+    const CODE_GUNICORN = {
+
+      de: `# Starten mit Gunicorn (Production)
 # gunicorn bedient app:server - das ist die Flask-Instanz
 # aus "server = app.server" in app.py.
-gunicorn app:server -b 0.0.0.0:8050 --workers 2`;
+gunicorn app:server -b 0.0.0.0:8050 --workers 2`,
+
+      en: `# Start with Gunicorn (production)
+# gunicorn serves app:server - that is the Flask instance
+# from "server = app.server" in app.py.
+gunicorn app:server -b 0.0.0.0:8050 --workers 2`,
+
+    };
 
     // Wird vom Dockerfile mit "COPY requirements.txt ." erwartet - muss also existieren.
     const CODE_REQUIREMENTS = `# requirements.txt
@@ -530,6 +722,8 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
         s2Desc: 'Plotly Express ist eine High-Level Python-Bibliothek für interaktive Charts. Mit wenigen Zeilen Code entstehen publikationsreife Visualisierungen, die im Browser als interaktive HTML-Grafiken dargestellt werden.',
         dataTitle: 'Datensatz für alle Beispiele',
         dataText: 'Alle Codebeispiele in diesem Lab arbeiten mit train.csv aus dem Superstore Sales Dataset (Kaggle, GPL 2): 9.800 Bestellpositionen, 2015\u20132018. Legen Sie die Datei in dasselbe Verzeichnis wie Ihr Skript. Achtung: Die Datumsspalten liegen als TT/MM/JJJJ vor \u2013 deshalb dayfirst=True beim Parsen. Eine Profit-Spalte gibt es in dieser Variante nicht; einzige Kennzahl ist Sales.',
+        runNoteCsv: 'Voraussetzung: pip install plotly pandas, train.csv im selben Verzeichnis. Der Block \u00F6ffnet eine Figur im Browser \u2013 kommt keine, fehlt meist der Aufruf fig.show() in einer nicht-interaktiven Umgebung.',
+        runNoteApp: 'Voraussetzung: pip install dash plotly pandas, train.csv im selben Verzeichnis. Als app.py speichern und mit python app.py starten. Sollzustand: Konsole meldet Running on http://127.0.0.1:8050, die Seite zeigt vier KPI-Karten mit Gesamtumsatz 2.261.536,78 und 4.922 Bestellungen.',
         dataDirect: '\u2193 train.csv herunterladen',
         dataKaggle: 'Quelle auf Kaggle \u2197',
         s2Code1Title: 'Balkendiagramm: Umsatz nach Kategorie',
@@ -573,7 +767,7 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
         s3ReqDesc: 'Legen Sie zuerst die requirements.txt neben app.py an – das Dockerfile kopiert sie im nächsten Schritt und bricht ohne sie ab:',
         s3TraefikTitle: 'Traefik',
         s3TraefikDesc: 'Automatisches HTTPS + Routing \u2013 kein manuelles nginx n\u00F6tig. Genau dieser Stack l\u00E4uft auf den Live-Dashboards der Kurs-Seite.',
-        s3ColabNote: 'Google Colab: Den vollst\u00E4ndigen Code kannst du direkt in Google Colab ausf\u00FChren \u2013 ohne lokale Installation, kostenlos im Browser. Notebooks werden in K\u00FCrze verf\u00FCgbar.',
+        s3ColabNote: 'Google Colab: Den Code oben kannst du in ein leeres Colab-Notebook einf\u00FCgen und dort ausf\u00FChren \u2013 ohne lokale Installation, kostenlos im Browser. Lade train.csv vorher \u00FCber das Dateisymbol links in die Sitzung hoch, sonst findet pandas die Datei nicht. Dash-Apps laufen in Colab nur eingeschr\u00E4nkt; f\u00FCr Schritt\u00A04 ist eine lokale Umgebung der einfachere Weg.',
 
         s5Title: 'YouTube-Ressourcen',
         s5Desc: 'Empfohlene Kan\u00E4le zur Vertiefung von Plotly und Dash:',
@@ -718,6 +912,8 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
         s2Desc: 'Plotly Express is a high-level Python library for interactive charts. With just a few lines of code you can create publication-ready visualizations displayed as interactive HTML graphics in the browser.',
         dataTitle: 'Dataset for all examples',
         dataText: 'Every code example in this lab uses train.csv from the Superstore Sales Dataset (Kaggle, GPL 2): 9,800 order line items, 2015\u20132018. Place the file in the same directory as your script. Note: the date columns are DD/MM/YYYY, hence dayfirst=True when parsing. This variant has no Profit column; Sales is the only measure.',
+        runNoteCsv: 'Prerequisites: pip install plotly pandas, train.csv in the same directory. The block opens a figure in the browser \u2013 if none appears, fig.show() is usually missing in a non-interactive environment.',
+        runNoteApp: 'Prerequisites: pip install dash plotly pandas, train.csv in the same directory. Save as app.py and run python app.py. Expected state: the console reports Running on http://127.0.0.1:8050 and the page shows four KPI cards with total revenue 2,261,536.78 and 4,922 orders.',
         dataDirect: '\u2193 Download train.csv',
         dataKaggle: 'Source on Kaggle \u2197',
         s2Code1Title: 'Bar Chart: Revenue by Category',
@@ -761,7 +957,7 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
         s3ReqDesc: 'Create requirements.txt next to app.py first – the Dockerfile copies it in the next step and fails without it:',
         s3TraefikTitle: 'Traefik',
         s3TraefikDesc: 'Automatic HTTPS + routing \u2013 no manual nginx required. This exact stack powers the live dashboards on the course page.',
-        s3ColabNote: 'Google Colab: Run the complete code directly in Google Colab \u2013 no local installation, free in the browser. Notebooks will be available shortly.',
+        s3ColabNote: 'Google Colab: paste the code above into an empty Colab notebook and run it there \u2013 no local installation, free in the browser. Upload train.csv to the session via the file icon on the left first, otherwise pandas will not find it. Dash apps only run with limitations in Colab; for step\u00A04 a local environment is the simpler route.',
 
         s5Title: 'YouTube Resources',
         s5Desc: 'Recommended channels for deepening your knowledge of Plotly and Dash:',
@@ -1015,13 +1211,13 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
               </div>
 
               <h3 style={{ marginTop: '1.5rem' }}>{tx.s2Code1Title}</h3>
-              <CodeBlock code={CODE_PX_BAR} lang={lang} />
+              <CodeBlock code={CODE_PX_BAR[lang]} lang={lang} kind="run" note={tx.runNoteCsv} />
 
               <h3 style={{ marginTop: '1.5rem' }}>{tx.s2Code2Title}</h3>
-              <CodeBlock code={CODE_PX_LINE} lang={lang} />
+              <CodeBlock code={CODE_PX_LINE[lang]} lang={lang} kind="run" note={tx.runNoteCsv} />
 
               <h3 style={{ marginTop: '1.5rem' }}>{tx.s2Code3Title}</h3>
-              <CodeBlock code={CODE_PX_SCATTER} lang={lang} />
+              <CodeBlock code={CODE_PX_SCATTER[lang]} lang={lang} kind="run" note={tx.runNoteCsv} />
             </section>
 
             {/* ── Section 3: Plotly Dash ── */}
@@ -1041,14 +1237,14 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
               </div>
 
               <h3 style={{ marginTop: '2rem' }}>{tx.s3AppTitle}</h3>
-              <CodeBlock code={CODE_DASH_APP} lang={lang} />
+              <CodeBlock code={CODE_DASH_APP[lang]} lang={lang} kind="run" note={tx.runNoteApp} />
 
               <h3 style={{ marginTop: '1.5rem' }}>{tx.s3InstallTitle}</h3>
               <div className="install-box">
                 <p style={{ margin: '0 0 0.5rem', fontWeight: 700, color: '#065F46', fontSize: '0.85rem', fontFamily: "'Space Grotesk', sans-serif" }}>
                   {'Terminal'}
                 </p>
-                <CodeBlock code={CODE_INSTALL} lang={lang} />
+                <CodeBlock code={CODE_INSTALL[lang]} lang={lang} kind="run" />
               </div>
 
               {/* Google Colab note */}
@@ -1063,13 +1259,13 @@ CMD ["gunicorn", "app:server", "-b", "0.0.0.0:8050", "--workers", "2"]`;
 
               <h4 style={{ marginTop: '1.5rem', color: 'var(--col-primary)' }}>{tx.s3GunicornTitle}</h4>
               <p style={{ margin: '0.25rem 0 0.5rem', fontSize: '0.9rem', color: '#374151' }}>{tx.s3GunicornDesc}</p>
-              <CodeBlock code={CODE_GUNICORN} lang={lang} />
+              <CodeBlock code={CODE_GUNICORN[lang]} lang={lang} kind="run" />
 
               <h4 style={{ marginTop: '1.5rem', color: 'var(--col-primary)' }}>{tx.s3DockerTitle}</h4>
               <p style={{ margin: '0.25rem 0 0.5rem', fontSize: '0.9rem', color: '#374151' }}>{tx.s3DockerDesc}</p>
               <p style={{ margin: '0.25rem 0 0.5rem', fontSize: '0.9rem', color: '#374151' }}>{tx.s3ReqDesc}</p>
-              <CodeBlock code={CODE_REQUIREMENTS} lang={lang} />
-              <CodeBlock code={CODE_DOCKERFILE} lang={lang} />
+              <CodeBlock code={CODE_REQUIREMENTS} lang={lang} kind="run" />
+              <CodeBlock code={CODE_DOCKERFILE} lang={lang} kind="run" />
 
               <div className="tip-box" style={{ marginTop: '1rem' }}>
                 <strong style={{ color: 'var(--col-primary)' }}>{tx.s3TraefikTitle}:</strong>{' '}

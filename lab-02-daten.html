@@ -94,6 +94,14 @@
 
     /* Tables */
     table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+    /* ── Kennzeichnung kopierbarer Codebloecke ───────────────────────────────
+       Jeder Block sagt, ob er in einer frischen Umgebung so laeuft ("run")
+       oder ob er ein Konzeptsnippet mit Platzhalternamen ist ("concept"). */
+    .code-tag { display: inline-block; font-family: 'Space Grotesk', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 0.25rem 0.65rem; border-radius: 5px 5px 0 0; }
+    .code-tag-run { background: #065F46; color: #fff; }
+    .code-tag-concept { background: #92400E; color: #fff; }
+    .code-tag + .code-block { border-radius: 0 8px 8px 0; margin-top: 0; }
+    .code-note { font-size: 0.78rem; color: #4B5563; margin: 0.35rem 0 0; line-height: 1.55; }
     /* ── Quiz: zweiter Versuch statt Einmal-Sperre ───────────────────────────
        Eine falsche Antwort sperrt die Frage nicht mehr. Die Loesung wird erst
        gezeigt, wenn sie getroffen oder ausdruecklich angefordert wurde. */
@@ -202,7 +210,7 @@
     const { useState, useEffect } = React;
 
     // ─── CodeBlock Component ──────────────────────────────────────────────────
-    function CodeBlock({ code, lang }) {
+    function CodeBlock({ code, lang, kind, note }) {
       const [copied, setCopied] = React.useState(false);
       const copy = () => {
         navigator.clipboard.writeText(code).then(() => {
@@ -221,7 +229,17 @@
       };
       return (
         <div style={{ position: 'relative', marginBottom: '1rem' }}>
+          {kind && (
+            <div className={'code-tag ' + (kind === 'run' ? 'code-tag-run' : 'code-tag-concept')}>
+              {kind === 'run'
+                ? (lang === 'en' ? 'Runnable as-is' : 'L\u00E4uft unver\u00E4ndert')
+                : kind === 'diagram'
+                  ? (lang === 'en' ? 'Schema \u2013 not code' : 'Schema \u2013 kein Code')
+                  : (lang === 'en' ? 'Concept \u2013 placeholder names' : 'Konzept \u2013 Platzhalternamen')}
+            </div>
+          )}
           <pre className="code-block">{code}</pre>
+          {note && <p className="code-note">{note}</p>}
           <button onClick={copy} style={{
             position: 'absolute', top: '0.5rem', right: '0.5rem',
             background: copied ? '#059669' : '#E5E7EB',
@@ -375,6 +393,10 @@
         s1PythonTitle: 'Daten laden in Python',
         s1PythonDesc: 'Mit pandas und der requests-Bibliothek k\u00F6nnen alle g\u00E4ngigen Datenquellen eingelesen werden:',
         s1CodePython: '# Python: Daten laden\nimport pandas as pd\nimport requests\n\n# CSV laden\ndf = pd.read_csv(\'daten.csv\')\n\n# Excel laden\ndf_excel = pd.read_excel(\'bericht.xlsx\', sheet_name=\'Umsatz\')\n\n# REST API laden\nresponse = requests.get(\'https://api.example.com/sales\')\ndf_api = pd.json_normalize(response.json()[\'data\'])  # Key je nach API verschieden \u2013 z.B. [\'results\'], [\'items\']\n\nprint(df.head())\nprint(df.shape)   # (Zeilen, Spalten)',
+        s1CodeNote: 'Dieser Block zeigt das Muster, nicht den Kursdatensatz: daten.csv, bericht.xlsx und api.example.com existieren nicht. So kopiert erzeugt er File- und Netzwerkfehler. Die lauff\u00E4hige Fassung mit train.csv steht direkt darunter.',
+        s1RunTitle: 'Dasselbe Muster, lauff\u00E4hig mit train.csv',
+        s1CodePythonRun: "# Dieselben drei Quellen, aber mit dem Kursdatensatz statt Platzhaltern.\n# train.csv liegt im selben Verzeichnis wie dieses Skript.\nimport pandas as pd\n\n# 1. CSV laden\ndf = pd.read_csv('train.csv', encoding='latin-1')\n\n# 2. Datum: die Datei nutzt TT/MM/JJJJ -> dayfirst=True ist Pflicht,\n#    sonst bricht das Parsen ab, sobald der Tag groesser als 12 ist.\ndf['Order Date'] = pd.to_datetime(df['Order Date'], dayfirst=True)\n\n# 3. Struktur und Qualitaet pruefen\nprint(df.shape)                            # (9800, 18)\nprint(round(df['Sales'].sum(), 2))         # 2261536.78\nprint(df['Order ID'].nunique())            # 4922\nprint(df.isnull().sum()[lambda s: s > 0])  # Postal Code    11",
+        s1RunNote: 'Voraussetzung: pandas installiert, train.csv im selben Verzeichnis (Download in Lab\u00A004). Sollausgabe: (9800, 18) \u00B7 2261536.78 \u00B7 4922 \u00B7 Postal Code 11. Weichen die Zahlen ab, wurde meist dayfirst=True vergessen.',
 
         s2Title: 'Datenmodellierung',
         s2Desc: 'Ein gutes Datenmodell ist entscheidend f\u00FCr die Performance und Verst\u00E4ndlichkeit eines BI-Systems. Das Star Schema ist das verbreitetste Modell im Data Warehousing.',
@@ -414,6 +436,7 @@
         ],
         s3PandasTitle: 'Datenqualit\u00E4t pr\u00FCfen & bereinigen mit Pandas',
         s3CodePandas: '# Datenqualit\u00E4t pr\u00FCfen\ndf.isnull().sum()          # Nullwerte pr\u00FCfen\ndf.duplicated().sum()      # Duplikate z\u00E4hlen\nprint(df.dtypes)           # Datentypen anzeigen\n\n# Bereinigen\ndf_clean = df.drop_duplicates()\ndf_clean = df_clean.dropna(subset=[\'Umsatz\'])\ndf_clean[\'Datum\'] = pd.to_datetime(df_clean[\'Datum\'])\ndf_clean[\'Land\'] = df_clean[\'Land\'].str.strip().str.upper()\n\n# Zusammenfassung\nprint(f"Zeilen original: {len(df)}")\nprint(f"Zeilen bereinigt: {len(df_clean)}")\nprint(f"Entfernt: {len(df) - len(df_clean)}")',
+        s3CodeNote: 'Konzeptsnippet mit Platzhalterspalten (Umsatz, Datum, Land). Auf train.csv angewandt heissen die Spalten Sales, Order Date und State.',
         s3PowerBITitle: 'Datenqualit\u00E4t in Power BI',
         s3PowerBIText: 'Im Power Query Editor (Home \u2192 Daten transformieren) stehen folgende Werkzeuge zur Verf\u00FCgung:',
         s3PowerBISteps: [
@@ -578,6 +601,10 @@
         s1PythonTitle: 'Loading Data in Python',
         s1PythonDesc: 'With pandas and the requests library, all common data sources can be read:',
         s1CodePython: '# Python: Load data\nimport pandas as pd\nimport requests\n\n# Load CSV\ndf = pd.read_csv(\'data.csv\')\n\n# Load Excel\ndf_excel = pd.read_excel(\'report.xlsx\', sheet_name=\'Revenue\')\n\n# Load REST API\nresponse = requests.get(\'https://api.example.com/sales\')\ndf_api = pd.json_normalize(response.json()[\'data\'])  # Key varies by API \u2013 e.g. [\'results\'], [\'items\']\n\nprint(df.head())\nprint(df.shape)   # (rows, columns)',
+        s1CodeNote: 'This block shows the pattern, not the course dataset: data.csv, report.xlsx and api.example.com do not exist. Copied as-is it produces file and network errors. The runnable version using train.csv follows directly below.',
+        s1RunTitle: 'The same pattern, runnable with train.csv',
+        s1CodePythonRun: "# The same three sources, but with the course dataset instead of placeholders.\n# train.csv sits in the same directory as this script.\nimport pandas as pd\n\n# 1. Load CSV\ndf = pd.read_csv('train.csv', encoding='latin-1')\n\n# 2. Dates: the file uses DD/MM/YYYY -> dayfirst=True is mandatory,\n#    otherwise parsing breaks as soon as the day exceeds 12.\ndf['Order Date'] = pd.to_datetime(df['Order Date'], dayfirst=True)\n\n# 3. Check structure and quality\nprint(df.shape)                            # (9800, 18)\nprint(round(df['Sales'].sum(), 2))         # 2261536.78\nprint(df['Order ID'].nunique())            # 4922\nprint(df.isnull().sum()[lambda s: s > 0])  # Postal Code    11",
+        s1RunNote: 'Prerequisites: pandas installed, train.csv in the same directory (download in Lab\u00A004). Expected output: (9800, 18) \u00B7 2261536.78 \u00B7 4922 \u00B7 Postal Code 11. If the numbers differ, dayfirst=True was usually forgotten.',
 
         s2Title: 'Data Modelling',
         s2Desc: 'A good data model is crucial for the performance and comprehensibility of a BI system. The star schema is the most common model in data warehousing.',
@@ -617,6 +644,7 @@
         ],
         s3PandasTitle: 'Check & Clean Data Quality with Pandas',
         s3CodePandas: '# Check data quality\ndf.isnull().sum()          # Check null values\ndf.duplicated().sum()      # Count duplicates\nprint(df.dtypes)           # Show data types\n\n# Clean\ndf_clean = df.drop_duplicates()\ndf_clean = df_clean.dropna(subset=[\'Revenue\'])\ndf_clean[\'Date\'] = pd.to_datetime(df_clean[\'Date\'])\ndf_clean[\'Country\'] = df_clean[\'Country\'].str.strip().str.upper()\n\n# Summary\nprint(f"Rows original: {len(df)}")\nprint(f"Rows cleaned: {len(df_clean)}")\nprint(f"Removed: {len(df) - len(df_clean)}")',
+        s3CodeNote: 'Concept snippet with placeholder columns (Revenue, Date, Country). Applied to train.csv the columns are Sales, Order Date and State.',
         s3PowerBITitle: 'Data Quality in Power BI',
         s3PowerBIText: 'In the Power Query Editor (Home \u2192 Transform Data) the following tools are available:',
         s3PowerBISteps: [
@@ -842,7 +870,9 @@
 
               <h3 style={{ marginTop: '2rem' }}>{tx.s1PythonTitle}</h3>
               <p style={{ marginBottom: '0.5rem' }}>{tx.s1PythonDesc}</p>
-              <CodeBlock code={tx.s1CodePython} lang={lang} />
+              <CodeBlock code={tx.s1CodePython} lang={lang} kind="concept" note={tx.s1CodeNote} />
+              <h4 style={{ marginTop: '1.5rem' }}>{tx.s1RunTitle}</h4>
+              <CodeBlock code={tx.s1CodePythonRun} lang={lang} kind="run" note={tx.s1RunNote} />
             </section>
 
             {/* ── Section 2: Datenmodellierung ── */}
@@ -854,7 +884,7 @@
               <h3 style={{ marginTop: '1.5rem' }}>{tx.s2StarTitle}</h3>
               <p>{tx.s2StarDesc}</p>
 
-              <CodeBlock code={tx.s2DiagramCode} lang={lang} />
+              <CodeBlock code={tx.s2DiagramCode} lang={lang} kind="diagram" />
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', margin: '1.5rem 0' }}>
                 <div className="concept-box" style={{ margin: 0 }}>
@@ -934,7 +964,7 @@
               </div>
 
               <h3 style={{ marginTop: '2rem' }}>{tx.s3PandasTitle}</h3>
-              <CodeBlock code={tx.s3CodePandas} lang={lang} />
+              <CodeBlock code={tx.s3CodePandas} lang={lang} kind="concept" note={tx.s3CodeNote} />
 
               <h3 style={{ marginTop: '2rem' }}>{tx.s3PowerBITitle}</h3>
               <div className="concept-box">

@@ -94,6 +94,14 @@
 
     /* Tables */
     table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+    /* ── Kennzeichnung kopierbarer Codebloecke ───────────────────────────────
+       Jeder Block sagt, ob er in einer frischen Umgebung so laeuft ("run")
+       oder ob er ein Konzeptsnippet mit Platzhalternamen ist ("concept"). */
+    .code-tag { display: inline-block; font-family: 'Space Grotesk', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 0.25rem 0.65rem; border-radius: 5px 5px 0 0; }
+    .code-tag-run { background: #065F46; color: #fff; }
+    .code-tag-concept { background: #92400E; color: #fff; }
+    .code-tag + .code-block { border-radius: 0 8px 8px 0; margin-top: 0; }
+    .code-note { font-size: 0.78rem; color: #4B5563; margin: 0.35rem 0 0; line-height: 1.55; }
     /* ── Quiz: zweiter Versuch statt Einmal-Sperre ───────────────────────────
        Eine falsche Antwort sperrt die Frage nicht mehr. Die Loesung wird erst
        gezeigt, wenn sie getroffen oder ausdruecklich angefordert wurde. */
@@ -190,7 +198,7 @@
     const { useState, useEffect } = React;
 
     // ─── CodeBlock Component ──────────────────────────────────────────────────
-    function CodeBlock({ code, lang }) {
+    function CodeBlock({ code, lang, kind, note }) {
       const [copied, setCopied] = React.useState(false);
       const copy = () => {
         navigator.clipboard.writeText(code).then(() => {
@@ -211,7 +219,17 @@
       const labelDone = lang === 'en' ? '\u2713 Copied' : '\u2713 Kopiert';
       return (
         <div style={{ position: 'relative', marginBottom: '1rem' }}>
+          {kind && (
+            <div className={'code-tag ' + (kind === 'run' ? 'code-tag-run' : 'code-tag-concept')}>
+              {kind === 'run'
+                ? (lang === 'en' ? 'Runnable as-is' : 'L\u00E4uft unver\u00E4ndert')
+                : kind === 'diagram'
+                  ? (lang === 'en' ? 'Schema \u2013 not code' : 'Schema \u2013 kein Code')
+                  : (lang === 'en' ? 'Concept \u2013 placeholder names' : 'Konzept \u2013 Platzhalternamen')}
+            </div>
+          )}
           <pre className="code-block">{code}</pre>
+          {note && <p className="code-note">{note}</p>}
           <button onClick={copy} style={{
             position: 'absolute', top: '0.5rem', right: '0.5rem',
             background: copied ? '#059669' : '#E5E7EB',
@@ -367,10 +385,15 @@
         s1GoldenRule: 'Goldene Regel',
         s1GoldenRuleText: 'Fast immer Measures verwenden! Measures sind flexibler, verbrauchen weniger Speicher und reagieren korrekt auf Filter. Calculated Columns nur verwenden, wenn Sie den Wert in Slicern oder als Filterbedingung ben\u00F6tigen.',
         s1CodeDax: '-- Einfache Aggregation\nGesamtumsatz = SUM(Umsatz[Betrag])\n\n-- Mit Bedingung (CALCULATE)\nUmsatz_DE = CALCULATE(SUM(Umsatz[Betrag]), Umsatz[Land] = "Deutschland")\n\n-- Division mit Null-Absicherung\n-- Hinweis: [Bruttogewinn] muss als eigenes Measure existieren, z.B.\n-- Bruttogewinn = SUM(Umsatz[Gewinn])\nMarge_% = DIVIDE([Bruttogewinn], [Gesamtumsatz], 0) * 100\n\n-- Zeitintelligenz\nUmsatz_VJ = CALCULATE([Gesamtumsatz], SAMEPERIODLASTYEAR(Datum[Datum]))\nWachstum_% = DIVIDE([Gesamtumsatz] - [Umsatz_VJ], [Umsatz_VJ], 0) * 100\n\n-- Ranking\nTop_Produkte = RANKX(ALL(Produkt[Name]), [Gesamtumsatz], , DESC, Dense)',
+        s1CodeNote: 'Konzeptsnippet: Umsatz[Betrag], Umsatz[Gewinn] und Umsatz[Land] sind Platzhalter und existieren im Kursdatensatz nicht. Die auf train.csv passenden Measures stehen in Lab\u00A005.',
 
         s2Title: 'Python \u00C4quivalente',
         s2Desc: 'Die gleichen KPIs, die Sie in DAX berechnen, k\u00F6nnen in Python mit der pandas-Bibliothek umgesetzt werden. Hier sehen Sie die direkten \u00C4quivalente:',
         s2CodePython: '# Gesamtumsatz\numsatz_gesamt = df[\'Betrag\'].sum()\n\n# Umsatz DE\numsatz_de = df[df[\'Land\'] == \'Deutschland\'][\'Betrag\'].sum()\n\n# Marge\nmarge_pct = df[\'Bruttogewinn\'].sum() / df[\'Betrag\'].sum() * 100\n\n# Jahresvergleich\n# Vorher: df[\'Datum\'] = pd.to_datetime(df[\'Datum\'])\ndf[\'Jahr\'] = pd.to_datetime(df[\'Datum\']).dt.year\nyearly = df.groupby(\'Jahr\')[\'Betrag\'].sum()\nwachstum = yearly.pct_change() * 100\nprint(wachstum)\n\n# Ranking\ntop_produkte = (df.groupby(\'Produkt\')[\'Betrag\'].sum()\n                  .sort_values(ascending=False)\n                  .reset_index())\ntop_produkte[\'Rang\'] = top_produkte[\'Betrag\'].rank(method=\'dense\', ascending=False).astype(int)  # Spalte \'Betrag\' entspricht \'Sales\' im Superstore-Datensatz\nprint(top_produkte.head(10))',
+        s2CodeNote: 'Konzeptsnippet mit Platzhalterspalten. Die lauff\u00E4hige Fassung auf train.csv steht direkt darunter.',
+        s2RunTitle: 'Dieselben KPIs, lauff\u00E4hig mit train.csv',
+        s2CodePythonRun: "# Dieselben KPIs wie oben, aber auf dem Kursdatensatz train.csv\n# (echte Spaltennamen statt Betrag / Bruttogewinn / Land).\nimport pandas as pd\n\ndf = pd.read_csv('train.csv', encoding='latin-1')\ndf['Order Date'] = pd.to_datetime(df['Order Date'], dayfirst=True)\n\n# Gesamtumsatz  ->  DAX: Umsatz = SUM(Orders[Sales])\numsatz_gesamt = df['Sales'].sum()\nprint(f\"Gesamtumsatz: {umsatz_gesamt:,.2f}\")        # 2,261,536.78\n\n# Gefilterte Aggregation  ->  DAX: CALCULATE(..., Orders[Region] = \"West\")\numsatz_west = df.loc[df['Region'] == 'West', 'Sales'].sum()\nprint(f\"Umsatz West:  {umsatz_west:,.2f}\")           # 710,219.68\n\n# Anteil am Gesamtumsatz  ->  DAX: DIVIDE(..., CALCULATE(..., ALL(...)))\nprint(f\"Anteil West:  {umsatz_west / umsatz_gesamt * 100:.1f} %\")  # 31.4 %\n\n# Jahresvergleich  ->  DAX: SAMEPERIODLASTYEAR(Datum[Datum])\njahr = df.groupby(df['Order Date'].dt.year)['Sales'].sum()\nprint(jahr.round(2))       # 2015 479856.21 | 2016 459436.01\n                           # 2017 600192.55 | 2018 722052.02\nprint((jahr.pct_change() * 100).round(1))   # 2018: 20.3\n\n# Ranking  ->  DAX: RANKX(ALL(...), [Umsatz], , DESC, Dense)\ntop = df.groupby('Sub-Category')['Sales'].sum().sort_values(ascending=False)\nprint(top.head(3).round(2))  # Phones 327782.45 | Chairs 322822.73\n                             # Storage 219343.39",
+        s2RunNote: 'Voraussetzung: pandas installiert, train.csv im selben Verzeichnis (Download in Lab\u00A004). Die Sollwerte stehen als Kommentar hinter jeder Zeile \u2013 stimmt eine Zahl nicht, liegt es fast immer am Datumsformat oder am encoding.',
 
         s3Title: 'KPI-Tabelle',
         s3Desc: 'Die wichtigsten Business-KPIs auf einen Blick \u2013 mit Formel, DAX-Funktion und Python-\u00C4quivalent.',
@@ -394,6 +417,7 @@
         s4WhyCalcTitle: 'Warum CALCULATE() so m\u00E4chtig ist',
         s4WhyCalcText: 'CALCULATE() ist die zentrale Funktion, um einen skalaren Ausdruck in einem ge\u00E4nderten Filterkontext auszuwerten: Filter hinzuf\u00FCgen, entfernen oder \u00FCberschreiben \u2013 direkt in einer Formel. Das Gegenst\u00FCck f\u00FCr Tabellenausdr\u00FCcke ist CALCULATETABLE(); daneben wirken Filtermodifikatoren wie ALL(), REMOVEFILTERS() oder KEEPFILTERS() auf den Kontext. In einem Measure f\u00FChrt der Weg zu eigenen Filtern aber praktisch immer \u00FCber CALCULATE.',
         s4CodeCalc: '-- Ohne CALCULATE: bestehende Filter gelten, aber\n-- man kann keine NEUEN Filter hinzuf\u00FCgen\nUmsatz_einfach = SUM(Umsatz[Betrag])  -- respektiert aktive Slicer/Filter\n\n-- Mit CALCULATE: Filter-Kontext gezielt \u00E4ndern\nUmsatz_DE = CALCULATE(\n    SUM(Umsatz[Betrag]),\n    Umsatz[Land] = "Deutschland"   -- neuer Filter wird hinzugef\u00FCgt\n)\n\n-- Filter entfernen mit ALL()\nUmsatz_Gesamt_Immer = CALCULATE(\n    SUM(Umsatz[Betrag]),\n    ALL(Umsatz)                    -- ALLE Filter auf Umsatz entfernt\n)\n\n-- Anteil am Gesamtumsatz\nAnteil_% = DIVIDE(\n    [Gesamtumsatz],\n    CALCULATE([Gesamtumsatz], ALL(Umsatz[Land])),\n    0\n)\n\n-- VAR / RETURN (modernes DAX-Pattern)\n-- Setzt voraus: Gesamtkosten = SUM(Umsatz[Kosten])\nGewinnmarge =\n    VAR _umsatz = [Gesamtumsatz]\n    VAR _kosten = [Gesamtkosten]\n    RETURN\n        DIVIDE(_umsatz - _kosten, _umsatz, 0)',
+        s4CodeNote: 'Konzeptsnippet: Platzhaltertabelle Umsatz mit den Spalten Betrag, Land und Kosten. Das Muster gilt unver\u00E4ndert, nur die Namen wechseln.',
 
         s5Title: 'Lernressourcen',
         s5Desc: 'Erg\u00E4nzende YouTube-Kanalempfehlungen f\u00FCr DAX und Python-Analysen:',
@@ -538,10 +562,15 @@
         s1GoldenRule: 'Golden Rule',
         s1GoldenRuleText: 'Almost always use Measures! Measures are more flexible, consume less memory and respond correctly to filters. Use Calculated Columns only when you need the value in slicers or as a filter condition.',
         s1CodeDax: '-- Simple aggregation\nTotalRevenue = SUM(Sales[Amount])\n\n-- With condition (CALCULATE)\nRevenue_DE = CALCULATE(SUM(Sales[Amount]), Sales[Country] = "Germany")\n\n-- Division with zero protection\n-- Note: [GrossProfit] must exist as its own measure, e.g.\n-- GrossProfit = SUM(Sales[Profit])\nMargin_% = DIVIDE([GrossProfit], [TotalRevenue], 0) * 100\n\n-- Time intelligence\nRevenue_PY = CALCULATE([TotalRevenue], SAMEPERIODLASTYEAR(Date[Date]))\nGrowth_% = DIVIDE([TotalRevenue] - [Revenue_PY], [Revenue_PY], 0) * 100\n\n-- Ranking\nTop_Products = RANKX(ALL(Product[Name]), [TotalRevenue], , DESC, Dense)',
+        s1CodeNote: 'Concept snippet: Sales[Amount], Sales[Profit] and Sales[Country] are placeholders and do not exist in the course dataset. The measures that fit train.csv are in Lab\u00A005.',
 
         s2Title: 'Python Equivalents',
         s2Desc: 'The same KPIs you calculate in DAX can be implemented in Python using the pandas library. Here are the direct equivalents:',
         s2CodePython: '# Total revenue\ntotal_revenue = df[\'Amount\'].sum()\n\n# Revenue Germany\nrevenue_de = df[df[\'Country\'] == \'Germany\'][\'Amount\'].sum()\n\n# Margin\nmargin_pct = df[\'GrossProfit\'].sum() / df[\'Amount\'].sum() * 100\n\n# Year-over-year comparison\n# Note: df[\'Date\'] = pd.to_datetime(df[\'Date\'])  # ensure datetime type first\ndf[\'Year\'] = pd.to_datetime(df[\'Date\']).dt.year\nyearly = df.groupby(\'Year\')[\'Amount\'].sum()\ngrowth = yearly.pct_change() * 100\nprint(growth)\n\n# Ranking\ntop_products = (df.groupby(\'Product\')[\'Amount\'].sum()\n                  .sort_values(ascending=False)\n                  .reset_index())\ntop_products[\'Rank\'] = top_products[\'Amount\'].rank(method=\'dense\', ascending=False).astype(int)  # Column \'Amount\' corresponds to \'Sales\' in the Superstore dataset\nprint(top_products.head(10))',
+        s2CodeNote: 'Concept snippet with placeholder columns. The runnable version on train.csv follows directly below.',
+        s2RunTitle: 'The same KPIs, runnable with train.csv',
+        s2CodePythonRun: "# The same KPIs as above, but on the course dataset train.csv\n# (real column names instead of Amount / GrossProfit / Country).\nimport pandas as pd\n\ndf = pd.read_csv('train.csv', encoding='latin-1')\ndf['Order Date'] = pd.to_datetime(df['Order Date'], dayfirst=True)\n\n# Total revenue  ->  DAX: Revenue = SUM(Orders[Sales])\ntotal_sales = df['Sales'].sum()\nprint(f\"Total revenue: {total_sales:,.2f}\")       # 2,261,536.78\n\n# Filtered aggregation  ->  DAX: CALCULATE(..., Orders[Region] = \"West\")\nsales_west = df.loc[df['Region'] == 'West', 'Sales'].sum()\nprint(f\"Revenue West:  {sales_west:,.2f}\")         # 710,219.68\n\n# Share of total  ->  DAX: DIVIDE(..., CALCULATE(..., ALL(...)))\nprint(f\"Share West:    {sales_west / total_sales * 100:.1f} %\")  # 31.4 %\n\n# Year-over-year  ->  DAX: SAMEPERIODLASTYEAR(Date[Date])\nyearly = df.groupby(df['Order Date'].dt.year)['Sales'].sum()\nprint(yearly.round(2))     # 2015 479856.21 | 2016 459436.01\n                           # 2017 600192.55 | 2018 722052.02\nprint((yearly.pct_change() * 100).round(1))  # 2018: 20.3\n\n# Ranking  ->  DAX: RANKX(ALL(...), [Revenue], , DESC, Dense)\ntop = df.groupby('Sub-Category')['Sales'].sum().sort_values(ascending=False)\nprint(top.head(3).round(2))  # Phones 327782.45 | Chairs 322822.73\n                             # Storage 219343.39",
+        s2RunNote: 'Prerequisites: pandas installed, train.csv in the same directory (download in Lab\u00A004). The expected values are in the comment after each line \u2013 if a number is off, it is nearly always the date format or the encoding.',
 
         s3Title: 'KPI Table',
         s3Desc: 'The most important business KPIs at a glance \u2013 with formula, DAX function and Python equivalent.',
@@ -565,6 +594,7 @@
         s4WhyCalcTitle: 'Why CALCULATE() is so powerful',
         s4WhyCalcText: 'CALCULATE() is the central function for evaluating a scalar expression in a modified filter context: add, remove or override filters \u2013 directly in a formula. Its counterpart for table expressions is CALCULATETABLE(); filter modifiers such as ALL(), REMOVEFILTERS() and KEEPFILTERS() also act on the context. Inside a measure, however, the route to your own filters is practically always CALCULATE.',
         s4CodeCalc: '-- Without CALCULATE: existing filters apply, but\n-- you cannot ADD new filters\nRevenue_simple = SUM(Sales[Amount])  -- respects active slicers/filters\n\n-- With CALCULATE: modify filter context explicitly\nRevenue_DE = CALCULATE(\n    SUM(Sales[Amount]),\n    Sales[Country] = "Germany"     -- new filter is added\n)\n\n-- Remove filter with ALL()\nRevenue_Always_Total = CALCULATE(\n    SUM(Sales[Amount]),\n    ALL(Sales)                     -- ALL filters on Sales removed\n)\n\n-- Share of total revenue\nShare_% = DIVIDE(\n    [TotalRevenue],\n    CALCULATE([TotalRevenue], ALL(Sales[Country])),\n    0\n)\n\n-- VAR / RETURN (modern DAX pattern)\n-- Requires: TotalCost = SUM(Sales[Cost])\nProfitMargin =\n    VAR _revenue = [TotalRevenue]\n    VAR _cost    = [TotalCost]\n    RETURN\n        DIVIDE(_revenue - _cost, _revenue, 0)',
+        s4CodeNote: 'Concept snippet: placeholder table Sales with columns Amount, Country and Cost. The pattern holds unchanged, only the names differ.',
 
         s5Title: 'Learning Resources',
         s5Desc: 'Recommended YouTube channels for DAX and Python analytics:',
@@ -776,7 +806,7 @@
               </div>
 
               <h3 style={{ marginTop: '2rem' }}>{'DAX Code'}</h3>
-              <CodeBlock code={tx.s1CodeDax} lang={lang} />
+              <CodeBlock code={tx.s1CodeDax} lang={lang} kind="concept" note={tx.s1CodeNote} />
             </section>
 
             {/* ── Section 2: Python Aquivalente ── */}
@@ -784,7 +814,9 @@
               <h2>{tx.s2Title}</h2>
               <div className="bauhaus-accent-line"></div>
               <p>{tx.s2Desc}</p>
-              <CodeBlock code={tx.s2CodePython} lang={lang} />
+              <CodeBlock code={tx.s2CodePython} lang={lang} kind="concept" note={tx.s2CodeNote} />
+              <h4 style={{ marginTop: '1.5rem' }}>{tx.s2RunTitle}</h4>
+              <CodeBlock code={tx.s2CodePythonRun} lang={lang} kind="run" note={tx.s2RunNote} />
             </section>
 
             {/* ── Section 3: KPI-Tabelle ── */}
@@ -844,7 +876,7 @@
                 <p style={{ margin: 0 }}>{tx.s4WhyCalcText}</p>
               </div>
 
-              <CodeBlock code={tx.s4CodeCalc} lang={lang} />
+              <CodeBlock code={tx.s4CodeCalc} lang={lang} kind="concept" note={tx.s4CodeNote} />
 
               {/* DAX Variables */}
               <div className="info-box" style={{ marginTop: '1.5rem' }}>
