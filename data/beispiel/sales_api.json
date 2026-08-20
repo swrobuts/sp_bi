@@ -1,0 +1,93 @@
+{
+  "meta": {
+    "source": "BI Lab Beispieldaten (fiktiv)",
+    "currency": "EUR",
+    "count": 12
+  },
+  "data": [
+    {
+      "Monat": "2025-01",
+      "Region": "Nord",
+      "Produktgruppe": "Hardware",
+      "Umsatz": 18450.0,
+      "Bestellungen": 112
+    },
+    {
+      "Monat": "2025-02",
+      "Region": "Nord",
+      "Produktgruppe": "Hardware",
+      "Umsatz": 17920.5,
+      "Bestellungen": 108
+    },
+    {
+      "Monat": "2025-03",
+      "Region": "Nord",
+      "Produktgruppe": "Software",
+      "Umsatz": 24310.75,
+      "Bestellungen": 143
+    },
+    {
+      "Monat": "2025-04",
+      "Region": "Sued",
+      "Produktgruppe": "Hardware",
+      "Umsatz": 21075.2,
+      "Bestellungen": 126
+    },
+    {
+      "Monat": "2025-05",
+      "Region": "Sued",
+      "Produktgruppe": "Software",
+      "Umsatz": 28640.0,
+      "Bestellungen": 167
+    },
+    {
+      "Monat": "2025-06",
+      "Region": "Sued",
+      "Produktgruppe": "Dienstleistung",
+      "Umsatz": 15230.4,
+      "Bestellungen": 61
+    },
+    {
+      "Monat": "2025-07",
+      "Region": "West",
+      "Produktgruppe": "Hardware",
+      "Umsatz": 19880.9,
+      "Bestellungen": 119
+    },
+    {
+      "Monat": "2025-08",
+      "Region": "West",
+      "Produktgruppe": "Software",
+      "Umsatz": 26115.3,
+      "Bestellungen": 154
+    },
+    {
+      "Monat": "2025-09",
+      "Region": "West",
+      "Produktgruppe": "Dienstleistung",
+      "Umsatz": 14760.0,
+      "Bestellungen": 58
+    },
+    {
+      "Monat": "2025-10",
+      "Region": "Ost",
+      "Produktgruppe": "Hardware",
+      "Umsatz": 16340.6,
+      "Bestellungen": 101
+    },
+    {
+      "Monat": "2025-11",
+      "Region": "Ost",
+      "Produktgruppe": "Software",
+      "Umsatz": 22980.15,
+      "Bestellungen": 138
+    },
+    {
+      "Monat": "2025-12",
+      "Region": "Ost",
+      "Produktgruppe": "Dienstleistung",
+      "Umsatz": 17505.25,
+      "Bestellungen": 70
+    }
+  ]
+}

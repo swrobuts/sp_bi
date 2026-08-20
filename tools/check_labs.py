@@ -9,6 +9,8 @@ Prueft, was beim Selbststudium tatsaechlich weh tut, wenn es kaputt ist:
   3. Compose    - docker compose config besteht; das Image-Tag ist gepinnt
   4. Sprache    - die englische Fassung enthaelt keine deutschen UI-Texte
   5. Kennzeichen- jeder kopierbare Block ist als run / concept / diagram markiert
+  6. Daten     - jede Datei, die ein lauffaehiger Block oeffnet, liegt im Repo
+                 und wird auf derselben Seite zum Download angeboten
 
 Aufruf:
     python3 tools/check_labs.py            # alles
@@ -109,7 +111,12 @@ def check_python(quick=False):
             # Dash-Apps starten einen Server - wir pruefen sie ohne app.run().
             headless = re.sub(r"^\s*app\.run\(.*$", "    pass", code, flags=re.M)
             with tempfile.TemporaryDirectory() as td:
-                shutil.copy(CSV_PATH, Path(td) / "train.csv")
+                # Genau die Dateien bereitstellen, die der Lernende ueber die
+                # Seite herunterladen kann - nicht mehr und nicht weniger.
+                for fname, repo_path in DATA_FILES.items():
+                    src = ROOT / repo_path
+                    if src.exists():
+                        shutil.copy(src, Path(td) / fname)
                 script = Path(td) / "block.py"
                 script.write_text(headless, encoding="utf-8")
                 proc = subprocess.run([sys.executable, "block.py"], cwd=td,
@@ -185,6 +192,83 @@ def check_tagging():
                f"{lab.name}: {tagged}/{total} Bloecke gekennzeichnet")
 
 
+# ── 6. Datenverfuegbarkeit ───────────────────────────────────────────────────
+# Jede Datei, die ein lauffaehiger Block oeffnet, muss im Repo liegen und ueber
+# die Seite herunterladbar sein. Sonst steht der Lernende vor einem Block, der
+# "Laeuft unveraendert" verspricht und an einem FileNotFoundError scheitert -
+# genau die Frustration, die diese Pruefung verhindern soll.
+
+# Dateiname im Code -> Pfad im Repo
+DATA_FILES = {
+    "train.csv": "data/train.csv",
+    "umsatz.csv": "data/beispiel/umsatz.csv",
+    "bericht.xlsx": "data/beispiel/bericht.xlsx",
+    "sales_api.json": "data/beispiel/sales_api.json",
+}
+
+# Diese Namen tauchen in Beispielen auf, sind aber Ausgabe- oder Projektdateien,
+# die der Lernende selbst anlegt - keine Eingabedaten.
+DATA_IGNORE = {"requirements.txt", "app.py", "charts.py", "explore.py",
+               "docker-compose.yml", "compose.yaml", ".env"}
+
+READ_CALL = re.compile(r"""(?:read_csv|read_excel|read_json|open)\(\s*['"]([^'"]+)['"]""")
+# SQL: COPY ... FROM '/data/train.csv'
+SQL_COPY = re.compile(r"""FROM\s+'([^']+\.[a-z]+)'""", re.I)
+# Compose: - ./train.csv:/data/train.csv:ro
+MOUNT = re.compile(r"""^\s*-\s+\./([\w./-]+\.[a-z]+):""", re.M)
+# Eigene Pages-URL in lauffaehigem Code
+OWN_URL = re.compile(r"""https://swrobuts\.github\.io/sp_bi/([\w./-]+)""")
+
+
+def check_data_availability():
+    referenced = set()
+    for lab in LABS:
+        for block in extract(lab):
+            if block["kind"] != "run":
+                continue
+            code = block["code"]
+            for hit in (READ_CALL.findall(code) + SQL_COPY.findall(code)
+                        + MOUNT.findall(code)):
+                name = hit.split("/")[-1]
+                if name in DATA_IGNORE:
+                    continue
+                referenced.add((lab.name, block["name"], name))
+
+    for lab_name, block_name, fname in sorted(referenced):
+        where = f"{lab_name}/{block_name} -> {fname}"
+        repo_path = DATA_FILES.get(fname)
+        if repo_path is None:
+            record(False, "Daten", f"{where}: unbekannte Datei, nicht im Repo hinterlegt")
+        elif not (ROOT / repo_path).exists():
+            record(False, "Daten", f"{where}: {repo_path} fehlt im Repo")
+        else:
+            record(True, "Daten", f"{where} liegt als {repo_path} bei")
+
+    # Wird jede bereitgestellte Datei auch zum Download angeboten?
+    for fname, repo_path in sorted(DATA_FILES.items()):
+        used_in = {l for l, _, n in referenced if n == fname}
+        for lab_name in sorted(used_in):
+            html = (ROOT / lab_name).read_text(encoding="utf-8")
+            if f'href="{repo_path}"' in html:
+                record(True, "Daten", f"{lab_name} bietet {repo_path} zum Download an")
+            else:
+                record(False, "Daten", f"{lab_name} nutzt {fname}, verlinkt aber {repo_path} nicht")
+
+    # Ueber HTTP geladene Daten muessen aus dem eigenen Repo kommen und dort liegen
+    for lab in LABS:
+        for block in extract(lab):
+            if block["kind"] != "run":
+                continue
+            if "example.com" in block["code"]:
+                record(False, "Daten",
+                       f"{lab.name}/{block['name']} nutzt den fiktiven Host example.com")
+            for path in OWN_URL.findall(block["code"]):
+                target = ROOT / path
+                record(target.exists(), "Daten",
+                       f"{lab.name}/{block['name']} laedt {path} per HTTP \u2013 Datei liegt im Repo"
+                       if target.exists() else
+                       f"{lab.name}/{block['name']} laedt {path} per HTTP, aber die Datei fehlt im Repo")
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--quick", action="store_true", help="Python-Bloecke nicht ausfuehren")
@@ -194,6 +278,7 @@ def main():
     check_tagging()
     check_language()
     check_compose()
+    check_data_availability()
     check_python(args.quick)
 
     failed = [r for r in results if r[0] is False]

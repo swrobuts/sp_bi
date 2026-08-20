@@ -57,3 +57,25 @@ Encoding (`latin-1`) schuld.
 (z. B. 957,5775). Eine Spalte `numeric(12,2)` rundet schon beim Import, die
 Gesamtsumme weicht dann um rund 20 Cent ab. Das Schema in
 `starter/lab-06-stack/init/01_schema.sql` verwendet deshalb `numeric(12,4)`.
+
+## Kleine Beispieldaten für Lab 02
+
+Neben dem Kursdatensatz liegen unter [`beispiel/`](beispiel/) drei winzige
+Quellen mit denselben zwölf Zeilen – CSV, Excel und JSON. Sie sind frei
+erfunden und dienen dem Abschnitt „Datenquellen anbinden" in Lab 02.
+Details in [`beispiel/README.md`](beispiel/README.md).
+
+## Wo die Daten in den Labs auftauchen
+
+| Lab | Datei | Wofür |
+|---|---|---|
+| 02 | `beispiel/umsatz.csv`, `beispiel/bericht.xlsx`, `beispiel/sales_api.json` | Drei Quellen, ein Ergebnis |
+| 02 | `train.csv` | Datenqualität an echten Defekten |
+| 03 | `train.csv` | KPIs in Python neben den DAX-Pendants |
+| 04 | `train.csv` | Plotly-Diagramme und Dash-App |
+| 05 | `train.csv` | Exploration, Power BI, Dash-Dashboard |
+| 06 | `train.csv` | Import nach PostgreSQL, Dashboards in Metabase |
+
+Jede dieser Seiten bietet die benötigten Dateien selbst zum Download an –
+niemand muss dafür in ein anderes Lab wechseln. `tools/check_labs.py` prüft
+das automatisch.

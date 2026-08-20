@@ -464,6 +464,11 @@
         s2CodePython: '# Gesamtumsatz\numsatz_gesamt = df[\'Betrag\'].sum()\n\n# Umsatz DE\numsatz_de = df[df[\'Land\'] == \'Deutschland\'][\'Betrag\'].sum()\n\n# Marge\nmarge_pct = df[\'Bruttogewinn\'].sum() / df[\'Betrag\'].sum() * 100\n\n# Jahresvergleich\n# Vorher: df[\'Datum\'] = pd.to_datetime(df[\'Datum\'])\ndf[\'Jahr\'] = pd.to_datetime(df[\'Datum\']).dt.year\nyearly = df.groupby(\'Jahr\')[\'Betrag\'].sum()\nwachstum = yearly.pct_change() * 100\nprint(wachstum)\n\n# Ranking\ntop_produkte = (df.groupby(\'Produkt\')[\'Betrag\'].sum()\n                  .sort_values(ascending=False)\n                  .reset_index())\ntop_produkte[\'Rang\'] = top_produkte[\'Betrag\'].rank(method=\'dense\', ascending=False).astype(int)  # Spalte \'Betrag\' entspricht \'Sales\' im Superstore-Datensatz\nprint(top_produkte.head(10))',
         s2CodeNote: 'Konzeptsnippet mit Platzhalterspalten. Die lauff\u00E4hige Fassung auf train.csv steht direkt darunter.',
         s2RunTitle: 'Dieselben KPIs, lauff\u00E4hig mit train.csv',
+        dataTitle: 'Daten f\u00FCr diesen Abschnitt',
+        dataText: 'Der lauff\u00E4hige Block unten braucht train.csv im selben Verzeichnis wie das Skript. Es ist derselbe Kursdatensatz wie in Lab\u00A004, 05 und 06: 9.800 Bestellpositionen, 2015\u20132018, Datumsformat TT/MM/JJJJ, Encoding latin-1. Einzige Kennzahl ist Sales \u2013 Profit, Quantity und Discount gibt es in dieser Variante nicht.',
+        dataLicense: 'Quelle: Superstore Sales Dataset von Rohit Sahoo (Kaggle), Lizenz GPL\u00A02.',
+        dataDirect: 'train.csv herunterladen',
+        dataKaggle: 'Originalquelle bei Kaggle',
         s2CodePythonRun: "# Dieselben KPIs wie oben, aber auf dem Kursdatensatz train.csv\n# (echte Spaltennamen statt Betrag / Bruttogewinn / Land).\nimport pandas as pd\n\ndf = pd.read_csv('train.csv', encoding='latin-1')\ndf['Order Date'] = pd.to_datetime(df['Order Date'], dayfirst=True)\n\n# Gesamtumsatz  ->  DAX: Umsatz = SUM(Orders[Sales])\numsatz_gesamt = df['Sales'].sum()\nprint(f\"Gesamtumsatz: {umsatz_gesamt:,.2f}\")        # 2,261,536.78\n\n# Gefilterte Aggregation  ->  DAX: CALCULATE(..., Orders[Region] = \"West\")\numsatz_west = df.loc[df['Region'] == 'West', 'Sales'].sum()\nprint(f\"Umsatz West:  {umsatz_west:,.2f}\")           # 710,219.68\n\n# Anteil am Gesamtumsatz  ->  DAX: DIVIDE(..., CALCULATE(..., ALL(...)))\nprint(f\"Anteil West:  {umsatz_west / umsatz_gesamt * 100:.1f} %\")  # 31.4 %\n\n# Jahresvergleich  ->  DAX: SAMEPERIODLASTYEAR(Datum[Datum])\njahr = df.groupby(df['Order Date'].dt.year)['Sales'].sum()\nprint(jahr.round(2))       # 2015 479856.21 | 2016 459436.01\n                           # 2017 600192.55 | 2018 722052.02\nprint((jahr.pct_change() * 100).round(1))   # 2018: 20.3\n\n# Ranking  ->  DAX: RANKX(ALL(...), [Umsatz], , DESC, Dense)\ntop = df.groupby('Sub-Category')['Sales'].sum().sort_values(ascending=False)\nprint(top.head(3).round(2))  # Phones 327782.45 | Chairs 322822.73\n                             # Storage 219343.39",
         s2RunNote: 'Voraussetzung: pandas installiert, train.csv im selben Verzeichnis (Download in Lab\u00A004). Die Sollwerte stehen als Kommentar hinter jeder Zeile \u2013 stimmt eine Zahl nicht, liegt es fast immer am Datumsformat oder am encoding.',
         selfCheckTitle: 'Selbstcheck (1 Minute)',
@@ -649,6 +654,11 @@
         s2CodePython: '# Total revenue\ntotal_revenue = df[\'Amount\'].sum()\n\n# Revenue Germany\nrevenue_de = df[df[\'Country\'] == \'Germany\'][\'Amount\'].sum()\n\n# Margin\nmargin_pct = df[\'GrossProfit\'].sum() / df[\'Amount\'].sum() * 100\n\n# Year-over-year comparison\n# Note: df[\'Date\'] = pd.to_datetime(df[\'Date\'])  # ensure datetime type first\ndf[\'Year\'] = pd.to_datetime(df[\'Date\']).dt.year\nyearly = df.groupby(\'Year\')[\'Amount\'].sum()\ngrowth = yearly.pct_change() * 100\nprint(growth)\n\n# Ranking\ntop_products = (df.groupby(\'Product\')[\'Amount\'].sum()\n                  .sort_values(ascending=False)\n                  .reset_index())\ntop_products[\'Rank\'] = top_products[\'Amount\'].rank(method=\'dense\', ascending=False).astype(int)  # Column \'Amount\' corresponds to \'Sales\' in the Superstore dataset\nprint(top_products.head(10))',
         s2CodeNote: 'Concept snippet with placeholder columns. The runnable version on train.csv follows directly below.',
         s2RunTitle: 'The same KPIs, runnable with train.csv',
+        dataTitle: 'Data for this section',
+        dataText: 'The runnable block below needs train.csv in the same directory as the script. It is the same course dataset as in Labs\u00A004, 05 and 06: 9,800 order line items, 2015\u20132018, date format DD/MM/YYYY, encoding latin-1. Sales is the only measure \u2013 this variant has no Profit, Quantity or Discount.',
+        dataLicense: 'Source: Superstore Sales Dataset by Rohit Sahoo (Kaggle), licensed GPL\u00A02.',
+        dataDirect: 'Download train.csv',
+        dataKaggle: 'Original source on Kaggle',
         s2CodePythonRun: "# The same KPIs as above, but on the course dataset train.csv\n# (real column names instead of Amount / GrossProfit / Country).\nimport pandas as pd\n\ndf = pd.read_csv('train.csv', encoding='latin-1')\ndf['Order Date'] = pd.to_datetime(df['Order Date'], dayfirst=True)\n\n# Total revenue  ->  DAX: Revenue = SUM(Orders[Sales])\ntotal_sales = df['Sales'].sum()\nprint(f\"Total revenue: {total_sales:,.2f}\")       # 2,261,536.78\n\n# Filtered aggregation  ->  DAX: CALCULATE(..., Orders[Region] = \"West\")\nsales_west = df.loc[df['Region'] == 'West', 'Sales'].sum()\nprint(f\"Revenue West:  {sales_west:,.2f}\")         # 710,219.68\n\n# Share of total  ->  DAX: DIVIDE(..., CALCULATE(..., ALL(...)))\nprint(f\"Share West:    {sales_west / total_sales * 100:.1f} %\")  # 31.4 %\n\n# Year-over-year  ->  DAX: SAMEPERIODLASTYEAR(Date[Date])\nyearly = df.groupby(df['Order Date'].dt.year)['Sales'].sum()\nprint(yearly.round(2))     # 2015 479856.21 | 2016 459436.01\n                           # 2017 600192.55 | 2018 722052.02\nprint((yearly.pct_change() * 100).round(1))  # 2018: 20.3\n\n# Ranking  ->  DAX: RANKX(ALL(...), [Revenue], , DESC, Dense)\ntop = df.groupby('Sub-Category')['Sales'].sum().sort_values(ascending=False)\nprint(top.head(3).round(2))  # Phones 327782.45 | Chairs 322822.73\n                             # Storage 219343.39",
         s2RunNote: 'Prerequisites: pandas installed, train.csv in the same directory (download in Lab\u00A004). The expected values are in the comment after each line \u2013 if a number is off, it is nearly always the date format or the encoding.',
         selfCheckTitle: 'Self-check (1 minute)',
@@ -903,6 +913,22 @@
               <div className="bauhaus-accent-line"></div>
               <p>{tx.s2Desc}</p>
               <CodeBlock code={tx.s2CodePython} lang={lang} kind="concept" note={tx.s2CodeNote} />
+              <div className="info-box" style={{ marginTop: '1.25rem' }}>
+                <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.dataTitle}</h4>
+                <p style={{ margin: '0 0 0.75rem' }}>{tx.dataText}</p>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <a href="data/train.csv" download
+                     style={{ background: 'var(--col-primary)', color: 'white', textDecoration: 'none', padding: '0.45rem 0.9rem', borderRadius: '6px', fontSize: '0.82rem', fontWeight: 700 }}>
+                    {tx.dataDirect}
+                  </a>
+                  <a href="https://www.kaggle.com/datasets/rohitsahoo/sales-forecasting"
+                     target="_blank" rel="noopener noreferrer"
+                     style={{ border: '1.5px solid var(--col-primary)', color: 'var(--col-primary)', textDecoration: 'none', padding: '0.45rem 0.9rem', borderRadius: '6px', fontSize: '0.82rem', fontWeight: 700 }}>
+                    {tx.dataKaggle}
+                  </a>
+                </div>
+                <p style={{ margin: '0.75rem 0 0', fontSize: '0.78rem', color: '#4B5563' }}>{tx.dataLicense}</p>
+              </div>
               <h4 style={{ marginTop: '1.5rem' }}>{tx.s2RunTitle}</h4>
               <CodeBlock code={tx.s2CodePythonRun} lang={lang} kind="run" note={tx.s2RunNote} />
               <div className="challenge-box">

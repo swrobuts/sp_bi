@@ -1,0 +1,13 @@
+Monat,Region,Produktgruppe,Umsatz,Bestellungen
+2025-01,Nord,Hardware,18450.0,112
+2025-02,Nord,Hardware,17920.5,108
+2025-03,Nord,Software,24310.75,143
+2025-04,Sued,Hardware,21075.2,126
+2025-05,Sued,Software,28640.0,167
+2025-06,Sued,Dienstleistung,15230.4,61
+2025-07,West,Hardware,19880.9,119
+2025-08,West,Software,26115.3,154
+2025-09,West,Dienstleistung,14760.0,58
+2025-10,Ost,Hardware,16340.6,101
+2025-11,Ost,Software,22980.15,138
+2025-12,Ost,Dienstleistung,17505.25,70

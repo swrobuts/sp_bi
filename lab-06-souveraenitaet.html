@@ -493,6 +493,11 @@
         s5ImportTitle: 'Kursdatensatz in PostgreSQL importieren',
         s5ImportIntro: 'Metabase braucht Daten, an die es sich anschliessen kann. Der Stack bringt dafuer einen zweiten PostgreSQL-Dienst mit: warehouse. Die Trennung ist Absicht - postgres haelt Metabases eigene Metadaten (Fragen, Dashboards, Nutzer), warehouse haelt die Analysedaten. Analysedaten gehoeren nicht in die Metadatenbank des Werkzeugs.',
         s5ImportStepsTitle: 'Vorbereiten und starten',
+        dataTitle: 'Daten f\u00fcr den Import',
+        dataText: 'Der warehouse-Dienst importiert train.csv beim ersten Start. Die Datei muss dazu neben der docker-compose.yml liegen \u2013 der Mount erwartet sie dort. Es ist derselbe Kursdatensatz wie in Lab\u00a004 und 05: 9.800 Zeilen, TT/MM/JJJJ, Encoding latin-1.',
+        dataLicense: 'Quelle: Superstore Sales Dataset von Rohit Sahoo (Kaggle), Lizenz GPL\u00a02. Das Starterpaket enth\u00e4lt die CSV bewusst nicht \u2013 sie liegt einmal unter data/ und wird von dort kopiert.',
+        dataDirect: 'train.csv herunterladen',
+        dataKaggle: 'Originalquelle bei Kaggle',
         s5ImportSteps: [
           'Starterpaket lab-06-stack.zip herunterladen und entpacken.',
           '.env.example nach .env kopieren und beide Passwoerter aendern.',
@@ -714,6 +719,11 @@
         s5ImportTitle: 'Import the course dataset into PostgreSQL',
         s5ImportIntro: 'Metabase needs data to connect to. The stack ships a second PostgreSQL service for that: warehouse. The split is deliberate - postgres holds Metabase\u2019s own metadata (questions, dashboards, users), warehouse holds the analytical data. Analytical data does not belong in the tool\u2019s metadata database.',
         s5ImportStepsTitle: 'Prepare and start',
+        dataTitle: 'Data for the import',
+        dataText: 'The warehouse service imports train.csv on first start. The file must sit next to docker-compose.yml \u2013 that is where the mount expects it. It is the same course dataset as in Labs\u00a004 and 05: 9,800 rows, DD/MM/YYYY, encoding latin-1.',
+        dataLicense: 'Source: Superstore Sales Dataset by Rohit Sahoo (Kaggle), licensed GPL\u00a02. The starter package deliberately does not bundle the CSV \u2013 it lives once under data/ and is copied from there.',
+        dataDirect: 'Download train.csv',
+        dataKaggle: 'Original source on Kaggle',
         s5ImportSteps: [
           'Download and unpack the starter package lab-06-stack.zip.',
           'Copy .env.example to .env and change both passwords.',
@@ -1048,6 +1058,22 @@
             <CodeBlock code={codeBashDocker[lang]} lang={lang} kind="run" />
             <h3 style={{ marginTop: '2.5rem' }}>{c.s5ImportTitle}</h3>
             <p>{c.s5ImportIntro}</p>
+            <div className="info-box" style={{ marginTop: '1.25rem' }}>
+              <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{c.dataTitle}</h4>
+              <p style={{ margin: '0 0 0.75rem' }}>{c.dataText}</p>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <a href="data/train.csv" download
+                   style={{ background: 'var(--col-primary)', color: 'white', textDecoration: 'none', padding: '0.45rem 0.9rem', borderRadius: '6px', fontSize: '0.82rem', fontWeight: 700 }}>
+                  {c.dataDirect}
+                </a>
+                <a href="https://www.kaggle.com/datasets/rohitsahoo/sales-forecasting"
+                   target="_blank" rel="noopener noreferrer"
+                   style={{ border: '1.5px solid var(--col-primary)', color: 'var(--col-primary)', textDecoration: 'none', padding: '0.45rem 0.9rem', borderRadius: '6px', fontSize: '0.82rem', fontWeight: 700 }}>
+                  {c.dataKaggle}
+                </a>
+              </div>
+              <p style={{ margin: '0.75rem 0 0', fontSize: '0.78rem', color: '#4B5563' }}>{c.dataLicense}</p>
+            </div>
             <h4>{c.s5ImportStepsTitle}</h4>
             <ol style={{ lineHeight: '1.9', paddingLeft: '1.25rem' }}>
               {c.s5ImportSteps.map((item, i) => <li key={i}>{item}</li>)}

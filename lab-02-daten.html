@@ -464,9 +464,17 @@
         s1PowerBIText: 'In Power BI \u00F6ffnet der Dialog \u201EDaten abrufen\u201C (Home \u2192 Daten abrufen) eine Quellen-Auswahl mit \u00FCber 100 Konnektoren. Nach der Verbindung \u00F6ffnet sich der Power Query Editor zur Vorschau und Transformation.',
         s1PythonTitle: 'Daten laden in Python',
         s1PythonDesc: 'Mit pandas und der requests-Bibliothek k\u00F6nnen alle g\u00E4ngigen Datenquellen eingelesen werden:',
-        s1CodePython: '# Python: Daten laden\nimport pandas as pd\nimport requests\n\n# CSV laden\ndf = pd.read_csv(\'daten.csv\')\n\n# Excel laden\ndf_excel = pd.read_excel(\'bericht.xlsx\', sheet_name=\'Umsatz\')\n\n# REST API laden\nresponse = requests.get(\'https://api.example.com/sales\')\ndf_api = pd.json_normalize(response.json()[\'data\'])  # Key je nach API verschieden \u2013 z.B. [\'results\'], [\'items\']\n\nprint(df.head())\nprint(df.shape)   # (Zeilen, Spalten)',
-        s1CodeNote: 'Dieser Block zeigt das Muster, nicht den Kursdatensatz: daten.csv, bericht.xlsx und api.example.com existieren nicht. So kopiert erzeugt er File- und Netzwerkfehler. Die lauff\u00E4hige Fassung mit train.csv steht direkt darunter.',
-        s1RunTitle: 'Dasselbe Muster, lauff\u00E4hig mit train.csv',
+        dataTitle: 'Daten f\u00FCr diesen Abschnitt',
+        dataCsv: 'umsatz.csv',
+        dataXlsx: 'bericht.xlsx',
+        dataJson: 'sales_api.json',
+        dataDirect: 'train.csv (Kursdatensatz)',
+        dataKaggle: 'Originalquelle bei Kaggle',
+        dataText: 'Alle Codebl\u00F6cke auf dieser Seite arbeiten mit Dateien, die hier bereitliegen. Die drei Beispielquellen (CSV, Excel, JSON) enthalten dieselben zw\u00F6lf Zeilen \u2013 daran l\u00E4sst sich pr\u00FCfen, ob alle Wege zum selben Ergebnis f\u00FChren. train.csv ist der Kursdatensatz f\u00FCr die Datenqualit\u00E4ts\u00FCbung: 9.800 Zeilen, TT/MM/JJJJ, Encoding latin-1.',
+        dataLicense: 'Quelle: Superstore Sales Dataset von Rohit Sahoo (Kaggle), Lizenz GPL\u00A02. Die Beispieldateien umsatz.csv, bericht.xlsx und sales_api.json sind frei erfunden und dienen nur der \u00DCbung.',
+        s1CodePython: "# Drei Quellen, dieselben Zahlen. Alle drei Dateien stehen oben zum\n# Download und liegen im Repo unter data/beispiel/.\nimport pandas as pd\nimport requests\n\n# 1. CSV\ndf_csv = pd.read_csv('umsatz.csv')\n\n# 2. Excel - der Blattname gehoert zur Datei, nicht zur Sprache\ndf_excel = pd.read_excel('bericht.xlsx', sheet_name='Umsatz')\n\n# 3. REST-API: dieselben Daten, aber ueber HTTP.\n#    Die Nutzlast liegt unter dem Schluessel 'data' - deshalb steht er\n#    in json_normalize. Bei anderen APIs heisst er 'results' oder 'items';\n#    ein Blick in die Antwort spart hier viel Raterei.\nurl = 'https://swrobuts.github.io/sp_bi/data/beispiel/sales_api.json'\nresponse = requests.get(url, timeout=10)\nresponse.raise_for_status()          # wirft bei 404 statt still leer zu bleiben\ndf_api = pd.json_normalize(response.json()['data'])\n\nfor name, df in [('CSV', df_csv), ('Excel', df_excel), ('API', df_api)]:\n    print(f\"{name:6} {df.shape}  Umsatz {df['Umsatz'].sum():,.2f}\")\n\n# Probe: drei Wege, ein Ergebnis. Genau darum geht es in diesem Abschnitt.\nassert df_csv['Umsatz'].sum() == df_excel['Umsatz'].sum() == df_api['Umsatz'].sum()\nprint('Alle drei Quellen stimmen ueberein.')",
+        s1CodeNote: 'Voraussetzung: pip install pandas requests openpyxl, dazu umsatz.csv und bericht.xlsx aus dem Download oben im selben Verzeichnis. Die dritte Quelle wird \u00FCber HTTP geladen und braucht eine Internetverbindung. Sollausgabe: dreimal (12, 5) und dreimal Umsatz 243.209,05, danach \u201EAlle drei Quellen stimmen ueberein.\u201C',
+        s1RunTitle: 'Dasselbe Muster auf dem Kursdatensatz train.csv',
         s1CodePythonRun: "# Dieselben drei Quellen, aber mit dem Kursdatensatz statt Platzhaltern.\n# train.csv liegt im selben Verzeichnis wie dieses Skript.\nimport pandas as pd\n\n# 1. CSV laden\ndf = pd.read_csv('train.csv', encoding='latin-1')\n\n# 2. Datum: die Datei nutzt TT/MM/JJJJ -> dayfirst=True ist Pflicht,\n#    sonst bricht das Parsen ab, sobald der Tag groesser als 12 ist.\ndf['Order Date'] = pd.to_datetime(df['Order Date'], dayfirst=True)\n\n# 3. Struktur und Qualitaet pruefen\nprint(df.shape)                            # (9800, 18)\nprint(round(df['Sales'].sum(), 2))         # 2261536.78\nprint(df['Order ID'].nunique())            # 4922\nprint(df.isnull().sum()[lambda s: s > 0])  # Postal Code    11",
         s1RunNote: 'Voraussetzung: pandas installiert, train.csv im selben Verzeichnis (Download in Lab\u00A004). Sollausgabe: (9800, 18) \u00B7 2261536.78 \u00B7 4922 \u00B7 Postal Code 11. Weichen die Zahlen ab, wurde meist dayfirst=True vergessen.',
         selfCheckTitle: 'Selbstcheck (1 Minute)',
@@ -515,8 +523,8 @@
           { name: 'Inkonsistenzen', desc: 'Schreibweisen variieren: \u201EDE\u201C, \u201Ede\u201C, \u201E Deutschland \u201C', fix: 'str.strip(), str.upper(), Ersetzungstabellen' },
         ],
         s3PandasTitle: 'Datenqualit\u00E4t pr\u00FCfen & bereinigen mit Pandas',
-        s3CodePandas: '# Datenqualit\u00E4t pr\u00FCfen\ndf.isnull().sum()          # Nullwerte pr\u00FCfen\ndf.duplicated().sum()      # Duplikate z\u00E4hlen\nprint(df.dtypes)           # Datentypen anzeigen\n\n# Bereinigen\ndf_clean = df.drop_duplicates()\ndf_clean = df_clean.dropna(subset=[\'Umsatz\'])\ndf_clean[\'Datum\'] = pd.to_datetime(df_clean[\'Datum\'])\ndf_clean[\'Land\'] = df_clean[\'Land\'].str.strip().str.upper()\n\n# Zusammenfassung\nprint(f"Zeilen original: {len(df)}")\nprint(f"Zeilen bereinigt: {len(df_clean)}")\nprint(f"Entfernt: {len(df) - len(df_clean)}")',
-        s3CodeNote: 'Konzeptsnippet mit Platzhalterspalten (Umsatz, Datum, Land). Auf train.csv angewandt heissen die Spalten Sales, Order Date und State.',
+        s3CodePandas: "# Datenqualitaet auf dem Kursdatensatz - echte Defekte statt Platzhalter.\nimport pandas as pd\n\ndf = pd.read_csv('train.csv', encoding='latin-1')\n\n# 1. Befund aufnehmen, bevor irgendetwas geaendert wird\nprint(df.isnull().sum()[lambda s: s > 0])   # Postal Code    11\nprint('Duplikate:', df.duplicated().sum())  # 0\nprint(df['Order Date'].dtype)               # str bzw. object - noch Text, kein Datum\n\n# 2. Typen richtigstellen. dayfirst=True ist Pflicht: die Datei ist TT/MM/JJJJ.\ndf['Order Date'] = pd.to_datetime(df['Order Date'], dayfirst=True)\ndf['Ship Date']  = pd.to_datetime(df['Ship Date'],  dayfirst=True)\n\n# 3. Schreibweisen vereinheitlichen, bevor gruppiert wird.\n#    Ohne strip() werden ' West' und 'West' zu zwei Gruppen.\ndf['Region'] = df['Region'].str.strip()\ndf['State']  = df['State'].str.strip()\n\n# 4. Plausibilitaet pruefen statt blind bereinigen\nprint('Umsatz <= 0:', (df['Sales'] <= 0).sum())                       # 0\nprint('Versand vor Bestellung:', (df['Ship Date'] < df['Order Date']).sum())  # 0\n\n# 5. Die elf fehlenden Postal Code werden weder geloescht noch erfunden.\n#    Warum, steht in Lab 05 unter Datenqualitaet.\nprint('Zeilen nach Bereinigung:', len(df))  # 9800",
+        s3CodeNote: 'Voraussetzung: pandas installiert, train.csv aus dem Download oben im selben Verzeichnis. Sollausgabe: Postal Code 11, Duplikate 0, Umsatz <= 0 ist 0, Versand vor Bestellung ist 0, 9800 Zeilen. Der Datensatz ist bewusst weitgehend sauber \u2013 der eine echte Defekt sind die elf fehlenden Postleitzahlen.',
         s3PowerBITitle: 'Datenqualit\u00E4t in Power BI',
         s3PowerBIText: 'Im Power Query Editor (Home \u2192 Daten transformieren) stehen folgende Werkzeuge zur Verf\u00FCgung:',
         s3PowerBISteps: [
@@ -680,9 +688,17 @@
         s1PowerBIText: 'In Power BI, the "Get Data" dialog (Home \u2192 Get Data) opens a source selection with over 100 connectors. After connecting, the Power Query Editor opens for preview and transformation.',
         s1PythonTitle: 'Loading Data in Python',
         s1PythonDesc: 'With pandas and the requests library, all common data sources can be read:',
-        s1CodePython: '# Python: Load data\nimport pandas as pd\nimport requests\n\n# Load CSV\ndf = pd.read_csv(\'data.csv\')\n\n# Load Excel\ndf_excel = pd.read_excel(\'report.xlsx\', sheet_name=\'Revenue\')\n\n# Load REST API\nresponse = requests.get(\'https://api.example.com/sales\')\ndf_api = pd.json_normalize(response.json()[\'data\'])  # Key varies by API \u2013 e.g. [\'results\'], [\'items\']\n\nprint(df.head())\nprint(df.shape)   # (rows, columns)',
-        s1CodeNote: 'This block shows the pattern, not the course dataset: data.csv, report.xlsx and api.example.com do not exist. Copied as-is it produces file and network errors. The runnable version using train.csv follows directly below.',
-        s1RunTitle: 'The same pattern, runnable with train.csv',
+        dataTitle: 'Data for this section',
+        dataCsv: 'umsatz.csv',
+        dataXlsx: 'bericht.xlsx',
+        dataJson: 'sales_api.json',
+        dataDirect: 'train.csv (course dataset)',
+        dataKaggle: 'Original source on Kaggle',
+        dataText: 'Every code block on this page works with files provided right here. The three example sources (CSV, Excel, JSON) contain the same twelve rows \u2013 that is how you check whether all routes lead to the same result. train.csv is the course dataset for the data-quality exercise: 9,800 rows, DD/MM/YYYY, encoding latin-1.',
+        dataLicense: 'Source: Superstore Sales Dataset by Rohit Sahoo (Kaggle), licensed GPL\u00A02. The example files umsatz.csv, bericht.xlsx and sales_api.json are fictional and exist only for practice.',
+        s1CodePython: "# Three sources, the same numbers. All three files are available for\n# download above and live in the repo under data/beispiel/.\nimport pandas as pd\nimport requests\n\n# 1. CSV\ndf_csv = pd.read_csv('umsatz.csv')\n\n# 2. Excel - the sheet name belongs to the file, not to the language\ndf_excel = pd.read_excel('bericht.xlsx', sheet_name='Umsatz')\n\n# 3. REST API: the same data, but over HTTP.\n#    The payload sits under the key 'data' - that is why it appears in\n#    json_normalize. Other APIs call it 'results' or 'items'; looking at\n#    the actual response saves a lot of guesswork here.\nurl = 'https://swrobuts.github.io/sp_bi/data/beispiel/sales_api.json'\nresponse = requests.get(url, timeout=10)\nresponse.raise_for_status()          # raises on 404 instead of staying silently empty\ndf_api = pd.json_normalize(response.json()['data'])\n\nfor name, df in [('CSV', df_csv), ('Excel', df_excel), ('API', df_api)]:\n    print(f\"{name:6} {df.shape}  revenue {df['Umsatz'].sum():,.2f}\")\n\n# Check: three routes, one result. That is the whole point of this section.\nassert df_csv['Umsatz'].sum() == df_excel['Umsatz'].sum() == df_api['Umsatz'].sum()\nprint('All three sources agree.')",
+        s1CodeNote: 'Prerequisites: pip install pandas requests openpyxl, plus umsatz.csv and bericht.xlsx from the download above in the same directory. The third source is fetched over HTTP and needs an internet connection. Expected output: three times (12, 5) and three times revenue 243,209.05, then \u201CAll three sources agree.\u201D',
+        s1RunTitle: 'The same pattern on the course dataset train.csv',
         s1CodePythonRun: "# The same three sources, but with the course dataset instead of placeholders.\n# train.csv sits in the same directory as this script.\nimport pandas as pd\n\n# 1. Load CSV\ndf = pd.read_csv('train.csv', encoding='latin-1')\n\n# 2. Dates: the file uses DD/MM/YYYY -> dayfirst=True is mandatory,\n#    otherwise parsing breaks as soon as the day exceeds 12.\ndf['Order Date'] = pd.to_datetime(df['Order Date'], dayfirst=True)\n\n# 3. Check structure and quality\nprint(df.shape)                            # (9800, 18)\nprint(round(df['Sales'].sum(), 2))         # 2261536.78\nprint(df['Order ID'].nunique())            # 4922\nprint(df.isnull().sum()[lambda s: s > 0])  # Postal Code    11",
         s1RunNote: 'Prerequisites: pandas installed, train.csv in the same directory (download in Lab\u00A004). Expected output: (9800, 18) \u00B7 2261536.78 \u00B7 4922 \u00B7 Postal Code 11. If the numbers differ, dayfirst=True was usually forgotten.',
         selfCheckTitle: 'Self-check (1 minute)',
@@ -731,8 +747,8 @@
           { name: 'Inconsistencies', desc: 'Spellings vary: "DE", "de", " Germany "', fix: 'str.strip(), str.upper(), replacement tables' },
         ],
         s3PandasTitle: 'Check & Clean Data Quality with Pandas',
-        s3CodePandas: '# Check data quality\ndf.isnull().sum()          # Check null values\ndf.duplicated().sum()      # Count duplicates\nprint(df.dtypes)           # Show data types\n\n# Clean\ndf_clean = df.drop_duplicates()\ndf_clean = df_clean.dropna(subset=[\'Revenue\'])\ndf_clean[\'Date\'] = pd.to_datetime(df_clean[\'Date\'])\ndf_clean[\'Country\'] = df_clean[\'Country\'].str.strip().str.upper()\n\n# Summary\nprint(f"Rows original: {len(df)}")\nprint(f"Rows cleaned: {len(df_clean)}")\nprint(f"Removed: {len(df) - len(df_clean)}")',
-        s3CodeNote: 'Concept snippet with placeholder columns (Revenue, Date, Country). Applied to train.csv the columns are Sales, Order Date and State.',
+        s3CodePandas: "# Data quality on the course dataset - real defects instead of placeholders.\nimport pandas as pd\n\ndf = pd.read_csv('train.csv', encoding='latin-1')\n\n# 1. Record the findings before changing anything\nprint(df.isnull().sum()[lambda s: s > 0])   # Postal Code    11\nprint('Duplicates:', df.duplicated().sum()) # 0\nprint(df['Order Date'].dtype)               # str or object - still text, not a date\n\n# 2. Fix the types. dayfirst=True is mandatory: the file is DD/MM/YYYY.\ndf['Order Date'] = pd.to_datetime(df['Order Date'], dayfirst=True)\ndf['Ship Date']  = pd.to_datetime(df['Ship Date'],  dayfirst=True)\n\n# 3. Normalise spellings before grouping.\n#    Without strip(), ' West' and 'West' become two separate groups.\ndf['Region'] = df['Region'].str.strip()\ndf['State']  = df['State'].str.strip()\n\n# 4. Check plausibility instead of cleaning blindly\nprint('Sales <= 0:', (df['Sales'] <= 0).sum())                        # 0\nprint('Shipped before ordered:', (df['Ship Date'] < df['Order Date']).sum())  # 0\n\n# 5. The eleven missing Postal Code values are neither deleted nor invented.\n#    Lab 05 explains why, under data quality.\nprint('Rows after cleaning:', len(df))  # 9800",
+        s3CodeNote: 'Prerequisites: pandas installed, train.csv from the download above in the same directory. Expected output: Postal Code 11, duplicates 0, Sales <= 0 is 0, shipped-before-ordered is 0, 9800 rows. The dataset is deliberately fairly clean \u2013 the one real defect is the eleven missing postal codes.',
         s3PowerBITitle: 'Data Quality in Power BI',
         s3PowerBIText: 'In the Power Query Editor (Home \u2192 Transform Data) the following tools are available:',
         s3PowerBISteps: [
@@ -958,7 +974,35 @@
 
               <h3 style={{ marginTop: '2rem' }}>{tx.s1PythonTitle}</h3>
               <p style={{ marginBottom: '0.5rem' }}>{tx.s1PythonDesc}</p>
-              <CodeBlock code={tx.s1CodePython} lang={lang} kind="concept" note={tx.s1CodeNote} />
+              <div className="info-box" style={{ marginTop: '1.25rem' }}>
+                <h4 style={{ marginTop: 0, color: 'var(--col-primary)' }}>{tx.dataTitle}</h4>
+                <p style={{ margin: '0 0 0.75rem' }}>{tx.dataText}</p>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <a href="data/beispiel/umsatz.csv" download
+                     style={{ background: 'var(--col-primary)', color: 'white', textDecoration: 'none', padding: '0.45rem 0.9rem', borderRadius: '6px', fontSize: '0.82rem', fontWeight: 700 }}>
+                    {tx.dataCsv}
+                  </a>
+                  <a href="data/beispiel/bericht.xlsx" download
+                     style={{ border: '1.5px solid var(--col-primary)', color: 'var(--col-primary)', textDecoration: 'none', padding: '0.45rem 0.9rem', borderRadius: '6px', fontSize: '0.82rem', fontWeight: 700 }}>
+                    {tx.dataXlsx}
+                  </a>
+                  <a href="data/beispiel/sales_api.json" download
+                     style={{ border: '1.5px solid var(--col-primary)', color: 'var(--col-primary)', textDecoration: 'none', padding: '0.45rem 0.9rem', borderRadius: '6px', fontSize: '0.82rem', fontWeight: 700 }}>
+                    {tx.dataJson}
+                  </a>
+                  <a href="data/train.csv" download
+                     style={{ border: '1.5px solid var(--col-primary)', color: 'var(--col-primary)', textDecoration: 'none', padding: '0.45rem 0.9rem', borderRadius: '6px', fontSize: '0.82rem', fontWeight: 700 }}>
+                    {tx.dataDirect}
+                  </a>
+                  <a href="https://www.kaggle.com/datasets/rohitsahoo/sales-forecasting"
+                     target="_blank" rel="noopener noreferrer"
+                     style={{ border: '1.5px solid var(--col-primary)', color: 'var(--col-primary)', textDecoration: 'none', padding: '0.45rem 0.9rem', borderRadius: '6px', fontSize: '0.82rem', fontWeight: 700 }}>
+                    {tx.dataKaggle}
+                  </a>
+                </div>
+                <p style={{ margin: '0.75rem 0 0', fontSize: '0.78rem', color: '#4B5563' }}>{tx.dataLicense}</p>
+              </div>
+              <CodeBlock code={tx.s1CodePython} lang={lang} kind="run" note={tx.s1CodeNote} />
               <h4 style={{ marginTop: '1.5rem' }}>{tx.s1RunTitle}</h4>
               <CodeBlock code={tx.s1CodePythonRun} lang={lang} kind="run" note={tx.s1RunNote} />
               <div className="challenge-box">
@@ -1058,7 +1102,7 @@
               </div>
 
               <h3 style={{ marginTop: '2rem' }}>{tx.s3PandasTitle}</h3>
-              <CodeBlock code={tx.s3CodePandas} lang={lang} kind="concept" note={tx.s3CodeNote} />
+              <CodeBlock code={tx.s3CodePandas} lang={lang} kind="run" note={tx.s3CodeNote} />
 
               <h3 style={{ marginTop: '2rem' }}>{tx.s3PowerBITitle}</h3>
               <div className="concept-box">
